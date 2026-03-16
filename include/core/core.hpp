@@ -7,11 +7,19 @@
 
 #ifndef CORE_HPP_
 #define CORE_HPP_
-
+#include "graphicals/Igraphic.hpp"
+#include <string>
+#include "./dll_cmds.hpp"
+#include "../games/Igames.hpp"
 class Core {
-public:
-    Core();
-    ~Core();
+    private:
+    bool _isRunning;
+    DLLoader<IGraphic>* _graphicLoader; 
+    IGraphic* _graphic;
 
+    public:
+    Core(const std::string& libPath);
+    void run();
+    ~Core();
 };
 #endif /* !CORE_HPP_ */

@@ -1,9 +1,11 @@
 #binary name
 arcade
-*.so
+unit_tests
 
+*.so
 *.o
 *.gcda
 *.gcno 
 html/
 latex/
+temp.txt

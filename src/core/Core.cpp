@@ -5,13 +5,36 @@
 ** Core
 */
 
-#include "core.hpp"
+#include "./core/core.hpp"
+#include "./dll_cmds.hpp"
+#include <chrono>
+#include <iostream>
 
-Core::Core()
-{
-
+Core::Core(const std::string& libPath) : _isRunning(true) {
+    _graphicLoader = new DLLoader<IGraphic>(libPath);
+    
+    _graphic = _graphicLoader->getInstance("createGraphical"); 
 }
 
 Core::~Core()
 {
+    delete _graphic;
+    delete _graphicLoader;
+}
+
+void Core::run()
+{
+    if (!_graphic)
+        return;
+    _graphic->init();
+    while (_isRunning) {
+        try {
+            _graphic->clear();
+            _graphic->handleEvents();
+            _graphic->display();
+        } catch (const std::exception &e) {
+            std::cerr << "Plugin requested exit: " << e.what() << std::endl;
+            _isRunning = false;
+        }
+    }
 }
