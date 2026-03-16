@@ -8,6 +8,7 @@
 #ifndef IGRAPHIC_HPP_
 #define IGRAPHIC_HPP_
 #include <string>
+#include "./games/IEvents.hpp"
 
 // Keys
 enum class ArcadeKey {
@@ -43,6 +44,22 @@ enum class ArcadeEventType {
     MOUSE_BUTTON_RELEASE,
     WINDOW_CLOSE
 };
+
+class ArcadeEvent : public IEvents {
+    public:
+        ArcadeEvent(ArcadeEventType type) : type(type) {}
+        ArcadeEventType getType() const { return type; }
+
+    private:
+        ArcadeEventType type;
+};
+
+static ArcadeEvent KEY_PRESS_EVENT(ArcadeEventType::KEY_PRESS);
+static ArcadeEvent KEY_RELEASE_EVENT(ArcadeEventType::KEY_RELEASE);
+static ArcadeEvent MOUSE_MOVE_EVENT(ArcadeEventType::MOUSE_MOVE);
+static ArcadeEvent MOUSE_BUTTON_PRESS_EVENT(ArcadeEventType::MOUSE_BUTTON_PRESS);
+static ArcadeEvent MOUSE_BUTTON_RELEASE_EVENT(ArcadeEventType::MOUSE_BUTTON_RELEASE);
+static ArcadeEvent WINDOW_CLOSE_EVENT(ArcadeEventType::WINDOW_CLOSE);
 
 // Mouse buttons
 enum class ArcadeMouseButton {

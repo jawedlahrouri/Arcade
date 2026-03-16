@@ -7,12 +7,10 @@
 
 #include "./core/core.hpp"
 #include "./dll_cmds.hpp"
-#include <chrono>
 #include <iostream>
 
 Core::Core(const std::string& libPath) : _isRunning(true) {
     _graphicLoader = new DLLoader<IGraphic>(libPath);
-    
     _graphic = _graphicLoader->getInstance("createGraphical"); 
 }
 
@@ -33,7 +31,7 @@ void Core::run()
             _graphic->handleEvents();
             _graphic->display();
         } catch (const std::exception &e) {
-            std::cerr << "Plugin requested exit: " << e.what() << std::endl;
+            std::cerr << "Game requested exit: " << e.what() << std::endl;
             _isRunning = false;
         }
     }

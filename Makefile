@@ -23,7 +23,7 @@ OBJ_CORE     := $(CORE:.cpp=.o)
 NAME        := arcade
 TEST_NAME   := unit_tests
 
-CXXFLAGS    := -Wall -Wextra -Iinclude -g -fno-gnu-unique
+CXXFLAGS    := -std=gnu++20 -Wall -Wextra -Iinclude -g -fno-gnu-unique
 CPPFLAGS    := -Iinclude
 
 CXX         := g++

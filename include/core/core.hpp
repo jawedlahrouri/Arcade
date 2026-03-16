@@ -10,7 +10,6 @@
 #include "graphicals/Igraphic.hpp"
 #include <string>
 #include "./dll_cmds.hpp"
-#include "../games/Igames.hpp"
 class Core {
     private:
     bool _isRunning;
