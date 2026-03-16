@@ -1,0 +1,9 @@
+#binary name
+arcade
+
+
+*.o
+*.gcda
+*.gcno 
+html/
+latex/
