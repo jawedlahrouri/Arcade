@@ -28,17 +28,18 @@ CPPFLAGS    := -Iinclude
 
 CXX         := g++
 RM          := rm -f
+LDLIBS      := -lSDL2 -lncurses
 
 all: $(NAME)
 
 $(NAME): $(OBJ) $(OBJ_CORE) $(SO_GAMES) $(SO_GRAPH)
-	$(CXX) -o $(NAME) $(OBJ) $(OBJ_CORE) $(SO_GAMES) $(SO_GRAPH)
+	$(CXX) -o $(NAME) $(OBJ) $(OBJ_CORE) $(LDLIBS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 %.so: %.cpp
-	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $<
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< $(LDLIBS)
 
 core: $(OBJ_CORE)
 

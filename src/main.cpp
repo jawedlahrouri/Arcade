@@ -11,13 +11,15 @@
 #include <exception>
 #include <unistd.h>
 #include "check_main.hpp"
+#include "./core/core.hpp"
+
 
 bool check_main::check_lib_folder(int argc, const char **argv)
 {
     (void)argc;
     std::string lib_path = argv[1];
-    if (lib_path.find("lib/") != 0) {
-        throw Exception("Error: Library path must start with 'lib/'");
+    if (lib_path.find("./lib/") != 0) {
+        throw Exception("Error: Library path must start with './lib/'");
     }
     return true;
 }
@@ -51,7 +53,9 @@ int main(int argc, char **argv)
         std::cerr << e.what() << std::endl;
         return 84;
     }
-    std::cout << "Hello World!" << std::endl;
+    // launch program
+    Core core = Core(argv[1]);
+    core.run();
     return 0;
 }
 #endif
