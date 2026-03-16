@@ -5,41 +5,61 @@
 ## Makefile
 ##
 
+SRC         := src/main.cpp
 
-SRC         =   src/main.cpp \
+CORE         := src/core/Core.cpp
 
+GAMES        := $(wildcard src/games/*.cpp)
+GRAPHICALS   := $(wildcard src/graphicals/*.cpp)
 
-SRC_TESTS   =   $(wildcard tests/*.cpp)
+SO_GAMES     := $(wildcard src/games/*.so) $(GAMES:.cpp=.so)
+SO_GRAPH     := $(wildcard src/graphicals/*.so) $(GRAPHICALS:.cpp=.so)
 
-OBJ         =   $(SRC:.cpp=.o) $(SRC_MAIN:.cpp=.o)
+SRC_TESTS    := $(wildcard tests/*.cpp)
 
-NAME        =   arcade
-TEST_NAME   =   unit_tests
+OBJ          := $(SRC:.cpp=.o)
+OBJ_CORE     := $(CORE:.cpp=.o)
 
-CXXFLAGS    =   -Wall -Wextra -Iinclude -g
-CPPFLAGS    =   -Iinclude
+NAME        := arcade
+TEST_NAME   := unit_tests
 
-CXX         =   g++
-RM          =   rm -f
+CXXFLAGS    := -Wall -Wextra -Iinclude -g -fno-gnu-unique
+CPPFLAGS    := -Iinclude
 
-all:    $(NAME)
+CXX         := g++
+RM          := rm -f
 
-$(NAME):    $(OBJ)
-	$(CXX) -o $(NAME) $(OBJ)
+all: $(NAME)
+
+$(NAME): $(OBJ) $(OBJ_CORE) $(SO_GAMES) $(SO_GRAPH)
+	$(CXX) -o $(NAME) $(OBJ) $(OBJ_CORE) $(SO_GAMES) $(SO_GRAPH)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+%.so: %.cpp
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $<
+
+core: $(OBJ_CORE)
+
+games: $(SO_GAMES)
+
+graphicals: $(SO_GRAPH)
 
 clean:
-	$(RM) $(OBJ)
+	$(RM) $(OBJ) $(OBJ_CORE)
 	$(RM) *.gcno *.gcda
 
 fclean: clean
 	$(RM) $(NAME)
 	$(RM) $(TEST_NAME)
+	$(RM) $(SO_GAMES) $(SO_GRAPH)
 
 re: fclean all
 
 tests_run:
-	@$(RM) *.gcda *.gcno 
-	$(CXX) -o $(TEST_NAME) $(SRC) $(SRC_TESTS) $(SRC_MAIN) $(CXXFLAGS) -DUNIT_TEST --coverage -lcriterion
+	@$(RM) *.gcda *.gcno
+	$(CXX) -o $(TEST_NAME) $(SRC) $(SRC_TESTS) $(CXXFLAGS) -DUNIT_TEST --coverage -lcriterion
 	./$(TEST_NAME)
 	gcovr --exclude tests/
 	gcovr --exclude tests/ --branches
