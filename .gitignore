@@ -1,7 +1,8 @@
 #binary name
 arcade
-*.so
+unit_tests
 
+*.so
 *.o
 *.gcda
 *.gcno 

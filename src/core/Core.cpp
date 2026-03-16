@@ -5,7 +5,7 @@
 ** Core
 */
 
-#include "core.hpp"
+#include "./core/core.hpp"
 
 Core::Core()
 {

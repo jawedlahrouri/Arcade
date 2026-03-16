@@ -62,6 +62,6 @@ tests_run:
 	$(CXX) -o $(TEST_NAME) $(SRC) $(SRC_TESTS) $(CXXFLAGS) -DUNIT_TEST --coverage -lcriterion
 	./$(TEST_NAME)
 	gcovr --exclude tests/
-	gcovr --exclude tests/ --branches
+	gcovr --exclude tests/ --txt-metric branch
 
 .PHONY: all clean fclean re tests_run
