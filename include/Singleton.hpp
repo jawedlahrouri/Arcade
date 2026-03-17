@@ -7,48 +7,44 @@
 
 #ifndef SINGLETON_HPP_
 #define SINGLETON_HPP_
+
 #include <string>
+#include <memory> // Pour std::unique_ptr
+#include "./graphicals/Igraphic.hpp"
 
 class Singleton {
     private:
-    
-    protected:
-    Singleton(const std::string value): value_(value)
-    {
-    }
+        static std::unique_ptr<Singleton> singleton_;
+        std::string value_;
+        std::unique_ptr<IAssetLoader> assetLoader_;
 
-    static Singleton* singleton_;
-    std::string value_;
+    protected:
+        Singleton(const std::string value, std::unique_ptr<IAssetLoader> loader)
+            : value_(value), assetLoader_(std::move(loader)) {}
 
     public:
-    /**
-     * Singletons should not be cloneable.
-     */
-    Singleton(Singleton &other) = delete;
-    /**
-     * Singletons should not be assignable.
-     */
-    void operator=(const Singleton &) = delete;
-    /**
-     * This is the static method that controls the access to the singleton
-     * instance. On the first run, it creates a singleton object and places it
-     * into the static field. On subsequent runs, it returns the client existing
-     * object stored in the static field.
-     */
+        static Singleton *GetInstance(const std::string& value, std::unique_ptr<IAssetLoader> loader) {
+            if (!singleton_) {
+                singleton_ = std::unique_ptr<Singleton>(new Singleton(value, std::move(loader)));
+            }
+            return singleton_.get();
+        }
 
-    static Singleton *GetInstance(const std::string& value);
-    /**
-     * Finally, any singleton should define some business logic, which can be
-     * executed on its instance.
-     */
-    void SomeBusinessLogic()
-    {
-        // ...
-    }
+        void loadtextures(const std::string &path) {
+            if (assetLoader_) {
+                assetLoader_->loadTexture(path);
+            }
+        }
 
-    std::string value() const{
-        return value_;
-    }
+        void loadaudio(const std::string &path) {
+            if (assetLoader_) {
+                assetLoader_->loadAudio(path);
+            }
+        }
+
+        std::string value() const {
+            return value_;
+        }
 };
 
 #endif /* !SINGLETON_HPP_ */

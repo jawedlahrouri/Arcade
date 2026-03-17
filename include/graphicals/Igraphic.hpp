@@ -42,7 +42,8 @@ enum class ArcadeEventType {
     MOUSE_MOVE,
     MOUSE_BUTTON_PRESS,
     MOUSE_BUTTON_RELEASE,
-    WINDOW_CLOSE
+    WINDOW_CLOSE,
+    UNKNOW
 };
 
 class ArcadeEvent : public IEvents {
@@ -86,6 +87,14 @@ class IGraphic {
 
     protected:
     private:
+};
+
+class IAssetLoader {
+    public:
+        virtual ~IAssetLoader() = default;
+
+        virtual void loadTexture(const std::string &path) = 0;
+        virtual void loadAudio(const std::string &path) = 0;
 };
 
 #endif /* !IGRAPHIC_HPP_ */
