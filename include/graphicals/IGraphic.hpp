@@ -46,6 +46,7 @@ enum class ArcadeEventType {
     UNKNOW
 };
 
+// Event class with a observer pattern than use the ArcadeEventType enum to know the type of event
 class ArcadeEvent : public IEvents {
     public:
         ArcadeEvent(ArcadeEventType type) : type(type) {}
@@ -70,6 +71,7 @@ enum class ArcadeMouseButton {
     UNKNOWN
 };
 
+// all the functions that the graphical library must implement
 class IGraphic {
     public:
         virtual ~IGraphic() = default;
@@ -89,6 +91,7 @@ class IGraphic {
     private:
 };
 
+// function to load assets, to be used by the singleton
 class IAssetLoader {
     public:
         virtual ~IAssetLoader() = default;

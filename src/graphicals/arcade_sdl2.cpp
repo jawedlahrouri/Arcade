@@ -49,6 +49,7 @@ void Sdl2Adapter::drawTile(int x, int y, ArcadeColor color)
 
 void Sdl2Adapter::drawText(int x, int y, const std::string &text, ArcadeColor color)
 {
+    (void)text;
     drawTile(x, y, color);
 }
 

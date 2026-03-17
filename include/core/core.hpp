@@ -7,7 +7,7 @@
 
 #ifndef CORE_HPP_
 #define CORE_HPP_
-#include "graphicals/Igraphic.hpp"
+#include "graphicals/IGraphic.hpp"
 #include <string>
 #include "./dll_cmds.hpp"
 class Core {

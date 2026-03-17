@@ -7,7 +7,7 @@
 
 #ifndef ARCADE_NCURSES_HPP_
 #define ARCADE_NCURSES_HPP_
-#include "Igraphic.hpp"
+#include "IGraphic.hpp"
 #include <ncurses.h>
 
 class NcursesAdapter : public IGraphic {

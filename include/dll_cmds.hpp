@@ -16,13 +16,26 @@
             void* _handle;
         public:
 
+        __attribute__((constructor))
+        static void initLibrary() {
+            //TODO: any initialization code if needed when the library is loaded
+        }
+
+        __attribute__((destructor))
+        static void cleanupLibrary() {
+            //TODO: any cleanup code if needed when the library is unloaded
+        }
+
         DLLoader(const std::string &path) {
             _handle = ::dlopen(path.c_str(), RTLD_LAZY); 
             if (!_handle) {
                 throw Exception(::dlerror());
             }
+            initLibrary();
         }
+
         ~DLLoader() {
+            cleanupLibrary();
             if (_handle) {
                 ::dlclose(_handle);
             }

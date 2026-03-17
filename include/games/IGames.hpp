@@ -8,10 +8,10 @@
 #ifndef IGAMES_HPP_
 #define IGAMES_HPP_
 
-class Igames {
+class IGames {
     public:
-        Igames();
-        ~Igames();
+        IGames();
+        ~IGames();
 
     protected:
     private:

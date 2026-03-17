@@ -10,7 +10,7 @@
 
 #include <string>
 #include <memory> // Pour std::unique_ptr
-#include "./graphicals/Igraphic.hpp"
+#include "./graphicals/IGraphic.hpp"
 
 class Singleton {
     private:

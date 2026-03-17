@@ -6,6 +6,7 @@
 */
 
 #include "./core/core.hpp"
+#include "./core/menu.hpp"
 #include "./dll_cmds.hpp"
 #include <iostream>
 

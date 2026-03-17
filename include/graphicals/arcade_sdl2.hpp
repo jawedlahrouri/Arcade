@@ -8,7 +8,7 @@
 #ifndef ARCADE_SDL2_HPP_
 #define ARCADE_SDL2_HPP_
 
-#include "./graphicals/Igraphic.hpp"
+#include "./graphicals/IGraphic.hpp"
 #include <SDL2/SDL.h>
 #include <string>
 
