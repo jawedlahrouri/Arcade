@@ -8,6 +8,7 @@
 #include "core/menu.hpp"
 #include "exception.hpp"
 #include "graphicals/IGraphic.hpp"
+#include <cstdio>
 
 Menu::Menu() : _playerName(""), _selectedGameIndex(0), _selectedGraphicIndex(0) {
     loadLibrariesList();
@@ -29,10 +30,6 @@ void Menu::handleInput(const std::string& key) {
 }
 
 void Menu::draw(IGraphic& graphicLib) {
-    // on clear
-    graphicLib.clear();
-
-    // Calcul  pour centrer le menu à l'écran
     auto screen = graphicLib.getScreenSize();
     int screenW = screen.first;
     int screenH = screen.second;
@@ -45,8 +42,11 @@ void Menu::draw(IGraphic& graphicLib) {
 
     int y = startY;
 
-    //  Titre
-    graphicLib.drawText(10, y, "--- ARCADE MENU ---", ArcadeColor::YELLOW);
+    // Titre centré horizontalement
+    std::string titleStr = "--- ARCADE MENU ---";
+    int titleX = (screenW - (int)titleStr.length()) / 2;
+    if (titleX < 0) titleX = 0;
+    graphicLib.drawText(titleX, y, titleStr, ArcadeColor::YELLOW);
     y += 2;
 
     // Liste des jeux
@@ -70,7 +70,4 @@ void Menu::draw(IGraphic& graphicLib) {
     //  Champ du nom du joueur
     // peut être mis ailleurs ou dans un sous menu TBD
     graphicLib.drawText(2, y, "Player Name: " + _playerName + "_", ArcadeColor::CYAN);
-
-    //  Mise à jour de l'écran
-    graphicLib.display();
 }
