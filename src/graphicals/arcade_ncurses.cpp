@@ -8,8 +8,10 @@
 #include "./graphicals/arcade_ncurses.hpp"
 #include "exception.hpp"
 #include <iostream>
+#include <ncurses.h>
 #include <ostream>
 #include <cstdlib>
+#include <cmath>
 
 void NcursesAdapter::init()
 {
@@ -41,8 +43,9 @@ void NcursesAdapter::drawTile(int x, int y, ArcadeColor color)
     mvprintw(y, x * 2, "  ");
     attroff(COLOR_PAIR(color_pair));
 }
-
-void NcursesAdapter::drawText(int x, int y, const std::string &text, ArcadeColor color)
+// default path: "asset/font/coolvetica/Coolvetica Rg.otf"
+// defult size: 24
+void NcursesAdapter::drawText(int x, int y, const std::string &text, ArcadeColor color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
 {
     int color_pair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(color_pair));
@@ -54,63 +57,61 @@ void NcursesAdapter::drawRect(int x, int y, int width, int height, ArcadeColor c
 {
     int color_pair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(color_pair));
-    for (int j = 0; j < height; ++j) {
-        for (int i = 0; i < width; ++i) {
-            mvprintw(y + j, (x + i) * 2, "  ");
-        }
+    for (int i = x; i < x + width; ++i) {
+        mvaddch(y, i * 2, '#');
+        mvaddch(y + height - 1, i * 2, '#');
+    }
+    for (int j = y; j < y + height; ++j) {
+        mvaddch(j, x * 2, '#');
+        mvaddch(j, (x + width - 1) * 2, '#');
     }
     attroff(COLOR_PAIR(color_pair));
 }
 
 void NcursesAdapter::drawCircle(int x, int y, int radius, ArcadeColor color)
 {
-    int cx = x;
-    int cy = y;
     int color_pair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(color_pair));
-    for (int dy = -radius; dy <= radius; ++dy) {
-        for (int dx = -radius; dx <= radius; ++dx) {
-            if (dx*dx + dy*dy <= radius*radius) {
-                int px = cx + dx;
-                int py = cy + dy;
-                mvprintw(py, px * 2, "  ");
-            }
-        }
-    }
+    mvaddch(y, x * 2, 'o');
+    mvaddch(y - radius, x * 2, 'o');
+    mvaddch(y + radius, x * 2, 'o');
+    mvaddch(y, (x - radius) * 2, 'o');
+    mvaddch(y, (x + radius) * 2, 'o');
     attroff(COLOR_PAIR(color_pair));
 }
 
 void NcursesAdapter::drawSprite(int x, int y, const std::string &spritePath)
 {
     (void)x; (void)y; (void)spritePath;
-    // Not implemented for ncurses adapter.
+    // A VOIR COMMENT IMPLEMENTER CA EN MODE ASCII ART LES SPRITES
 }
 
 void NcursesAdapter::drawLine(int x1, int y1, int x2, int y2, ArcadeColor color)
 {
-    int dx = std::abs(x2 - x1);
-    int sx = x1 < x2 ? 1 : -1;
-    int dy = -std::abs(y2 - y1);
-    int sy = y1 < y2 ? 1 : -1;
-    int err = dx + dy;
-    int e2;
-    int cx = x1;
-    int cy = y1;
     int color_pair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(color_pair));
+
+    int x = x1;
+    int y = y1;
+    int dx = std::abs(x2 - x1);
+    int dy = std::abs(y2 - y1);
+    int sx = (x1 < x2) ? 1 : -1;
+    int sy = (y1 < y2) ? 1 : -1;
+    int err = dx - dy;
+
     while (true) {
-        mvprintw(cy, cx * 2, "  ");
-        if (cx == x2 && cy == y2) break;
-        e2 = 2 * err;
-        if (e2 >= dy) {
-            err += dy;
-            cx += sx;
-        }
-        if (e2 <= dx) {
-            err += dx;
-            cy += sy;
-        }
+        int termX = x * 2;
+        int termY = y;
+        mvaddch(termY, termX, '*');
+        mvaddch(termY, termX + 1, '*');
+
+        if (x == x2 && y == y2) break;
+
+        int e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; x += sx; }
+        if (e2 < dx)  { err += dx; y += sy; }
     }
+
     attroff(COLOR_PAIR(color_pair));
 }
 
@@ -119,9 +120,18 @@ void NcursesAdapter::display()
     refresh();
 }
 
-void NcursesAdapter::handleEvents()
+std::string NcursesAdapter::handleEvents()
 {
     int ch = getch();
+    if (ch == 'q' || ch == 'Q') {
+        return "QUIT";
+    }
+    if (ch == KEY_UP) return "UP";
+    if (ch == KEY_DOWN) return "DOWN";
+    if (ch == KEY_LEFT) return "LEFT";
+    if (ch == KEY_RIGHT) return "RIGHT";
+    if (ch == '\n' || ch == KEY_ENTER) return "ENTER";
+
     if (ch == KEY_MOUSE) {
         MEVENT event;
         if (getmouse(&event) == OK) {
@@ -130,6 +140,15 @@ void NcursesAdapter::handleEvents()
             }
         }
     }
+    return "NONE";
+}
+
+std::pair<int,int> NcursesAdapter::getScreenSize()
+{
+    int rows, cols;
+    getmaxyx(stdscr, rows, cols);
+    // width in "tiles" - each tile uses 2 columns
+    return { cols / 2, rows };
 }
 
 NcursesAdapter::~NcursesAdapter()
@@ -140,9 +159,3 @@ NcursesAdapter::~NcursesAdapter()
 extern "C" IGraphic* createGraphical() {
     return new NcursesAdapter();
 }
-
-//extern "C" {
-//    IGraphic* create_graphic() {
-//        return new NcursesAdapter();
-//    }
-//}

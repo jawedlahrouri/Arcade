@@ -9,16 +9,18 @@
 #define CORE_HPP_
 #include "graphicals/IGraphic.hpp"
 #include <string>
+#include <memory>
 #include "./dll_cmds.hpp"
 class Core {
     private:
     bool _isRunning;
-    DLLoader<IGraphic>* _graphicLoader; 
-    IGraphic* _graphic;
+    
+    std::unique_ptr<DLLoader<IGraphic>> _graphicLoader; 
+    std::unique_ptr<IGraphic> _graphic;
 
     public:
     Core(const std::string& libPath);
     void run();
-    ~Core();
+    ~Core() = default;
 };
 #endif /* !CORE_HPP_ */

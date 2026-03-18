@@ -37,7 +37,7 @@ VPATH       := src/games src/graphicals
 CXX         := g++
 RM          := rm -f
 LDLIBS      := -ldl
-PLUGIN_LIBS := -lSDL2 -lncurses
+PLUGIN_LIBS := -lSDL2 -lSDL2_ttf -lncurses
 
 all: $(NAME)
 

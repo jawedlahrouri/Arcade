@@ -8,6 +8,7 @@
 #ifndef IGRAPHIC_HPP_
 #define IGRAPHIC_HPP_
 #include <string>
+#include <utility>
 #include "./games/IEvents.hpp"
 
 // Keys
@@ -79,13 +80,14 @@ class IGraphic {
         virtual void init() = 0;
         virtual void clear() = 0;
         virtual void display() = 0;
-        virtual void drawText(int x, int y, const std::string &text, ArcadeColor color) = 0;
+        virtual void drawText(int x, int y, const std::string &text, ArcadeColor color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24) = 0;
         virtual void drawRect(int x, int y, int width, int height, ArcadeColor color) = 0;
         virtual void drawCircle(int x, int y, int radius, ArcadeColor color) = 0;
         virtual void drawSprite(int x, int y, const std::string &spritePath) = 0;
         virtual void drawLine(int x1, int y1, int x2, int y2, ArcadeColor color) = 0;
         virtual void drawTile(int x, int y, ArcadeColor color) = 0;
-        virtual void handleEvents() = 0;
+        virtual std::string handleEvents() = 0;
+        virtual std::pair<int,int> getScreenSize() = 0;
 
     protected:
     private:

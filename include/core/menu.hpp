@@ -7,17 +7,31 @@
 
 #ifndef MENU_HPP_
 #define MENU_HPP_
+#include "graphicals/IGraphic.hpp"
 #include <string>
 #include <vector>
 
 class Menu {
-	private:
-		std::string _libDirectory;
-		std::vector<std::string> _graphicLibs;
+    public:
+    Menu();
+    ~Menu() = default;
 
-	public:
-    void Menuinit();
+    // Scan le dossier ./lib/ pour trouver les jeux et libs graphiques
+    void loadLibrariesList();
+    
+    // Gère la logique (navigation dans les listes, saisie du pseudo)
+    void handleInput(const std::string& key); 
+    
+    // Dessine le menu en utilisant la librairie graphique courante
+    void draw(IGraphic& graphicLib);
 
+private:
+    std::vector<std::string> _gameLibs;
+    std::vector<std::string> _graphicLibs;
+    std::string _playerName;
+    
+    size_t _selectedGameIndex;
+    size_t _selectedGraphicIndex;
 };
 
 #endif /* !MENU_HPP_ */
