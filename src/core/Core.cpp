@@ -41,6 +41,7 @@ void Core::run()
 
         if (elapsed.count() < 16) { // ~60 FPS
             continue;
+        }
 
         lastUpdate = now;
         try {
