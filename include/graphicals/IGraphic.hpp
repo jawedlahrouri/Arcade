@@ -21,6 +21,7 @@ enum class ArcadeKey {
     BACKSPACE,
     SPACE,
     ESCAPE,
+    S, // pour switch
     UNKNOWN
 };
 
@@ -77,7 +78,6 @@ class IGraphic {
     public:
         virtual ~IGraphic() = default;
 
-        virtual bool isgame() = 0;
         virtual void init() = 0;
         virtual void clear() = 0;
         virtual void display() = 0;

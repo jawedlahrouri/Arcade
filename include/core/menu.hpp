@@ -11,6 +11,11 @@
 #include <string>
 #include <vector>
 
+struct MenuAction {
+    std::string libPath;
+    bool isGame;
+};
+
 class Menu {
     public:
     Menu();
@@ -19,8 +24,8 @@ class Menu {
     // Scan le dossier ./lib/ pour trouver les jeux et libs graphiques
     void loadLibrariesList();
     
-    // Gère la logique (navigation dans les listes, saisie du pseudo)
-    void handleInput(const std::string& key); 
+    // Gère les actions
+    MenuAction handleInput(const std::string& event);
     
     // Dessine le menu en utilisant la librairie graphique courante
     void draw(IGraphic& graphicLib);

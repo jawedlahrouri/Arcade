@@ -17,7 +17,6 @@
     class DLLoader {
         private:
             void* _handle;
-            std::vector<int> _libInfo; // 0 = game, 1 = lib
 
         public:
 
@@ -55,15 +54,7 @@
             typedef T* (*CreatorFunc)();
             CreatorFunc creator = reinterpret_cast<CreatorFunc>(raw_sym);
             T* instance = creator();
-
-            if (instance) {
-                _libInfo.push_back(instance->isgame() ? 0 : 1);
-            }
             return instance;
-        }
-
-        const std::vector<int>& getLibInfo() const {
-            return _libInfo;
         }
     };
 

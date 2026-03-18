@@ -11,7 +11,7 @@
 #include <iostream>
 #include <chrono>
 
-Core::Core(const std::string& libPath) : _isRunning(true) {
+Core::Core(const std::string& libPath) : _isRunning(true), _currentGraphicLibPath(libPath) {
     _graphicLoader = std::make_unique<DLLoader<IGraphic>>(libPath);
     IGraphic* rawGraphicPtr = _graphicLoader->getInstance("createGraphical"); 
     
@@ -20,6 +20,52 @@ Core::Core(const std::string& libPath) : _isRunning(true) {
     }
     
     _graphic.reset(rawGraphicPtr);
+}
+
+void Core::changeGraphicLib(const std::string& newLibPath) {
+    if (newLibPath.empty() || newLibPath == _currentGraphicLibPath) {
+        return;
+    }
+
+    std::unique_ptr<DLLoader<IGraphic>> newLoader = std::make_unique<DLLoader<IGraphic>>(newLibPath);
+    IGraphic* rawGraphicPtr = newLoader->getInstance("createGraphical"); 
+    
+    if (!rawGraphicPtr) {
+        throw std::runtime_error("Failed to load new graphic lib");
+    }
+    std::unique_ptr<IGraphic> newGraphic(rawGraphicPtr);
+
+    _graphic.reset();
+    _graphicLoader.reset();
+    _graphicLoader = std::move(newLoader);
+    _graphic = std::move(newGraphic);
+    _graphic->init();
+    _currentGraphicLibPath = newLibPath;
+}
+
+void Core::loadGame(const std::string& gamePath) {
+    if (gamePath.empty() || gamePath == _currentGameLibPath) {
+        return;
+    }
+
+    unloadGame();
+
+    _gameLoader = std::make_unique<DLLoader<IGames>>(gamePath);
+    IGames* rawGamePtr = _gameLoader->getInstance("createGame");
+
+    if (!rawGamePtr) {
+        throw std::runtime_error("Failed to load game: " + gamePath);
+    }
+
+    _currentGame.reset(rawGamePtr);
+    _currentGameLibPath = gamePath;
+    _currentGame->init(*_graphic);
+}
+
+void Core::unloadGame() {
+    _currentGame.reset();
+    _gameLoader.reset();
+    _currentGameLibPath = "";
 }
 
 void Core::run()
@@ -48,16 +94,45 @@ void Core::run()
             std::string currentEvent = _graphic->handleEvents();
             
             if (currentEvent == "QUIT") {
-                _isRunning = false;
+                if (inMenu) {
+                    _isRunning = false;
+                } else {
+                    inMenu = true;
+                    _graphic->clear();
+                    continue;
+                }
             }
 
             _graphic->clear();
 
             if (inMenu) {
-                arcadeMenu.handleInput(currentEvent);
+                MenuAction action = arcadeMenu.handleInput(currentEvent);
+
+                if (!action.libPath.empty()) {
+                    try {
+                        if (action.isGame) {
+                            loadGame(action.libPath);
+                            inMenu = false;
+                        } else {
+                            changeGraphicLib(action.libPath);
+                        }
+                    } catch (const std::exception &e) {
+                        std::cerr << "Failed to load library: " << e.what() << std::endl;
+                    }
+                }
                 arcadeMenu.draw(*_graphic);
             } else {
-                // Logique du jeu (ex: currentGame->update(), etc)
+                // Jeu en cours
+                if (_currentGame) {
+                    _currentGame->handleInput(currentEvent);
+                    _currentGame->update();
+                    _currentGame->draw(*_graphic);
+
+                    if (_currentGame->isGameOver()) {
+                        unloadGame();
+                        inMenu = true;
+                    }
+                }
             }
 
             _graphic->display();

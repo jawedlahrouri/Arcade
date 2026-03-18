@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
+#include <cctype>
 
 void NcursesAdapter::init()
 {
@@ -127,6 +128,11 @@ void NcursesAdapter::display()
 std::string NcursesAdapter::handleEvents()
 {
     int key = getch();
+
+    if (key == ERR) {
+        return "NONE";
+    }
+
     if (key == 'q' || key == 'Q') {
         return "QUIT";
     }
@@ -144,6 +150,18 @@ std::string NcursesAdapter::handleEvents()
             }
         }
     }
+
+    if (key >= 0 && key <= 255) {
+        unsigned char c = static_cast<unsigned char>(key);
+
+        if (std::isalpha(c)) {
+            return std::string(1, static_cast<char>(std::toupper(c)));
+        }
+        if (std::isdigit(c) || std::ispunct(c) || std::isspace(c)) {
+            return std::string(1, static_cast<char>(c));
+        }
+    }
+
     return "NONE";
 }
 

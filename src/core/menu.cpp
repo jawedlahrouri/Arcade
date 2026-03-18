@@ -6,9 +6,7 @@
 */
 
 #include "core/menu.hpp"
-#include "exception.hpp"
 #include "graphicals/IGraphic.hpp"
-#include <cstdio>
 #include <iostream>
 #include <vector>
 
@@ -25,8 +23,7 @@ void Menu::loadLibrariesList() {
         {0, "arcade_snake.so"},
         {0, "arcade_pacman.so"},
         {1, "arcade_ncurses.so"},
-        {1, "arcade_sdl2.so"},
-        {1, "arcade_sfml.so"}
+        {1, "arcade_sdl2.so"}
     };
     for (const auto& lib : libs) {
         if (lib.first == 0) {
@@ -41,13 +38,31 @@ void Menu::loadLibrariesList() {
     }
 }
 
-void Menu::handleInput(const std::string& key) {
+MenuAction Menu::handleInput(const std::string& event) {
+    MenuAction action = {"", false};
+
+    if (_gameLibs.empty() || _graphicLibs.empty())
+        return action;
+
     // Exemple de logique de navigation
-    if (key == "DOWN") {
+    if (event == "DOWN") {
         _selectedGameIndex = (_selectedGameIndex + 1) % _gameLibs.size();
-    } else if (key == "UP") {
+    }
+    if (event == "UP") {
         _selectedGameIndex = (_selectedGameIndex > 0) ? _selectedGameIndex - 1 : _gameLibs.size() - 1;
     }
+    if (event == "ENTER") {
+        action.libPath = "./lib/" + _gameLibs[_selectedGameIndex];
+        action.isGame = true;
+        return action;
+    }
+    if (event == "S") {
+        _selectedGraphicIndex = (_selectedGraphicIndex + 1) % _graphicLibs.size();
+        action.libPath = "./lib/" + _graphicLibs[_selectedGraphicIndex];
+        action.isGame = false;
+        return action;
+    }
+    return action;
 }
 
 void Menu::draw(IGraphic& graphicLib) {
