@@ -12,6 +12,7 @@
 
 class NcursesAdapter : public IGraphic {
 public:
+bool isgame() override { return true; }
     void init() override;
     void clear() override;
     void drawTile(int x, int y, ArcadeColor color) override;

@@ -9,6 +9,8 @@
 #include "exception.hpp"
 #include "graphicals/IGraphic.hpp"
 #include <cstdio>
+#include <iostream>
+#include <vector>
 
 Menu::Menu() : _playerName(""), _selectedGameIndex(0), _selectedGraphicIndex(0) {
     loadLibrariesList();
@@ -16,8 +18,27 @@ Menu::Menu() : _playerName(""), _selectedGameIndex(0), _selectedGraphicIndex(0) 
 
 // Pour l'instant, on met des valeurs en dur pour tester l'affichage.
 void Menu::loadLibrariesList() {
-    _gameLibs = {"arcade_snake.so"};
-    _graphicLibs = {"arcade_ncurses.so", "arcade_sdl2.so", "arcade_sfml.so"};
+    _gameLibs.clear();
+    _graphicLibs.clear();
+
+    std::vector<std::pair<int, std::string>> libs = {
+        {0, "arcade_snake.so"},
+        {0, "arcade_pacman.so"},
+        {1, "arcade_ncurses.so"},
+        {1, "arcade_sdl2.so"},
+        {1, "arcade_sfml.so"}
+    };
+    for (const auto& lib : libs) {
+        if (lib.first == 0) {
+            std::cout << "[Menu] " << lib.second << " -> jeu (0)" << std::endl;
+            _gameLibs.push_back(lib.second);
+        } else if (lib.first == 1) {
+            std::cout << "[Menu] " << lib.second << " -> lib graphique (1)" << std::endl;
+            _graphicLibs.push_back(lib.second);
+        } else {
+            std::cout << "[Menu] " << lib.second << " -> type inconnu (" << lib.first << ")" << std::endl;
+        }
+    }
 }
 
 void Menu::handleInput(const std::string& key) {

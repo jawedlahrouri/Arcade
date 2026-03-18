@@ -21,6 +21,7 @@ private:
     const int tileSize = 32;
     std::map<std::string, TTF_Font*> fontsCache;
 public:
+    bool isgame() override { return true; }
     void init() override;
     void clear() override;
     void display() override;

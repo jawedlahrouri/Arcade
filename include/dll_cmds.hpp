@@ -8,12 +8,17 @@
 #ifndef DL_CMDS_HPP_
 #define DL_CMDS_HPP_
 #include <dlfcn.h>
+#include <vector>
+#include <memory>
 #include "exception.hpp"
+#include "graphicals/IGraphic.hpp"
 
     template <typename T>
     class DLLoader {
         private:
             void* _handle;
+            std::vector<int> _libInfo; // 0 = game, 1 = lib
+
         public:
 
         __attribute__((constructor))
@@ -31,11 +36,9 @@
             if (!_handle) {
                 throw Exception(::dlerror());
             }
-            initLibrary();
         }
 
         ~DLLoader() {
-            cleanupLibrary();
             if (_handle) {
                 ::dlclose(_handle);
             }
@@ -51,7 +54,16 @@
             }
             typedef T* (*CreatorFunc)();
             CreatorFunc creator = reinterpret_cast<CreatorFunc>(raw_sym);
-            return creator();
+            T* instance = creator();
+
+            if (instance) {
+                _libInfo.push_back(instance->isgame() ? 0 : 1);
+            }
+            return instance;
+        }
+
+        const std::vector<int>& getLibInfo() const {
+            return _libInfo;
         }
     };
 
