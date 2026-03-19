@@ -32,12 +32,23 @@ bool check_main::check_file_exist(const std::string &path)
     return true;
 }
 
+bool check_main::check_is_so(int argc, const char **argv)
+{
+    (void)argc;
+    std::string lib_path = argv[1];
+    if (!lib_path.ends_with(".so")) {
+        throw Exception("Error: File '" + lib_path + "' is not a .so file");
+    }
+    return true;
+}
+
 bool check_main::check_args(int ac, const char **av)
 {
     if (ac != 2) {
         throw Exception("Usage: " + std::string(av[0]) + " <library_path>");
     }
     check_lib_folder(ac, av);
+    check_is_so(ac, av);
 #ifndef UNIT_TEST
     check_file_exist(std::string(av[1]));
 #endif

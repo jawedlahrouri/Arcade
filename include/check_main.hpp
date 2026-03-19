@@ -14,6 +14,7 @@ class check_main {
     public:
         static bool check_lib_folder(int argc, const char **argv);
         static bool check_file_exist(const std::string &path);
+        static bool check_is_so(int argc, const char **argv);
         static bool check_args(int ac, const char **av);
 };
 

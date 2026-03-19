@@ -15,6 +15,9 @@ void Sdl2Adapter::init()
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         throw Exception("SDL could not initialize! SDL_Error: " + std::string(SDL_GetError()));
     }
+    if (TTF_Init() == -1) {
+        throw Exception("TTF could not initialize! TTF_Error: " + std::string(TTF_GetError()));
+    }
     window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
     if (!window) {
         throw Exception("Window could not be created! SDL_Error: " + std::string(SDL_GetError()));
@@ -47,14 +50,62 @@ void Sdl2Adapter::drawTile(int x, int y, ArcadeColor color)
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void Sdl2Adapter::drawText(int x, int y, const std::string &text, ArcadeColor color)
+void Sdl2Adapter::drawText(int x, int y, const std::string &text, ArcadeColor color, const std::string &fontPath, int fontSize)
 {
-    drawTile(x, y, color);
+    std::string key = fontPath + ":" + std::to_string(fontSize);
+    if (fontsCache.find(key) == fontsCache.end()) {
+        TTF_Font* newFont = TTF_OpenFont(fontPath.c_str(), fontSize);
+        if (!newFont) {
+            std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+            return;
+        }
+        fontsCache[key] = newFont;
+    }
+
+    TTF_Font* font = fontsCache[key];
+    SDL_Color sdlColor = {255, 255, 255, 255};
+    switch (color) {
+        case ArcadeColor::BLACK: sdlColor = {0, 0, 0, 255}; break;
+        case ArcadeColor::RED: sdlColor = {255, 0, 0, 255}; break;
+        case ArcadeColor::GREEN: sdlColor = {0, 255, 0, 255}; break;
+        case ArcadeColor::YELLOW: sdlColor = {255, 255, 0, 255}; break;
+        case ArcadeColor::BLUE: sdlColor = {0, 0, 255, 255}; break;
+        case ArcadeColor::MAGENTA: sdlColor = {255, 0, 255, 255}; break;
+        case ArcadeColor::CYAN: sdlColor = {0, 255, 255, 255}; break;
+        case ArcadeColor::WHITE: sdlColor = {255, 255, 255, 255}; break;
+    }
+
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, text.c_str(), sdlColor);
+    if (!surfaceMessage) return;
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+    if (!Message) {
+        SDL_FreeSurface(surfaceMessage);
+        return;
+    }
+
+    SDL_Rect Message_rect;
+    Message_rect.x = x * tileSize;
+    Message_rect.y = y * tileSize;
+    Message_rect.w = surfaceMessage->w;
+    Message_rect.h = surfaceMessage->h;
+
+    SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+    SDL_FreeSurface(surfaceMessage);
+    SDL_DestroyTexture(Message);
 }
 
 void Sdl2Adapter::display()
 {
     SDL_RenderPresent(renderer);
+}
+
+std::pair<int,int> Sdl2Adapter::getScreenSize()
+{
+    int w = 0, h = 0;
+    if (window) {
+        SDL_GetWindowSize(window, &w, &h);
+    }
+    return { w / tileSize, h / tileSize };
 }
 
 static void sdl_set_color(SDL_Renderer* renderer, ArcadeColor color)
@@ -105,28 +156,42 @@ void Sdl2Adapter::drawLine(int x1, int y1, int x2, int y2, ArcadeColor color)
     SDL_RenderDrawLine(renderer, x1 * tileSize, y1 * tileSize, x2 * tileSize, y2 * tileSize);
 }
 
-void Sdl2Adapter::handleEvents()
+std::string Sdl2Adapter::handleEvents()
 {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            throw Exception("SDL window closed");
+            return "QUIT";
         } else if (event.type == SDL_KEYDOWN) {
-            std::cout << "Key pressed: " << SDL_GetKeyName(event.key.keysym.sym) << std::endl;
-        } else if (event.type == SDL_KEYUP) {
-            std::cout << "Key released: " << SDL_GetKeyName(event.key.keysym.sym) << std::endl;
+            std::string keyName = SDL_GetKeyName(event.key.keysym.sym);
+            if (keyName == "Up") return "UP";
+            if (keyName == "Down") return "DOWN";
+            if (keyName == "Left") return "LEFT";
+            if (keyName == "Right") return "RIGHT";
+            if (keyName == "Return") return "ENTER";
+            if (keyName == "Q") return "QUIT";
+            return keyName;
         }
     }
+    return "NONE";
 }
 
 Sdl2Adapter::~Sdl2Adapter()
 {
+    for (auto& pair : fontsCache) {
+        if (pair.second) {
+            TTF_CloseFont(pair.second);
+        }
+    }
+    fontsCache.clear();
+    
     if (renderer) {
         SDL_DestroyRenderer(renderer);
     }
     if (window) {
         SDL_DestroyWindow(window);
     }
+    TTF_Quit();
     SDL_Quit();
 } 
 

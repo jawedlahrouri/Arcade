@@ -7,15 +7,23 @@
 
 #include "./graphicals/arcade_ncurses.hpp"
 #include "exception.hpp"
+#include <cstdio>
+#include <filesystem>
 #include <iostream>
+#include <ncurses.h>
 #include <ostream>
 #include <cstdlib>
+#include <cmath>
+#include <fstream>
+#include <cctype>
 
 void NcursesAdapter::init()
 {
     initscr();
     cbreak();
     noecho();
+    nodelay(stdscr, TRUE);
+    keypad(stdscr, TRUE);
     curs_set(0);
     start_color();
     init_pair(1, COLOR_BLACK, COLOR_BLACK);
@@ -34,84 +42,82 @@ void NcursesAdapter::clear()
     ::clear();
 }
 
-void NcursesAdapter::drawTile(int x, int y, ArcadeColor color)
+void NcursesAdapter::drawTile(int tileX, int tileY, ArcadeColor color)
 {
-    int color_pair = static_cast<int>(color) + 1;
-    attron(COLOR_PAIR(color_pair));
-    mvprintw(y, x * 2, "  ");
-    attroff(COLOR_PAIR(color_pair));
+    int colorPair = static_cast<int>(color) + 1;
+    attron(COLOR_PAIR(colorPair));
+    mvprintw(tileY, tileX * 2, "  ");
+    attroff(COLOR_PAIR(colorPair));
+}
+// default path: "asset/font/coolvetica/Coolvetica Rg.otf"
+// defult size: 24
+void NcursesAdapter::drawText(int posX, int posY, const std::string &text, ArcadeColor color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
+{
+    int colorPair = static_cast<int>(color) + 1;
+    attron(COLOR_PAIR(colorPair));
+    mvprintw(posY, posX * 2, "%s", text.c_str());
+    attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::drawText(int x, int y, const std::string &text, ArcadeColor color)
+void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHeight, ArcadeColor color)
 {
-    int color_pair = static_cast<int>(color) + 1;
-    attron(COLOR_PAIR(color_pair));
-    mvprintw(y, x * 2, "%s", text.c_str());
-    attroff(COLOR_PAIR(color_pair));
-}
-
-void NcursesAdapter::drawRect(int x, int y, int width, int height, ArcadeColor color)
-{
-    int color_pair = static_cast<int>(color) + 1;
-    attron(COLOR_PAIR(color_pair));
-    for (int j = 0; j < height; ++j) {
-        for (int i = 0; i < width; ++i) {
-            mvprintw(y + j, (x + i) * 2, "  ");
-        }
+    int colorPair = static_cast<int>(color) + 1;
+    attron(COLOR_PAIR(colorPair));
+    for (int col = startX; col < startX + rectWidth; ++col) {
+        mvaddch(startY, col * 2, '#');
+        mvaddch(startY + rectHeight - 1, col * 2, '#');
     }
-    attroff(COLOR_PAIR(color_pair));
-}
-
-void NcursesAdapter::drawCircle(int x, int y, int radius, ArcadeColor color)
-{
-    int cx = x;
-    int cy = y;
-    int color_pair = static_cast<int>(color) + 1;
-    attron(COLOR_PAIR(color_pair));
-    for (int dy = -radius; dy <= radius; ++dy) {
-        for (int dx = -radius; dx <= radius; ++dx) {
-            if (dx*dx + dy*dy <= radius*radius) {
-                int px = cx + dx;
-                int py = cy + dy;
-                mvprintw(py, px * 2, "  ");
-            }
-        }
+    for (int row = startY; row < startY + rectHeight; ++row) {
+        mvaddch(row, startX * 2, '#');
+        mvaddch(row, (startX + rectWidth - 1) * 2, '#');
     }
-    attroff(COLOR_PAIR(color_pair));
+    attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::drawSprite(int x, int y, const std::string &spritePath)
+void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, ArcadeColor color)
 {
-    (void)x; (void)y; (void)spritePath;
-    // Not implemented for ncurses adapter.
+    int colorPair = static_cast<int>(color) + 1;
+    attron(COLOR_PAIR(colorPair));
+    mvaddch(centerY, centerX * 2, 'o');
+    mvaddch(centerY - radius, centerX * 2, 'o');
+    mvaddch(centerY + radius, centerX * 2, 'o');
+    mvaddch(centerY, (centerX - radius) * 2, 'o');
+    mvaddch(centerY, (centerX + radius) * 2, 'o');
+    attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::drawLine(int x1, int y1, int x2, int y2, ArcadeColor color)
+void NcursesAdapter::drawSprite(int posX, int posY, const std::string &spritePath)
 {
-    int dx = std::abs(x2 - x1);
-    int sx = x1 < x2 ? 1 : -1;
-    int dy = -std::abs(y2 - y1);
-    int sy = y1 < y2 ? 1 : -1;
-    int err = dx + dy;
-    int e2;
-    int cx = x1;
-    int cy = y1;
-    int color_pair = static_cast<int>(color) + 1;
-    attron(COLOR_PAIR(color_pair));
+    (void)posX; (void)posY; (void)spritePath;
+    //TODO: A VOIR COMMENT IMPLEMENTER CA EN MODE ASCII ART LES SPRITES
+}
+
+void NcursesAdapter::drawLine(int xStart, int yStart, int xEnd, int yEnd, ArcadeColor color)
+{
+    int colorPair = static_cast<int>(color) + 1;
+    attron(COLOR_PAIR(colorPair));
+
+    int x = xStart;
+    int y = yStart;
+    int deltaX = std::abs(xEnd - xStart);
+    int deltaY = std::abs(yEnd - yStart);
+    int stepX = (xStart < xEnd) ? 1 : -1;
+    int stepY = (yStart < yEnd) ? 1 : -1;
+    int errorTerm = deltaX - deltaY;
+
     while (true) {
-        mvprintw(cy, cx * 2, "  ");
-        if (cx == x2 && cy == y2) break;
-        e2 = 2 * err;
-        if (e2 >= dy) {
-            err += dy;
-            cx += sx;
-        }
-        if (e2 <= dx) {
-            err += dx;
-            cy += sy;
-        }
+        int screenCol = x * 2;
+        int screenRow = y;
+        mvaddch(screenRow, screenCol, '*');
+        mvaddch(screenRow, screenCol + 1, '*');
+
+        if (x == xEnd && y == yEnd) break;
+
+        int error2 = 2 * errorTerm;
+        if (error2 > -deltaY) { errorTerm -= deltaY; x += stepX; }
+        if (error2 < deltaX)  { errorTerm += deltaX; y += stepY; }
     }
-    attroff(COLOR_PAIR(color_pair));
+    attroff(COLOR_PAIR(colorPair));
 }
 
 void NcursesAdapter::display()
@@ -119,10 +125,24 @@ void NcursesAdapter::display()
     refresh();
 }
 
-void NcursesAdapter::handleEvents()
+std::string NcursesAdapter::handleEvents()
 {
-    int ch = getch();
-    if (ch == KEY_MOUSE) {
+    int key = getch();
+
+    if (key == ERR) {
+        return "NONE";
+    }
+
+    if (key == 'q' || key == 'Q') {
+        return "QUIT";
+    }
+    if (key == KEY_UP) return "UP";
+    if (key == KEY_DOWN) return "DOWN";
+    if (key == KEY_LEFT) return "LEFT";
+    if (key == KEY_RIGHT) return "RIGHT";
+    if (key == '\n' || key == KEY_ENTER) return "ENTER";
+
+    if (key == KEY_MOUSE) {
         MEVENT event;
         if (getmouse(&event) == OK) {
             if (event.bstate & BUTTON1_CLICKED) {
@@ -130,6 +150,33 @@ void NcursesAdapter::handleEvents()
             }
         }
     }
+
+    if (key >= 0 && key <= 255) {
+        unsigned char c = static_cast<unsigned char>(key);
+
+        if (std::isalpha(c)) {
+            return std::string(1, static_cast<char>(std::toupper(c)));
+        }
+        if (std::isdigit(c) || std::ispunct(c) || std::isspace(c)) {
+            return std::string(1, static_cast<char>(c));
+        }
+    }
+
+    return "NONE";
+}
+
+std::pair<int,int> NcursesAdapter::getScreenSize()
+{
+    int termRows, termCols;
+    getmaxyx(stdscr, termRows, termCols);
+    std::filesystem::path logPath = "logs/arcade_ncurses.log";
+    std::ofstream log(logPath, std::ios::app);
+    if (log.is_open()) {
+        log << "Screen size: " << termCols << "x" << termRows << std::endl;
+        log.close();
+    }
+    // width in "tiles" - each tile uses 2 columns
+    return { termCols / 2, termRows };
 }
 
 NcursesAdapter::~NcursesAdapter()
@@ -140,9 +187,3 @@ NcursesAdapter::~NcursesAdapter()
 extern "C" IGraphic* createGraphical() {
     return new NcursesAdapter();
 }
-
-//extern "C" {
-//    IGraphic* create_graphic() {
-//        return new NcursesAdapter();
-//    }
-//}
