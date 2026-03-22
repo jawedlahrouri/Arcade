@@ -5,77 +5,84 @@
 ## Makefile
 ##
 
-SRC         := src/main.cpp
-
-CORE         := src/core/Core.cpp \
-					src/core/menu.cpp
-
-GAMES        := src/games/arcade_snake.cpp
-
-GRAPHICALS   := src/graphicals/arcade_ncurses.cpp \
-						src/graphicals/arcade_sdl2.cpp
-
-SO_GAMES     := lib/arcade_snake.so
-SO_GRAPH     := lib/arcade_ncurses.so  \
-						lib/arcade_sdl2.so
-OLD_SO       := src/games/arcade_snake.so \
-					src/graphicals/arcade_ncurses.so \
-					src/graphicals/arcade_sdl2.so
-
-SRC_TESTS    := $(wildcard tests/*.cpp)
-
-OBJ          := $(SRC:.cpp=.o)
-OBJ_CORE     := $(CORE:.cpp=.o)
-
 NAME        := arcade
-TEST_NAME   := unit_tests
-
-CXXFLAGS    := -std=gnu++20 -Wall -Wextra -Iinclude -g -fno-gnu-unique
-CPPFLAGS    := -Iinclude
-VPATH       := src/games src/graphicals
 
 CXX         := g++
-RM          := rm -f
+CXXFLAGS    := -std=gnu++20 -Wall -Wextra -Iinclude -g -fno-gnu-unique
 LDLIBS      := -ldl
-PLUGIN_LIBS := -lSDL2 -lSDL2_ttf -lncurses
 
-all: $(NAME)
+# Core
+SRC_MAIN    := src/main.cpp
+OBJ_MAIN    := $(SRC_MAIN:.cpp=.o)
 
-$(NAME): $(OBJ) $(OBJ_CORE) $(SO_GAMES) $(SO_GRAPH)
-	$(CXX) -o $(NAME) $(OBJ) $(OBJ_CORE) $(LDLIBS)
+SRC_CORE    := src/core/Core.cpp \
+                src/core/menu.cpp
+OBJ_CORE    := $(SRC_CORE:.cpp=.o)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+# Games
+SRC_SNAKE   := src/games/arcade_snake.cpp
+SO_SNAKE    := lib/arcade_snake.so
+
+GAMES       := $(SO_SNAKE)
+
+# Graphicals
+SRC_NCURSES := src/graphicals/arcade_ncurses.cpp
+SO_NCURSES  := lib/arcade_ncurses.so
+
+SRC_SDL2    := src/graphicals/arcade_sdl2.cpp
+SO_SDL2     := lib/arcade_sdl2.so
+
+GRAPHICALS  := $(SO_NCURSES) $(SO_SDL2)
+
+# Tests
+TEST_NAME   := unit_tests
+SRC_TESTS   := $(wildcard tests/*.cpp)
+
+RM          := rm -f
+
+all: core games graphicals
+
+core: $(NAME)
+
+$(NAME): $(OBJ_MAIN) $(OBJ_CORE)
+	$(CXX) -o $(NAME) $(OBJ_MAIN) $(OBJ_CORE) $(LDLIBS)
+
+games: $(GAMES)
+
+graphicals: $(GRAPHICALS)
 
 lib:
 	mkdir -p lib
 
-lib/%.so: %.cpp | lib
-	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< $(PLUGIN_LIBS)
+$(SO_SNAKE): $(SRC_SNAKE) | lib
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $<
 
-core: $(OBJ_CORE)
+$(SO_NCURSES): $(SRC_NCURSES) | lib
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< -lncurses
 
-games: $(SO_GAMES)
+$(SO_SDL2): $(SRC_SDL2) | lib
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< -lSDL2 -lSDL2_ttf
 
-graphicals: $(SO_GRAPH)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	$(RM) $(OBJ) $(OBJ_CORE)
+	$(RM) $(OBJ_MAIN) $(OBJ_CORE)
 	$(RM) *.gcno *.gcda
-	$(RM) $(OLD_SO)
 
 fclean: clean
 	$(RM) $(NAME)
 	$(RM) $(TEST_NAME)
-	$(RM) $(SO_GAMES) $(SO_GRAPH)
+	$(RM) $(GAMES) $(GRAPHICALS)
+	$(RM) -r lib/
 
 re: fclean all
 
 tests_run:
 	@$(RM) *.gcda *.gcno
-	$(CXX) -o $(TEST_NAME) $(SRC) $(SRC_TESTS) $(CXXFLAGS) -DUNIT_TEST --coverage -lcriterion
+	$(CXX) -o $(TEST_NAME) $(SRC_MAIN) $(SRC_TESTS) $(CXXFLAGS) -DUNIT_TEST --coverage -lcriterion
 	./$(TEST_NAME)
 	gcovr --exclude tests/
 	gcovr --exclude tests/ --txt-metric branch
 
-.PHONY: all clean fclean re tests_run
+.PHONY: all core games graphicals clean fclean re tests_run
