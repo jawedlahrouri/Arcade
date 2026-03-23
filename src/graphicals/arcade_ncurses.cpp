@@ -6,8 +6,6 @@
 */
 
 #include "./graphicals/arcade_ncurses.hpp"
-#include "exception.hpp"
-#include <cstdio>
 #include <filesystem>
 #include <iostream>
 #include <ncurses.h>
@@ -15,7 +13,6 @@
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
-#include <cctype>
 
 void NcursesAdapter::init()
 {
@@ -51,8 +48,10 @@ void NcursesAdapter::drawTile(int tileX, int tileY, ArcadeColor color)
 }
 // default path: "asset/font/coolvetica/Coolvetica Rg.otf"
 // defult size: 24
-void NcursesAdapter::drawText(int posX, int posY, const std::string &text, ArcadeColor color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
+void NcursesAdapter::drawText(int posX, int posY, const std::string &text, ArcadeColor color, const std::string &fontPath, int fontSize)
 {
+    (void)fontPath;
+    (void)fontSize;
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
     mvprintw(posY, posX * 2, "%s", text.c_str());
@@ -125,22 +124,23 @@ void NcursesAdapter::display()
     refresh();
 }
 
-std::string NcursesAdapter::handleEvents()
+std::vector<Arcade::InputCommand> NcursesAdapter::pollInputs()
 {
+    std::vector<Arcade::InputCommand> commands;
     int key = getch();
 
     if (key == ERR) {
-        return "NONE";
+        commands.push_back(Arcade::InputCommand::NONE);
+        return commands;
     }
 
-    if (key == 'q' || key == 'Q') {
-        return "QUIT";
+    const auto mapped = kNcursesKeyMap.find(key);
+    if (mapped != kNcursesKeyMap.end()) {
+        commands.push_back(mapped->second);
+        if (mapped->second == Arcade::InputCommand::QUIT) {
+            return commands;
+        }
     }
-    if (key == KEY_UP) return "UP";
-    if (key == KEY_DOWN) return "DOWN";
-    if (key == KEY_LEFT) return "LEFT";
-    if (key == KEY_RIGHT) return "RIGHT";
-    if (key == '\n' || key == KEY_ENTER) return "ENTER";
 
     if (key == KEY_MOUSE) {
         MEVENT event;
@@ -151,18 +151,10 @@ std::string NcursesAdapter::handleEvents()
         }
     }
 
-    if (key >= 0 && key <= 255) {
-        unsigned char c = static_cast<unsigned char>(key);
-
-        if (std::isalpha(c)) {
-            return std::string(1, static_cast<char>(std::toupper(c)));
-        }
-        if (std::isdigit(c) || std::ispunct(c) || std::isspace(c)) {
-            return std::string(1, static_cast<char>(c));
-        }
+    if (commands.empty()) {
+        commands.push_back(Arcade::InputCommand::NONE);
     }
-
-    return "NONE";
+    return commands;
 }
 
 std::pair<int,int> NcursesAdapter::getScreenSize()
@@ -175,7 +167,6 @@ std::pair<int,int> NcursesAdapter::getScreenSize()
         log << "Screen size: " << termCols << "x" << termRows << std::endl;
         log.close();
     }
-    // width in "tiles" - each tile uses 2 columns
     return { termCols / 2, termRows };
 }
 

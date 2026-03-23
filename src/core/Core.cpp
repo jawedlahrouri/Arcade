@@ -91,22 +91,47 @@ void Core::run()
 
         lastUpdate = now;
         try {
-            std::string currentEvent = _graphic->handleEvents();
-            
-            if (currentEvent == "QUIT") {
-                if (inMenu) {
-                    _isRunning = false;
-                } else {
-                    inMenu = true;
-                    _graphic->clear();
-                    continue;
+            std::vector<Arcade::InputCommand> commands = _graphic->pollInputs();
+            bool skipFrame = false;
+
+            for (const auto command : commands) {
+                if (command == Arcade::InputCommand::QUIT) {
+                    if (inMenu) {
+                        _isRunning = false;
+                    } else {
+                        inMenu = true;
+                        unloadGame();
+                        _graphic->clear();
+                        skipFrame = true;
+                    }
                 }
+                if (command == Arcade::InputCommand::BACK && !inMenu) {
+                    unloadGame();
+                    inMenu = true;
+                    skipFrame = true;
+                }
+                if (command == Arcade::InputCommand::SWITCH_GRAPHICS) {
+                    MenuAction action = arcadeMenu.getNextGraphic();
+                    if (!action.libPath.empty()) {
+                        try {
+                            changeGraphicLib(action.libPath);
+                            _graphic->init();
+                            skipFrame = true;
+                        } catch (const std::exception &e) {
+                            std::cerr << "Failed to switch graphic lib: " << e.what() << std::endl;
+                        }
+                    }
+                }
+            }
+
+            if (!_isRunning || skipFrame) {
+                continue;
             }
 
             _graphic->clear();
 
             if (inMenu) {
-                MenuAction action = arcadeMenu.handleInput(currentEvent);
+                MenuAction action = arcadeMenu.handleInput(commands);
 
                 if (!action.libPath.empty()) {
                     try {
@@ -124,7 +149,7 @@ void Core::run()
             } else {
                 // Jeu en cours
                 if (_currentGame) {
-                    _currentGame->handleInput(currentEvent);
+                    _currentGame->handleInput(commands);
                     _currentGame->update();
                     _currentGame->draw(*_graphic);
 

@@ -17,7 +17,7 @@ class SnakeGame : public IGames {
 
     void init(IGraphic &graphicLib) override;
     void update() override;
-    void handleInput(const std::string& input) override;
+    void handleInput(const std::vector<Arcade::InputCommand>& inputs) override;
     void draw(IGraphic& graphicLib) override;
     bool isGameOver() override { return _isGameOver; }
 

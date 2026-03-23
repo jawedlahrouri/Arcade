@@ -8,7 +8,7 @@
 #ifndef IGAMES_HPP_
 #define IGAMES_HPP_
 
-#include <string>
+#include <vector>
 #include "graphicals/IGraphic.hpp"
 
 class IGames {
@@ -17,7 +17,7 @@ class IGames {
 
         virtual void init(IGraphic& graphicLib) = 0;
         virtual void update() = 0;
-        virtual void handleInput(const std::string& input) = 0;
+        virtual void handleInput(const std::vector<Arcade::InputCommand>& inputs) = 0;
         virtual void draw(IGraphic& graphicLib) = 0;
         virtual bool isGameOver() = 0;
 

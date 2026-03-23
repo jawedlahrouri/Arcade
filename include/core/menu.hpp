@@ -25,8 +25,11 @@ class Menu {
     void loadLibrariesList();
     
     // Gère les actions
-    MenuAction handleInput(const std::string& event);
+    MenuAction handleInput(const std::vector<Arcade::InputCommand>& commands);
     
+    // Retourne la prochaine lib graphique pour le switch au runtime
+    MenuAction getNextGraphic();
+
     // Dessine le menu en utilisant la librairie graphique courante
     void draw(IGraphic& graphicLib);
 
