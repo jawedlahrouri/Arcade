@@ -17,20 +17,6 @@
 #include <vector>
 #include <unordered_map>
 
-namespace {
-    const std::unordered_map<SDL_Keycode, Arcade::InputCommand> kSdlKeyMap = {
-        {SDLK_UP, Arcade::InputCommand::UP},
-        {SDLK_DOWN, Arcade::InputCommand::DOWN},
-        {SDLK_LEFT, Arcade::InputCommand::LEFT},
-        {SDLK_RIGHT, Arcade::InputCommand::RIGHT},
-        {SDLK_RETURN, Arcade::InputCommand::ENTER},
-        {SDLK_KP_ENTER, Arcade::InputCommand::ENTER},
-        {SDLK_s, Arcade::InputCommand::SWITCH_GRAPHICS},
-        {SDLK_ESCAPE, Arcade::InputCommand::BACK},
-        {SDLK_q, Arcade::InputCommand::QUIT}
-    };
-}
-
 class Sdl2AssetManager {
 private:
     SDL_Renderer* _renderer;
@@ -50,6 +36,9 @@ private:
     const int tileSize = 32;
     std::map<std::string, TTF_Font*> fontsCache;
     std::unique_ptr<Sdl2AssetManager> assetManager;
+
+    static const std::unordered_map<SDL_Keycode, Arcade::InputCommand> KEY_MAP;
+
 public:
     void init() override;
     void clear() override;

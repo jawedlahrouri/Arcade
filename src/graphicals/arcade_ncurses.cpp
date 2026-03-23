@@ -14,6 +14,20 @@
 #include <cmath>
 #include <fstream>
 
+const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
+    {KEY_UP, Arcade::InputCommand::UP},
+    {KEY_DOWN, Arcade::InputCommand::DOWN},
+    {KEY_LEFT, Arcade::InputCommand::LEFT},
+    {KEY_RIGHT, Arcade::InputCommand::RIGHT},
+    {'\n', Arcade::InputCommand::ENTER},
+    {KEY_ENTER, Arcade::InputCommand::ENTER},
+    {'s', Arcade::InputCommand::SWITCH_GRAPHICS},
+    {'S', Arcade::InputCommand::SWITCH_GRAPHICS},
+    {27, Arcade::InputCommand::BACK},
+    {'q', Arcade::InputCommand::QUIT},
+    {'Q', Arcade::InputCommand::QUIT}
+};
+
 void NcursesAdapter::init()
 {
     initscr();
@@ -134,8 +148,8 @@ std::vector<Arcade::InputCommand> NcursesAdapter::pollInputs()
         return commands;
     }
 
-    const auto mapped = kNcursesKeyMap.find(key);
-    if (mapped != kNcursesKeyMap.end()) {
+    const auto mapped = NcursesAdapter::KEY_MAP.find(key);
+    if (mapped != NcursesAdapter::KEY_MAP.end()) {
         commands.push_back(mapped->second);
         if (mapped->second == Arcade::InputCommand::QUIT) {
             return commands;

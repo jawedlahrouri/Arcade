@@ -11,23 +11,10 @@
 #include <ncurses.h>
 #include <unordered_map>
 
-namespace {
-    const std::unordered_map<int, Arcade::InputCommand> kNcursesKeyMap = {
-        {KEY_UP, Arcade::InputCommand::UP},
-        {KEY_DOWN, Arcade::InputCommand::DOWN},
-        {KEY_LEFT, Arcade::InputCommand::LEFT},
-        {KEY_RIGHT, Arcade::InputCommand::RIGHT},
-        {'\n', Arcade::InputCommand::ENTER},
-        {KEY_ENTER, Arcade::InputCommand::ENTER},
-        {'s', Arcade::InputCommand::SWITCH_GRAPHICS},
-        {'S', Arcade::InputCommand::SWITCH_GRAPHICS},
-        {27, Arcade::InputCommand::BACK},
-        {'q', Arcade::InputCommand::QUIT},
-        {'Q', Arcade::InputCommand::QUIT}
-    };
-}
-
 class NcursesAdapter : public IGraphic {
+private:
+    static const std::unordered_map<int, Arcade::InputCommand> KEY_MAP;
+
 public:
     void init() override;
     void clear() override;

@@ -11,6 +11,18 @@
 #include <ostream>
 #include <vector>
 
+const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP = {
+    {SDLK_UP, Arcade::InputCommand::UP},
+    {SDLK_DOWN, Arcade::InputCommand::DOWN},
+    {SDLK_LEFT, Arcade::InputCommand::LEFT},
+    {SDLK_RIGHT, Arcade::InputCommand::RIGHT},
+    {SDLK_RETURN, Arcade::InputCommand::ENTER},
+    {SDLK_KP_ENTER, Arcade::InputCommand::ENTER},
+    {SDLK_s, Arcade::InputCommand::SWITCH_GRAPHICS},
+    {SDLK_ESCAPE, Arcade::InputCommand::BACK},
+    {SDLK_q, Arcade::InputCommand::QUIT}
+};
+
 Sdl2AssetManager::Sdl2AssetManager(SDL_Renderer* renderer) : _renderer(renderer)
 {
 }
@@ -214,8 +226,8 @@ std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
         if (event.type == SDL_QUIT) {
             commands.push_back(Arcade::InputCommand::QUIT);
         } else if (event.type == SDL_KEYDOWN) {
-            const auto mapped = kSdlKeyMap.find(event.key.keysym.sym);
-            if (mapped != kSdlKeyMap.end()) {
+            const auto mapped = Sdl2Adapter::KEY_MAP.find(event.key.keysym.sym);
+            if (mapped != Sdl2Adapter::KEY_MAP.end()) {
                 commands.push_back(mapped->second);
             }
         }
