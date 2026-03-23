@@ -13,13 +13,32 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <map>
+#include <memory>
+#include <vector>
+#include <unordered_map>
+
+class Sdl2AssetManager {
+private:
+    SDL_Renderer* _renderer;
+    std::map<std::string, SDL_Texture*> _textures;
+
+public:
+    explicit Sdl2AssetManager(SDL_Renderer* renderer);
+    ~Sdl2AssetManager();
+
+    SDL_Texture* getTexture(const std::string& path);
+};
 
 class Sdl2Adapter : public IGraphic {
 private:
-    SDL_Window* window;
-    SDL_Renderer* renderer;
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
     const int tileSize = 32;
     std::map<std::string, TTF_Font*> fontsCache;
+    std::unique_ptr<Sdl2AssetManager> assetManager;
+
+    static const std::unordered_map<SDL_Keycode, Arcade::InputCommand> KEY_MAP;
+
 public:
     void init() override;
     void clear() override;
@@ -30,7 +49,7 @@ public:
     void drawSprite(int x, int y, const std::string &spritePath) override;
     void drawLine(int x1, int y1, int x2, int y2, ArcadeColor color) override;
     void drawTile(int x, int y, ArcadeColor color) override;
-    std::string handleEvents() override;
+    std::vector<Arcade::InputCommand> pollInputs() override;
     std::pair<int,int> getScreenSize() override;
     ~Sdl2Adapter() override;
 

@@ -16,7 +16,8 @@ SRC_MAIN    := src/main.cpp
 OBJ_MAIN    := $(SRC_MAIN:.cpp=.o)
 
 SRC_CORE    := src/core/Core.cpp \
-                src/core/menu.cpp
+                src/core/menu.cpp \
+                src/core/Player.cpp
 OBJ_CORE    := $(SRC_CORE:.cpp=.o)
 
 # Games

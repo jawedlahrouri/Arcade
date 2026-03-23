@@ -9,6 +9,57 @@
 #include "exception.hpp"
 #include <iostream>
 #include <ostream>
+#include <vector>
+
+const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP = {
+    {SDLK_UP, Arcade::InputCommand::UP},
+    {SDLK_DOWN, Arcade::InputCommand::DOWN},
+    {SDLK_LEFT, Arcade::InputCommand::LEFT},
+    {SDLK_RIGHT, Arcade::InputCommand::RIGHT},
+    {SDLK_RETURN, Arcade::InputCommand::ENTER},
+    {SDLK_KP_ENTER, Arcade::InputCommand::ENTER},
+    {SDLK_s, Arcade::InputCommand::SWITCH_GRAPHICS},
+    {SDLK_ESCAPE, Arcade::InputCommand::BACK},
+    {SDLK_q, Arcade::InputCommand::QUIT}
+};
+
+Sdl2AssetManager::Sdl2AssetManager(SDL_Renderer* renderer) : _renderer(renderer)
+{
+}
+
+Sdl2AssetManager::~Sdl2AssetManager()
+{
+    for (auto& entry : _textures) {
+        if (entry.second != nullptr) {
+            SDL_DestroyTexture(entry.second);
+        }
+    }
+    _textures.clear();
+}
+
+SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
+{
+    auto found = _textures.find(path);
+    if (found != _textures.end()) {
+        return found->second;
+    }
+
+    SDL_Surface* surface = SDL_LoadBMP(path.c_str());
+    if (surface == nullptr) {
+        std::cerr << "Failed to load sprite '" << path << "': " << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(_renderer, surface);
+    SDL_FreeSurface(surface);
+    if (texture == nullptr) {
+        std::cerr << "Failed to create texture from '" << path << "': " << SDL_GetError() << std::endl;
+        return nullptr;
+    }
+
+    _textures[path] = texture;
+    return texture;
+}
 
 void Sdl2Adapter::init()
 {
@@ -26,6 +77,7 @@ void Sdl2Adapter::init()
     if (!renderer) {
         throw Exception("Renderer could not be created! SDL_Error: " + std::string(SDL_GetError()));
     }
+    assetManager = std::make_unique<Sdl2AssetManager>(renderer);
 }
 
 void Sdl2Adapter::clear()
@@ -147,7 +199,17 @@ void Sdl2Adapter::drawCircle(int x, int y, int radius, ArcadeColor color)
 
 void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
 {
-    (void)x; (void)y; (void)spritePath;
+    if (!assetManager) {
+        return;
+    }
+
+    SDL_Texture* texture = assetManager->getTexture(spritePath);
+    if (texture == nullptr) {
+        return;
+    }
+
+    SDL_Rect dstRect = {x * tileSize, y * tileSize, tileSize, tileSize};
+    SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
 }
 
 void Sdl2Adapter::drawLine(int x1, int y1, int x2, int y2, ArcadeColor color)
@@ -156,28 +218,30 @@ void Sdl2Adapter::drawLine(int x1, int y1, int x2, int y2, ArcadeColor color)
     SDL_RenderDrawLine(renderer, x1 * tileSize, y1 * tileSize, x2 * tileSize, y2 * tileSize);
 }
 
-std::string Sdl2Adapter::handleEvents()
+std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
 {
+    std::vector<Arcade::InputCommand> commands;
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            return "QUIT";
+            commands.push_back(Arcade::InputCommand::QUIT);
         } else if (event.type == SDL_KEYDOWN) {
-            std::string keyName = SDL_GetKeyName(event.key.keysym.sym);
-            if (keyName == "Up") return "UP";
-            if (keyName == "Down") return "DOWN";
-            if (keyName == "Left") return "LEFT";
-            if (keyName == "Right") return "RIGHT";
-            if (keyName == "Return") return "ENTER";
-            if (keyName == "Q") return "QUIT";
-            return keyName;
+            const auto mapped = Sdl2Adapter::KEY_MAP.find(event.key.keysym.sym);
+            if (mapped != Sdl2Adapter::KEY_MAP.end()) {
+                commands.push_back(mapped->second);
+            }
         }
     }
-    return "NONE";
+    if (commands.empty()) {
+        commands.push_back(Arcade::InputCommand::NONE);
+    }
+    return commands;
 }
 
 Sdl2Adapter::~Sdl2Adapter()
 {
+    assetManager.reset();
+
     for (auto& pair : fontsCache) {
         if (pair.second) {
             TTF_CloseFont(pair.second);

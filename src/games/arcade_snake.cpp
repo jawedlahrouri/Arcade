@@ -32,9 +32,12 @@ void SnakeGame::update() {
     // TODO: Update game logic here
 }
 
-void SnakeGame::handleInput(const std::string& input) {
-    if (input == "QUIT") {
-        _isGameOver = true;
+void SnakeGame::handleInput(const std::vector<Arcade::InputCommand>& inputs) {
+    for (const auto input : inputs) {
+        if (input == Arcade::InputCommand::BACK || input == Arcade::InputCommand::QUIT) {
+            _isGameOver = true;
+            return;
+        }
     }
     // TODO: Handle other inputs (movement, etc)
 }

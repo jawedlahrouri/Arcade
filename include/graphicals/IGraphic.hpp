@@ -8,22 +8,22 @@
 #ifndef IGRAPHIC_HPP_
 #define IGRAPHIC_HPP_
 #include <string>
+#include <vector>
 #include <utility>
-#include "./games/IEvents.hpp"
 
-// Keys
-enum class ArcadeKey {
+namespace Arcade {
+enum class InputCommand {
+    NONE,
     UP,
     DOWN,
     LEFT,
     RIGHT,
     ENTER,
-    BACKSPACE,
-    SPACE,
-    ESCAPE,
-    S, // pour switch
-    UNKNOWN
+    SWITCH_GRAPHICS,
+    BACK,
+    QUIT
 };
+}
 
 // Colors
 enum class ArcadeColor {
@@ -35,42 +35,6 @@ enum class ArcadeColor {
     MAGENTA,
     CYAN,
     WHITE
-};
-
-// Event types
-enum class ArcadeEventType {
-    KEY_PRESS,
-    KEY_RELEASE,
-    MOUSE_MOVE,
-    MOUSE_BUTTON_PRESS,
-    MOUSE_BUTTON_RELEASE,
-    WINDOW_CLOSE,
-    UNKNOW
-};
-
-// Event class with a observer pattern than use the ArcadeEventType enum to know the type of event
-class ArcadeEvent : public IEvents {
-    public:
-        ArcadeEvent(ArcadeEventType type) : type(type) {}
-        ArcadeEventType getType() const { return type; }
-
-    private:
-        ArcadeEventType type;
-};
-
-static ArcadeEvent KEY_PRESS_EVENT(ArcadeEventType::KEY_PRESS);
-static ArcadeEvent KEY_RELEASE_EVENT(ArcadeEventType::KEY_RELEASE);
-static ArcadeEvent MOUSE_MOVE_EVENT(ArcadeEventType::MOUSE_MOVE);
-static ArcadeEvent MOUSE_BUTTON_PRESS_EVENT(ArcadeEventType::MOUSE_BUTTON_PRESS);
-static ArcadeEvent MOUSE_BUTTON_RELEASE_EVENT(ArcadeEventType::MOUSE_BUTTON_RELEASE);
-static ArcadeEvent WINDOW_CLOSE_EVENT(ArcadeEventType::WINDOW_CLOSE);
-
-// Mouse buttons
-enum class ArcadeMouseButton {
-    LEFT,
-    RIGHT,
-    MIDDLE,
-    UNKNOWN
 };
 
 // all the functions that the graphical library must implement
@@ -87,20 +51,11 @@ class IGraphic {
         virtual void drawSprite(int x, int y, const std::string &spritePath) = 0;
         virtual void drawLine(int x1, int y1, int x2, int y2, ArcadeColor color) = 0;
         virtual void drawTile(int x, int y, ArcadeColor color) = 0;
-        virtual std::string handleEvents() = 0;
+        virtual std::vector<Arcade::InputCommand> pollInputs() = 0;
         virtual std::pair<int,int> getScreenSize() = 0;
 
     protected:
     private:
-};
-
-// function to load assets, to be used by the singleton
-class IAssetLoader {
-    public:
-        virtual ~IAssetLoader() = default;
-
-        virtual void loadTexture(const std::string &path) = 0;
-        virtual void loadAudio(const std::string &path) = 0;
 };
 
 #endif /* !IGRAPHIC_HPP_ */

@@ -38,30 +38,61 @@ void Menu::loadLibrariesList() {
     }
 }
 
-MenuAction Menu::handleInput(const std::string& event) {
+MenuAction Menu::handleInput(const std::vector<Arcade::InputCommand>& commands) {
     MenuAction action = {"", false};
 
     if (_gameLibs.empty() || _graphicLibs.empty())
         return action;
 
-    // Exemple de logique de navigation
-    if (event == "DOWN") {
-        _selectedGameIndex = (_selectedGameIndex + 1) % _gameLibs.size();
+    for (const auto command : commands) {
+        if (command == Arcade::InputCommand::DOWN) {
+            if (_selectedGameIndex + 1 < _gameLibs.size()) {
+                _selectedGameIndex++;
+            }
+            continue;
+        }
+
+        if (command == Arcade::InputCommand::UP) {
+            if (_selectedGameIndex > 0) {
+                _selectedGameIndex--;
+            }
+            continue;
+        }
+
+        if (command == Arcade::InputCommand::ENTER) {
+            action.libPath = "./lib/" + _gameLibs[_selectedGameIndex];
+            action.isGame = true;
+            return action;
+        }
+
+        if (command == Arcade::InputCommand::SWITCH_GRAPHICS) {
+            if (_selectedGraphicIndex + 1 < _graphicLibs.size()) {
+                _selectedGraphicIndex++;
+            } else {
+                _selectedGraphicIndex = 0;
+            }
+            action.libPath = "./lib/" + _graphicLibs[_selectedGraphicIndex];
+            action.isGame = false;
+            return action;
+        }
     }
-    if (event == "UP") {
-        _selectedGameIndex = (_selectedGameIndex > 0) ? _selectedGameIndex - 1 : _gameLibs.size() - 1;
-    }
-    if (event == "ENTER") {
-        action.libPath = "./lib/" + _gameLibs[_selectedGameIndex];
-        action.isGame = true;
+    return action;
+}
+
+MenuAction Menu::getNextGraphic() {
+    MenuAction action = {"", false};
+
+    if (_graphicLibs.empty()) {
         return action;
     }
-    if (event == "S") {
-        _selectedGraphicIndex = (_selectedGraphicIndex + 1) % _graphicLibs.size();
-        action.libPath = "./lib/" + _graphicLibs[_selectedGraphicIndex];
-        action.isGame = false;
-        return action;
+
+    if (_selectedGraphicIndex + 1 < _graphicLibs.size()) {
+        _selectedGraphicIndex++;
+    } else {
+        _selectedGraphicIndex = 0;
     }
+    action.libPath = "./lib/" + _graphicLibs[_selectedGraphicIndex];
+    action.isGame = false;
     return action;
 }
 

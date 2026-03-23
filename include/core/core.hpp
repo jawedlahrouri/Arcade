@@ -31,6 +31,7 @@ class Core {
     void loadGame(const std::string& gamePath);
     void unloadGame();
     void run();
+    std::string getCurrentGraphicLib() const { return _currentGraphicLibPath; }
     ~Core() = default;
 };
 #endif /* !CORE_HPP_ */
