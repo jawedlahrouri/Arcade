@@ -97,6 +97,7 @@ MenuAction Menu::getNextGraphic() {
 }
 
 void Menu::draw(IGraphic& graphicLib) {
+    static const std::string MenuFont = "asset/font/coolvetica/Coolvetica Rg.otf";
     auto screen = graphicLib.getScreenSize();
     int screenW = screen.first;
     int screenH = screen.second;
@@ -113,28 +114,28 @@ void Menu::draw(IGraphic& graphicLib) {
     std::string titleStr = "--- ARCADE MENU ---";
     int titleX = (screenW - (int)titleStr.length()) / 2;
     if (titleX < 0) titleX = 0;
-    graphicLib.drawText(titleX, y, titleStr, ArcadeColor::YELLOW);
+    graphicLib.drawText(titleX, y, titleStr, Arcade::Color::YELLOW, MenuFont, 24);
     y += 2;
 
     // Liste des jeux
-    graphicLib.drawText(2, y, "Games available:", ArcadeColor::WHITE);
+    graphicLib.drawText(2, y, "Games available:", Arcade::Color::WHITE, MenuFont, 24);
     y += 2;
     for (int i = 0; i < gameCount; ++i) {
-        ArcadeColor color = (i == static_cast<int>(_selectedGameIndex)) ? ArcadeColor::RED : ArcadeColor::WHITE;
-        graphicLib.drawText(4, y + i, _gameLibs[i], color);
+        Arcade::Color color = (i == static_cast<int>(_selectedGameIndex)) ? Arcade::Color::RED : Arcade::Color::WHITE;
+        graphicLib.drawText(4, y + i, _gameLibs[i], color, MenuFont, 24);
     }
     y += gameCount + 1;
 
     //  Liste des libs graphiques
-    graphicLib.drawText(2, y, "Graphics available:", ArcadeColor::WHITE);
+    graphicLib.drawText(2, y, "Graphics available:", Arcade::Color::WHITE, MenuFont, 24);
     y += 2;
     for (int i = 0; i < graphCount; ++i) {
-        ArcadeColor color = (i == static_cast<int>(_selectedGraphicIndex)) ? ArcadeColor::BLUE : ArcadeColor::WHITE;
-        graphicLib.drawText(4, y + i, _graphicLibs[i], color);
+        Arcade::Color color = (i == static_cast<int>(_selectedGraphicIndex)) ? Arcade::Color::BLUE : Arcade::Color::WHITE;
+        graphicLib.drawText(4, y + i, _graphicLibs[i], color, MenuFont, 24);
     }
     y += graphCount + 1;
 
     //  Champ du nom du joueur
     // peut être mis ailleurs ou dans un sous menu TBD
-    graphicLib.drawText(2, y, "Player Name: " + _playerName + "_", ArcadeColor::CYAN);
+    graphicLib.drawText(2, y, "Player Name: " + _playerName + "_", Arcade::Color::CYAN, MenuFont, 24);
 }

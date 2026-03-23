@@ -8,12 +8,15 @@
 #include "./graphicals/arcade_ncurses.hpp"
 #include <filesystem>
 #include <iostream>
-#include <ncurses.h>
 #include <ostream>
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
+#include <map>
 
+// TODO: Peut être déplaacer les touches spécifique au jeu.
+// Par exemple UP pour snake est dans snake.cpp
+//SWITCH GRAPHICS et BACK sont dans la lib graphique selon moi (TBD)
 const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
     {KEY_UP, Arcade::InputCommand::UP},
     {KEY_DOWN, Arcade::InputCommand::DOWN},
@@ -26,6 +29,12 @@ const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
     {27, Arcade::InputCommand::BACK},
     {'q', Arcade::InputCommand::QUIT},
     {'Q', Arcade::InputCommand::QUIT}
+};
+
+std::map<Arcade::ElementType, char> asciiMap = {
+    {Arcade::ElementType::WALL, '#'},
+    {Arcade::ElementType::PLAYER_UP, '^'},
+    {Arcade::ElementType::FOOD, '*'}
 };
 
 void NcursesAdapter::init()
@@ -53,7 +62,7 @@ void NcursesAdapter::clear()
     ::clear();
 }
 
-void NcursesAdapter::drawTile(int tileX, int tileY, ArcadeColor color)
+void NcursesAdapter::drawTile(int tileX, int tileY, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
@@ -62,9 +71,8 @@ void NcursesAdapter::drawTile(int tileX, int tileY, ArcadeColor color)
 }
 // default path: "asset/font/coolvetica/Coolvetica Rg.otf"
 // defult size: 24
-void NcursesAdapter::drawText(int posX, int posY, const std::string &text, ArcadeColor color, const std::string &fontPath, int fontSize)
+void NcursesAdapter::drawText(int posX, int posY, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
 {
-    (void)fontPath;
     (void)fontSize;
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
@@ -72,7 +80,7 @@ void NcursesAdapter::drawText(int posX, int posY, const std::string &text, Arcad
     attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHeight, ArcadeColor color)
+void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHeight, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
@@ -87,7 +95,7 @@ void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHei
     attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, ArcadeColor color)
+void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
@@ -101,11 +109,23 @@ void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, ArcadeColo
 
 void NcursesAdapter::drawSprite(int posX, int posY, const std::string &spritePath)
 {
-    (void)posX; (void)posY; (void)spritePath;
-    //TODO: A VOIR COMMENT IMPLEMENTER CA EN MODE ASCII ART LES SPRITES
+    (void)posX;
+    (void)posY;
+    (void)spritePath;
 }
 
-void NcursesAdapter::drawLine(int xStart, int yStart, int xEnd, int yEnd, ArcadeColor color)
+void NcursesAdapter::draw(const std::vector<Arcade::GameObject> &objects)
+{
+    for (const auto &obj : objects) {
+        const auto it = asciiMap.find(obj.type);
+        if (it == asciiMap.end()) {
+            continue;
+        }
+        mvaddch(obj.y, obj.x, it->second);
+    }
+}
+
+void NcursesAdapter::drawLine(int xStart, int yStart, int xEnd, int yEnd, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));

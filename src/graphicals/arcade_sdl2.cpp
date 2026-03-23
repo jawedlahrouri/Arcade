@@ -23,6 +23,8 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 
+
+
 Sdl2AssetManager::Sdl2AssetManager(SDL_Renderer* renderer) : _renderer(renderer)
 {
 }
@@ -86,23 +88,23 @@ void Sdl2Adapter::clear()
     SDL_RenderClear(renderer);
 }
 
-void Sdl2Adapter::drawTile(int x, int y, ArcadeColor color)
+void Sdl2Adapter::drawTile(int x, int y, Arcade::Color color)
 {
     SDL_Rect rect = {x * tileSize, y * tileSize, tileSize, tileSize};
     switch (color) {
-        case ArcadeColor::BLACK: SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); break;
-        case ArcadeColor::RED: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
-        case ArcadeColor::GREEN: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
-        case ArcadeColor::YELLOW: SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); break;
-        case ArcadeColor::BLUE: SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); break;
-        case ArcadeColor::MAGENTA: SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255); break;
-        case ArcadeColor::CYAN: SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); break;
-        case ArcadeColor::WHITE: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
+        case Arcade::Color::BLACK: SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); break;
+        case Arcade::Color::RED: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
+        case Arcade::Color::GREEN: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
+        case Arcade::Color::YELLOW: SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); break;
+        case Arcade::Color::BLUE: SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); break;
+        case Arcade::Color::MAGENTA: SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255); break;
+        case Arcade::Color::CYAN: SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); break;
+        case Arcade::Color::WHITE: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
     }
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void Sdl2Adapter::drawText(int x, int y, const std::string &text, ArcadeColor color, const std::string &fontPath, int fontSize)
+void Sdl2Adapter::drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize)
 {
     std::string key = fontPath + ":" + std::to_string(fontSize);
     if (fontsCache.find(key) == fontsCache.end()) {
@@ -117,14 +119,14 @@ void Sdl2Adapter::drawText(int x, int y, const std::string &text, ArcadeColor co
     TTF_Font* font = fontsCache[key];
     SDL_Color sdlColor = {255, 255, 255, 255};
     switch (color) {
-        case ArcadeColor::BLACK: sdlColor = {0, 0, 0, 255}; break;
-        case ArcadeColor::RED: sdlColor = {255, 0, 0, 255}; break;
-        case ArcadeColor::GREEN: sdlColor = {0, 255, 0, 255}; break;
-        case ArcadeColor::YELLOW: sdlColor = {255, 255, 0, 255}; break;
-        case ArcadeColor::BLUE: sdlColor = {0, 0, 255, 255}; break;
-        case ArcadeColor::MAGENTA: sdlColor = {255, 0, 255, 255}; break;
-        case ArcadeColor::CYAN: sdlColor = {0, 255, 255, 255}; break;
-        case ArcadeColor::WHITE: sdlColor = {255, 255, 255, 255}; break;
+        case Arcade::Color::BLACK: sdlColor = {0, 0, 0, 255}; break;
+        case Arcade::Color::RED: sdlColor = {255, 0, 0, 255}; break;
+        case Arcade::Color::GREEN: sdlColor = {0, 255, 0, 255}; break;
+        case Arcade::Color::YELLOW: sdlColor = {255, 255, 0, 255}; break;
+        case Arcade::Color::BLUE: sdlColor = {0, 0, 255, 255}; break;
+        case Arcade::Color::MAGENTA: sdlColor = {255, 0, 255, 255}; break;
+        case Arcade::Color::CYAN: sdlColor = {0, 255, 255, 255}; break;
+        case Arcade::Color::WHITE: sdlColor = {255, 255, 255, 255}; break;
     }
 
     SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, text.c_str(), sdlColor);
@@ -160,28 +162,28 @@ std::pair<int,int> Sdl2Adapter::getScreenSize()
     return { w / tileSize, h / tileSize };
 }
 
-static void sdl_set_color(SDL_Renderer* renderer, ArcadeColor color)
+static void sdl_set_color(SDL_Renderer* renderer, Arcade::Color color)
 {
     switch (color) {
-        case ArcadeColor::BLACK: SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); break;
-        case ArcadeColor::RED: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
-        case ArcadeColor::GREEN: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
-        case ArcadeColor::YELLOW: SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); break;
-        case ArcadeColor::BLUE: SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); break;
-        case ArcadeColor::MAGENTA: SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255); break;
-        case ArcadeColor::CYAN: SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); break;
-        case ArcadeColor::WHITE: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
+        case Arcade::Color::BLACK: SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); break;
+        case Arcade::Color::RED: SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); break;
+        case Arcade::Color::GREEN: SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); break;
+        case Arcade::Color::YELLOW: SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255); break;
+        case Arcade::Color::BLUE: SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255); break;
+        case Arcade::Color::MAGENTA: SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255); break;
+        case Arcade::Color::CYAN: SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255); break;
+        case Arcade::Color::WHITE: SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); break;
     }
 }
 
-void Sdl2Adapter::drawRect(int x, int y, int width, int height, ArcadeColor color)
+void Sdl2Adapter::drawRect(int x, int y, int width, int height, Arcade::Color color)
 {
     SDL_Rect rect = {x * tileSize, y * tileSize, width * tileSize, height * tileSize};
     sdl_set_color(renderer, color);
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void Sdl2Adapter::drawCircle(int x, int y, int radius, ArcadeColor color)
+void Sdl2Adapter::drawCircle(int x, int y, int radius, Arcade::Color color)
 {
     sdl_set_color(renderer, color);
     int cx = x * tileSize + tileSize / 2;
@@ -204,7 +206,7 @@ void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
     }
 
     SDL_Texture* texture = assetManager->getTexture(spritePath);
-    if (texture == nullptr) {
+    if (!texture) {
         return;
     }
 
@@ -212,10 +214,41 @@ void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
     SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
 }
 
-void Sdl2Adapter::drawLine(int x1, int y1, int x2, int y2, ArcadeColor color)
+void Sdl2Adapter::drawLine(int x1, int y1, int x2, int y2, Arcade::Color color)
 {
     sdl_set_color(renderer, color);
     SDL_RenderDrawLine(renderer, x1 * tileSize, y1 * tileSize, x2 * tileSize, y2 * tileSize);
+}
+
+void Sdl2Adapter::draw(const std::vector<Arcade::GameObject> &objects)
+{
+    if (!assetManager) {
+        return;
+    }
+
+    static const std::map<Arcade::ElementType, std::string> texturePathMap = {
+        {Arcade::ElementType::WALL, "asset/textures/wall.bmp"},
+        {Arcade::ElementType::PLAYER_UP, "asset/textures/player_up.bmp"},
+        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/player_down.bmp"},
+        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/player_left.bmp"},
+        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/player_right.bmp"},
+        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"}
+    };
+
+    for (const auto &obj : objects) {
+        const auto texIt = texturePathMap.find(obj.type);
+        if (texIt == texturePathMap.end()) {
+            continue;
+        }
+
+        SDL_Texture *texture = assetManager->getTexture(texIt->second);
+        if (!texture) {
+            continue;
+        }
+
+        SDL_Rect dstRect = {obj.x * tileSize, obj.y * tileSize, tileSize, tileSize};
+        SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
+    }
 }
 
 std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()

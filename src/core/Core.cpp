@@ -152,6 +152,8 @@ void Core::run()
                     _currentGame->handleInput(commands);
                     _currentGame->update();
                     _currentGame->draw(*_graphic);
+                    const std::vector<Arcade::GameObject> objects = _currentGame->getDisplayables();
+                    _graphic->draw(objects);
 
                     if (_currentGame->isGameOver()) {
                         unloadGame();

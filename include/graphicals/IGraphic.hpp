@@ -12,30 +12,49 @@
 #include <utility>
 
 namespace Arcade {
-enum class InputCommand {
-    NONE,
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    ENTER,
-    SWITCH_GRAPHICS,
-    BACK,
-    QUIT
-};
+    enum class InputCommand {
+        NONE,
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+        ENTER,
+        SWITCH_GRAPHICS,
+        BACK,
+        QUIT
+    };
+
+    // Colors
+    enum class Color {
+        BLACK,
+        RED,
+        GREEN,
+        YELLOW,
+        BLUE,
+        MAGENTA,
+        CYAN,
+        WHITE
+    };
+
+    // elements
+    enum class ElementType {
+        EMPTY,
+        WALL,
+        PLAYER_UP,
+        PLAYER_DOWN,
+        PLAYER_LEFT,
+        PLAYER_RIGHT,
+        FOOD,
+        SCORE
+    };
+
+    struct GameObject {
+        ElementType type;
+        int x;
+        int y;
+    };
 }
 
-// Colors
-enum class ArcadeColor {
-    BLACK,
-    RED,
-    GREEN,
-    YELLOW,
-    BLUE,
-    MAGENTA,
-    CYAN,
-    WHITE
-};
 
 // all the functions that the graphical library must implement
 class IGraphic {
@@ -45,12 +64,13 @@ class IGraphic {
         virtual void init() = 0;
         virtual void clear() = 0;
         virtual void display() = 0;
-        virtual void drawText(int x, int y, const std::string &text, ArcadeColor color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24) = 0;
-        virtual void drawRect(int x, int y, int width, int height, ArcadeColor color) = 0;
-        virtual void drawCircle(int x, int y, int radius, ArcadeColor color) = 0;
+        virtual void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize = 24) = 0;
+        virtual void drawRect(int x, int y, int width, int height, Arcade::Color color) = 0;
+        virtual void drawCircle(int x, int y, int radius, Arcade::Color color) = 0;
         virtual void drawSprite(int x, int y, const std::string &spritePath) = 0;
-        virtual void drawLine(int x1, int y1, int x2, int y2, ArcadeColor color) = 0;
-        virtual void drawTile(int x, int y, ArcadeColor color) = 0;
+        virtual void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color) = 0;
+        virtual void drawTile(int x, int y, Arcade::Color color) = 0;
+        virtual void draw(const std::vector<Arcade::GameObject> &objects) = 0;
         virtual std::vector<Arcade::InputCommand> pollInputs() = 0;
         virtual std::pair<int,int> getScreenSize() = 0;
 
