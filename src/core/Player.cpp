@@ -6,8 +6,6 @@
 */
 
 #include "core/Player.hpp"
-#include <fstream>
-#include <iostream>
 
 Player::Player(const std::string& name) : _name(name)
 {
