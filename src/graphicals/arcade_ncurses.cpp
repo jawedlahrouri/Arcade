@@ -74,10 +74,18 @@ void NcursesAdapter::drawTile(int tileX, int tileY, Arcade::Color color)
 void NcursesAdapter::drawText(int posX, int posY, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
 {
     (void)fontSize;
+    (void)fontPath;
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
     mvprintw(posY, posX * 2, "%s", text.c_str());
     attroff(COLOR_PAIR(colorPair));
+}
+
+int NcursesAdapter::measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize)
+{
+    (void)fontPath;
+    (void)fontSize;
+    return static_cast<int>((text.length() + 1) / 2);
 }
 
 void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHeight, Arcade::Color color)
@@ -85,12 +93,12 @@ void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHei
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
     for (int col = startX; col < startX + rectWidth; ++col) {
-        mvaddch(startY, col * 2, '#');
-        mvaddch(startY + rectHeight - 1, col * 2, '#');
+        mvprintw(startY, col * 2, "##");
+        mvprintw(startY + rectHeight - 1, col * 2, "##");
     }
     for (int row = startY; row < startY + rectHeight; ++row) {
-        mvaddch(row, startX * 2, '#');
-        mvaddch(row, (startX + rectWidth - 1) * 2, '#');
+        mvprintw(row, startX * 2, "##");
+        mvprintw(row, (startX + rectWidth - 1) * 2, "##");
     }
     attroff(COLOR_PAIR(colorPair));
 }
@@ -112,6 +120,15 @@ void NcursesAdapter::drawSprite(int posX, int posY, const std::string &spritePat
     (void)posX;
     (void)posY;
     (void)spritePath;
+}
+
+void NcursesAdapter::drawbox(int x, int y, Arcade::Color color)
+{
+    int colorPair = static_cast<int>(color) + 1;
+    attron(COLOR_PAIR(colorPair));
+    mvaddch(y, x * 2, '#');
+    mvaddch(y, x * 2 + 1, '#');
+    attroff(COLOR_PAIR(colorPair));
 }
 
 void NcursesAdapter::draw(const std::vector<Arcade::GameObject> &objects)
