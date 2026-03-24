@@ -5,27 +5,9 @@
 ** arcade_snake
 */
 #include "games/arcade_snake.hpp"
-#include "graphicals/IGraphic.hpp"
 
-void SnakeGame::draw(IGraphic& graphicLib) {
-    auto screen = graphicLib.getScreenSize();
-    int screenW = screen.first;
-    int screenH = screen.second;
-
-    int startY = screenH / 4;
-    int y = startY;
-
-    // Titre centré horizontalement
-    std::string titleStr = "--- Snake ---";
-    int titleX = (screenW - (int)titleStr.length()) / 2;
-    if (titleX < 0) titleX = 0;
-    graphicLib.drawText(titleX, y, titleStr, Arcade::Color::YELLOW, "asset/font/coolvetica/Coolvetica Rg.otf", 24);
-    y += 2;
-}
-
-void SnakeGame::init(IGraphic &graphicLib) {
+void SnakeGame::init() {
     _isGameOver = false;
-    SnakeGame::draw(graphicLib);
 }
 
 void SnakeGame::update() {
@@ -44,7 +26,13 @@ void SnakeGame::handleInput(const std::vector<Arcade::InputCommand>& inputs) {
 
 std::vector<Arcade::GameObject> SnakeGame::getDisplayables() const
 {
-    return {};
+    return {
+        {Arcade::ElementType::WALL, 10, 5},
+        {Arcade::ElementType::WALL, 11, 5},
+        {Arcade::ElementType::WALL, 12, 5},
+        {Arcade::ElementType::PLAYER_RIGHT, 11, 7},
+        {Arcade::ElementType::FOOD, 15, 7}
+    };
 }
 
 extern "C" IGames* createGame() {

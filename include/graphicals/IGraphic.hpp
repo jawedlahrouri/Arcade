@@ -55,7 +55,6 @@ namespace Arcade {
     };
 }
 
-
 // all the functions that the graphical library must implement
 class IGraphic {
     public:

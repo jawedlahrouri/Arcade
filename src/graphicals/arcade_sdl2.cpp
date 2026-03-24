@@ -23,8 +23,6 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 
-
-
 Sdl2AssetManager::Sdl2AssetManager(SDL_Renderer* renderer) : _renderer(renderer)
 {
 }

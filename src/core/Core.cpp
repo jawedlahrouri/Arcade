@@ -66,7 +66,7 @@ void Core::loadGame(const std::string& gamePath) {
 
     _currentGame.reset(rawGamePtr);
     _currentGameLibPath = gamePath;
-    _currentGame->init(*_graphic);
+    _currentGame->init();
 }
 
 void Core::unloadGame() {
@@ -158,7 +158,6 @@ void Core::run()
                 if (_currentGame) {
                     _currentGame->handleInput(commands);
                     _currentGame->update();
-                    _currentGame->draw(*_graphic);
                     const std::vector<Arcade::GameObject> objects = _currentGame->getDisplayables();
                     _graphic->draw(objects);
 
