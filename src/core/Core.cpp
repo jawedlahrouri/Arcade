@@ -10,11 +10,18 @@
 #include "./dll_cmds.hpp"
 #include <iostream>
 #include <chrono>
+#include "./exception"
+#include "exception.hpp"
 
 Core::Core(const std::string& libPath) : _isRunning(true), _currentGraphicLibPath(libPath) {
     _graphicLoader = std::make_unique<DLLoader<IGraphic>>(libPath);
-    IGraphic* rawGraphicPtr = _graphicLoader->getInstance("createGraphical"); 
-    
+    IGraphic* rawGraphicPtr = nullptr;
+    try {
+        rawGraphicPtr = _graphicLoader->getInstance("createGraphical");
+    } catch (Exception) {
+        throw ErrorException("Error: " + libPath + " not a graphic library");
+    }
+
     if (!rawGraphicPtr) {
         throw std::runtime_error("Failed to load graphic lib");
     }
@@ -152,6 +159,8 @@ void Core::run()
                     _currentGame->handleInput(commands);
                     _currentGame->update();
                     _currentGame->draw(*_graphic);
+                    const std::vector<Arcade::GameObject> objects = _currentGame->getDisplayables();
+                    _graphic->draw(objects);
 
                     if (_currentGame->isGameOver()) {
                         unloadGame();

@@ -20,6 +20,7 @@ class IGames {
         virtual void handleInput(const std::vector<Arcade::InputCommand>& inputs) = 0;
         virtual void draw(IGraphic& graphicLib) = 0;
         virtual bool isGameOver() = 0;
+        virtual std::vector<Arcade::GameObject> getDisplayables() const = 0;
 
     protected:
     private:

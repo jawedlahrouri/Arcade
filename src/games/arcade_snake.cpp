@@ -19,7 +19,7 @@ void SnakeGame::draw(IGraphic& graphicLib) {
     std::string titleStr = "--- Snake ---";
     int titleX = (screenW - (int)titleStr.length()) / 2;
     if (titleX < 0) titleX = 0;
-    graphicLib.drawText(titleX, y, titleStr, ArcadeColor::YELLOW);
+    graphicLib.drawText(titleX, y, titleStr, Arcade::Color::YELLOW, "asset/font/coolvetica/Coolvetica Rg.otf", 24);
     y += 2;
 }
 
@@ -40,6 +40,11 @@ void SnakeGame::handleInput(const std::vector<Arcade::InputCommand>& inputs) {
         }
     }
     // TODO: Handle other inputs (movement, etc)
+}
+
+std::vector<Arcade::GameObject> SnakeGame::getDisplayables() const
+{
+    return {};
 }
 
 extern "C" IGames* createGame() {
