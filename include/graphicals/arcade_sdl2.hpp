@@ -44,11 +44,13 @@ public:
     void clear() override;
     void display() override;
     void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24) override;
+    int measureTextWidth(const std::string &text, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24) override;
     void drawRect(int x, int y, int width, int height, Arcade::Color color) override;
     void drawCircle(int x, int y, int radius, Arcade::Color color) override;
     void drawSprite(int x, int y, const std::string &spritePath) override;
     void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color) override;
     void drawTile(int x, int y, Arcade::Color color) override;
+    void drawbox(int x, int y, Arcade::Color color) override;
     void draw(const std::vector<Arcade::GameObject> &objects) override;
     std::vector<Arcade::InputCommand> pollInputs() override;
     std::pair<int,int> getScreenSize() override;

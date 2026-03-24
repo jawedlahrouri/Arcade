@@ -23,8 +23,6 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 
-
-
 Sdl2AssetManager::Sdl2AssetManager(SDL_Renderer* renderer) : _renderer(renderer)
 {
 }
@@ -148,6 +146,28 @@ void Sdl2Adapter::drawText(int x, int y, const std::string &text, Arcade::Color 
     SDL_DestroyTexture(Message);
 }
 
+int Sdl2Adapter::measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize)
+{
+    std::string key = fontPath + ":" + std::to_string(fontSize);
+    if (fontsCache.find(key) == fontsCache.end()) {
+        TTF_Font* newFont = TTF_OpenFont(fontPath.c_str(), fontSize);
+        if (!newFont) {
+            return static_cast<int>((text.length() + 1) / 2);
+        }
+        fontsCache[key] = newFont;
+    }
+
+    TTF_Font* font = fontsCache[key];
+    int textPxWidth = 0;
+    int textPxHeight = 0;
+    if (TTF_SizeText(font, text.c_str(), &textPxWidth, &textPxHeight) != 0) {
+        (void)textPxHeight;
+        return static_cast<int>((text.length() + 1) / 2);
+    }
+    (void)textPxHeight;
+    return (textPxWidth + tileSize - 1) / tileSize;
+}
+
 void Sdl2Adapter::display()
 {
     SDL_RenderPresent(renderer);
@@ -180,7 +200,7 @@ void Sdl2Adapter::drawRect(int x, int y, int width, int height, Arcade::Color co
 {
     SDL_Rect rect = {x * tileSize, y * tileSize, width * tileSize, height * tileSize};
     sdl_set_color(renderer, color);
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderDrawRect(renderer, &rect);
 }
 
 void Sdl2Adapter::drawCircle(int x, int y, int radius, Arcade::Color color)
@@ -218,6 +238,13 @@ void Sdl2Adapter::drawLine(int x1, int y1, int x2, int y2, Arcade::Color color)
 {
     sdl_set_color(renderer, color);
     SDL_RenderDrawLine(renderer, x1 * tileSize, y1 * tileSize, x2 * tileSize, y2 * tileSize);
+}
+
+void Sdl2Adapter::drawbox(int x, int y, Arcade::Color color)
+{
+    sdl_set_color(renderer, color);
+    SDL_Rect rect = {x * tileSize, y * tileSize, tileSize, tileSize};
+    SDL_RenderDrawRect(renderer, &rect);
 }
 
 void Sdl2Adapter::draw(const std::vector<Arcade::GameObject> &objects)

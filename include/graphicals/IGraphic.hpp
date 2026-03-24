@@ -55,7 +55,6 @@ namespace Arcade {
     };
 }
 
-
 // all the functions that the graphical library must implement
 class IGraphic {
     public:
@@ -65,11 +64,13 @@ class IGraphic {
         virtual void clear() = 0;
         virtual void display() = 0;
         virtual void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize = 24) = 0;
+        virtual int measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize = 24) = 0;
         virtual void drawRect(int x, int y, int width, int height, Arcade::Color color) = 0;
         virtual void drawCircle(int x, int y, int radius, Arcade::Color color) = 0;
         virtual void drawSprite(int x, int y, const std::string &spritePath) = 0;
         virtual void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color) = 0;
         virtual void drawTile(int x, int y, Arcade::Color color) = 0;
+        virtual void drawbox(int x, int y, Arcade::Color color) = 0;
         virtual void draw(const std::vector<Arcade::GameObject> &objects) = 0;
         virtual std::vector<Arcade::InputCommand> pollInputs() = 0;
         virtual std::pair<int,int> getScreenSize() = 0;

@@ -15,10 +15,9 @@ class IGames {
     public:
         virtual ~IGames() = default;
 
-        virtual void init(IGraphic& graphicLib) = 0;
+        virtual void init() = 0;
         virtual void update() = 0;
         virtual void handleInput(const std::vector<Arcade::InputCommand>& inputs) = 0;
-        virtual void draw(IGraphic& graphicLib) = 0;
         virtual bool isGameOver() = 0;
         virtual std::vector<Arcade::GameObject> getDisplayables() const = 0;
 

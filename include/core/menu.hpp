@@ -42,4 +42,15 @@ private:
     size_t _selectedGraphicIndex;
 };
 
+class MenuPage : public Menu {
+    public:
+    MenuPage() = default;
+    ~MenuPage() = default;
+};
+
+class SettingsPage : public Menu {
+    public:
+    SettingsPage() = default;
+    ~SettingsPage() = default;
+};
 #endif /* !MENU_HPP_ */
