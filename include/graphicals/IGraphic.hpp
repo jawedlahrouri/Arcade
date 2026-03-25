@@ -7,68 +7,9 @@
 
 #ifndef IGRAPHIC_HPP_
 #define IGRAPHIC_HPP_
+#include "arcade_types.hpp"
 #include <string>
-#include <vector>
 #include <utility>
-
-namespace Arcade {
-    enum class InputCommand {
-        NONE,
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-        ENTER,
-        SWITCH_GRAPHICS,
-        BACK,
-        QUIT
-    };
-
-    // Colors
-    enum class Color {
-        BLACK,
-        RED,
-        GREEN,
-        YELLOW,
-        BLUE,
-        MAGENTA,
-        CYAN,
-        WHITE
-    };
-
-    // elements
-    enum class ElementType {
-        EMPTY,
-        WALL,
-        PLAYER,
-        ENEMY,
-        PLAYER_UP,
-        PLAYER_DOWN,
-        PLAYER_LEFT,
-        PLAYER_RIGHT,
-        FOOD,
-        SCORE
-    };
-
-    struct SpriteObject {
-        ElementType type;
-        int x;
-        int y;
-    };
-
-    struct TextObject {
-        std::string text;
-        int x;
-        int y;
-        Color color;
-    };
-
-    struct DisplayData {
-        std::vector<SpriteObject> sprites;
-        std::vector<TextObject> texts;
-    };
-
-}
 
 // all the functions that the graphical library must implement
 class IGraphic {

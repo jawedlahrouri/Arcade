@@ -6,7 +6,6 @@
 */
 
 #include "core/menu.hpp"
-#include "graphicals/IGraphic.hpp"
 #include <vector>
 #include <algorithm>
 #include <filesystem>

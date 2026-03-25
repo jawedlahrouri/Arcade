@@ -9,7 +9,7 @@
 #define IGAMES_HPP_
 
 #include <vector>
-#include "graphicals/IGraphic.hpp"
+#include "arcade_types.hpp"
 
 class IGames {
     public:
