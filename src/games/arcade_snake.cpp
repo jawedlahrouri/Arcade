@@ -41,15 +41,17 @@ void SnakeGame::handleInput(const std::vector<Arcade::InputCommand>& inputs) {
  * @brief Builds the sprite list representing the current frame.
  * @return Vector of sprite objects to render.
  */
-std::vector<Arcade::SpriteObject> SnakeGame::getDisplayables() const
+Arcade::DisplayData SnakeGame::getDisplayables() const
 {
-    return {
+    Arcade::DisplayData data;
+    data.sprites = {
         {Arcade::ElementType::WALL, 10, 5},
         {Arcade::ElementType::WALL, 11, 5},
         {Arcade::ElementType::WALL, 12, 5},
         {Arcade::ElementType::PLAYER_RIGHT, 11, 7},
         {Arcade::ElementType::FOOD, 15, 7}
     };
+    return data;
 }
 
 /**

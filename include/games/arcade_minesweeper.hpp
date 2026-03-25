@@ -42,7 +42,7 @@ class arcade_minesweeper : public IGames {
         void update() override;
         void handleInput(const std::vector<Arcade::InputCommand>& inputs) override;
         bool isGameOver() override;
-        std::vector<Arcade::SpriteObject> getDisplayables() const override;
+        Arcade::DisplayData getDisplayables() const override;
 
         // Méthodes liés à la génération de la grille
         void create_starting_zone(); // créer la zone large au debut du demineur

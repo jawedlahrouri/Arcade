@@ -71,8 +71,8 @@ bool arcade_minesweeper::isGameOver() {
     return _isGameOver;
 }
 
-std::vector<Arcade::SpriteObject> arcade_minesweeper::getDisplayables() const {
-    std::vector<Arcade::SpriteObject> displayables;
+Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
+    Arcade::DisplayData data;
 
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
@@ -92,10 +92,10 @@ std::vector<Arcade::SpriteObject> arcade_minesweeper::getDisplayables() const {
                 sprite.type = Arcade::ElementType::FOOD;
             else
                 sprite.type = Arcade::ElementType::WALL;
-            displayables.push_back(sprite);
+            data.sprites.push_back(sprite);
         }
     }
-    return displayables;
+    return data;
 }
 
 void arcade_minesweeper::create_starting_zone() {

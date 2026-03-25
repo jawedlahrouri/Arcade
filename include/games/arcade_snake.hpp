@@ -40,10 +40,10 @@ class SnakeGame : public IGames {
      */
     bool isGameOver() override { return _isGameOver; }
     /**
-     * @brief Returns the list of sprites to render.
-     * @return Vector of sprite objects for the current frame.
+     * @brief Returns the aggregated display data to render.
+     * @return DisplayData for the current frame.
      */
-    std::vector<Arcade::SpriteObject> getDisplayables() const override;
+    Arcade::DisplayData getDisplayables() const override;
 
     private:
     bool _isGameOver = false;

@@ -23,7 +23,7 @@ Core::Core(const std::string& libPath) : _isRunning(true), _currentGraphicLibPat
     IGraphic* rawGraphicPtr = nullptr;
     try {
         rawGraphicPtr = _graphicLoader->getInstance("createGraphical");
-    } catch (Exception) {
+    } catch (const Exception &) {
         throw ErrorException("Error: " + libPath + " not a graphic library");
     }
 
@@ -265,7 +265,7 @@ void Core::renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bo
     _currentGame->handleInput(commands);
     _currentGame->update();
 
-    const std::vector<Arcade::SpriteObject> objects = _currentGame->getDisplayables();
+    const Arcade::DisplayData objects = _currentGame->getDisplayables();
     _graphic->draw(objects);
 
     if (_currentGame->isGameOver()) {
