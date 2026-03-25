@@ -21,6 +21,7 @@ namespace Arcade {
         ENTER,
         SWITCH_GRAPHICS,
         BACK,
+        FLAG,
         QUIT
     };
 
