@@ -6,6 +6,7 @@
 */
 
 #include "./graphicals/arcade_ncurses.hpp"
+#include "arcade_types.hpp"
 #include <filesystem>
 #include <iostream>
 #include <ostream>
@@ -26,6 +27,10 @@ const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
     {KEY_ENTER, Arcade::InputCommand::ENTER},
     {'s', Arcade::InputCommand::SWITCH_GRAPHICS},
     {'S', Arcade::InputCommand::SWITCH_GRAPHICS},
+    {'r', Arcade::InputCommand::RELOAD_GAME},
+    {'R', Arcade::InputCommand::RELOAD_GAME},
+    {'n', Arcade::InputCommand::SWITCH_GAME},
+    {'N', Arcade::InputCommand::SWITCH_GAME},
     {27, Arcade::InputCommand::BACK},
     {'q', Arcade::InputCommand::QUIT},
     {'Q', Arcade::InputCommand::QUIT}

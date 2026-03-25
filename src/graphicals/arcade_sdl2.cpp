@@ -7,6 +7,7 @@
 
 #include "./graphicals/arcade_sdl2.hpp"
 #include "exception.hpp"
+#include <SDL2/SDL_keycode.h>
 #include <iostream>
 #include <ostream>
 #include <vector>
@@ -19,6 +20,8 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_RETURN, Arcade::InputCommand::ENTER},
     {SDLK_KP_ENTER, Arcade::InputCommand::ENTER},
     {SDLK_s, Arcade::InputCommand::SWITCH_GRAPHICS},
+    {SDLK_r, Arcade::InputCommand::RELOAD_GAME},
+    {SDLK_n, Arcade::InputCommand::SWITCH_GAME},
     {SDLK_ESCAPE, Arcade::InputCommand::BACK},
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
