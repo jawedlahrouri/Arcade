@@ -20,6 +20,8 @@ namespace Arcade {
         RIGHT,
         ENTER,
         SWITCH_GRAPHICS,
+        SWITCH_GAME,
+        RELOAD_GAME,
         BACK,
         FLAG,
         QUIT

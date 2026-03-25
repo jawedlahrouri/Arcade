@@ -147,6 +147,27 @@ bool Core::handleSwitchGraphics(Menu &arcadeMenu)
     return true;
 }
 
+bool Core::switchGame(const std::string &gamePath)
+{
+    if (gamePath.empty() || gamePath == _currentGameLibPath) {
+        return false;
+    }
+    loadGame(gamePath);
+    return true;
+}
+
+bool Core::handleReloadGame(Menu &arcadeMenu)
+{
+    (void)arcadeMenu;
+    if (_currentGameLibPath.empty()) {
+        return false;
+    }
+    loadGame(_currentGameLibPath);
+    return true;
+}
+
+
+
 /**
  * @brief Handles one global command affecting app state, menu, or backend.
  * @param command Input command to process.
@@ -177,7 +198,19 @@ void Core::handleCommand(const Arcade::InputCommand &command, bool &inMenu, bool
     if (command == Arcade::InputCommand::SWITCH_GRAPHICS) {
         skipFrame = handleSwitchGraphics(arcadeMenu);
     }
+    if (command == Arcade::InputCommand::SWITCH_GAME) {
+        MenuAction action = arcadeMenu.getNextGame();
+        if (!action.libPath.empty()) {
+            loadGame(action.libPath);
+            inMenu = false;
+            skipFrame = true;
+        }
+    }
+    if (command == Arcade::InputCommand::RELOAD_GAME) {
+        skipFrame = handleReloadGame(arcadeMenu);
+    }
 }
+
 
 /**
  * @brief Processes all global commands collected for the current frame.

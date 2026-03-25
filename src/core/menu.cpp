@@ -244,6 +244,27 @@ MenuAction Menu::getNextGraphic() {
 }
 
 /**
+ * @brief Selects the next game library in cyclic order.
+ * @return MenuAction for the next game library, or empty action.
+ */
+MenuAction Menu::getNextGame() {
+    MenuAction action = {"", false};
+
+    if (_gameLibs.empty()) {
+        return action;
+    }
+
+    if (_selectedGameIndex + 1 < _gameLibs.size()) {
+        _selectedGameIndex++;
+    } else {
+        _selectedGameIndex = 0;
+    }
+    action.libPath = "./lib/" + _gameLibs[_selectedGameIndex];
+    action.isGame = true;
+    return action;
+}
+
+/**
  * @brief Builds all menu sprites and texts for rendering.
  * @return Fully populated display data for the current menu state.
  */

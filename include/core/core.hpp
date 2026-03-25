@@ -47,6 +47,18 @@ class Core {
      */
     bool handleSwitchGraphics(Menu &arcadeMenu);
     /**
+     * @brief Reloads the currently active game library.
+     * @param arcadeMenu Menu instance (unused but kept for parity).
+     * @return true when the game was reloaded and the frame should be skipped.
+     */
+    bool handleReloadGame(Menu &arcadeMenu);
+    /**
+     * @brief Attempts to switch to a different game library.
+     * @param gamePath Path to the game shared library.
+     * @return true when a switch occurred.
+     */
+    bool switchGame(const std::string &gamePath);
+    /**
      * @brief Handles one global command affecting core execution state.
      * @param command Command to handle.
      * @param inMenu Indicates whether menu mode is active.

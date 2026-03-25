@@ -43,6 +43,11 @@ class Menu {
      * @return Menu action containing the next graphic library path.
      */
     MenuAction getNextGraphic();
+    /**
+     * @brief Selects the next game library for runtime switching.
+     * @return Menu action containing the next game library path.
+     */
+    MenuAction getNextGame();
 
     /**
      * @brief Sets the logical screen size used for menu layout.
