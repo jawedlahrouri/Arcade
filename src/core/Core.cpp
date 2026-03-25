@@ -75,6 +75,127 @@ void Core::unloadGame() {
     _currentGameLibPath = "";
 }
 
+bool Core::isFrameReady(std::chrono::steady_clock::time_point &lastUpdate)
+{
+    const auto now = std::chrono::steady_clock::now();
+    const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastUpdate);
+
+    if (elapsed.count() < 16) {
+        return false;
+    }
+    lastUpdate = now;
+    return true;
+}
+
+void Core::applyMenuAction(const MenuAction &action, bool &inMenu)
+{
+    if (action.libPath.empty()) {
+        return;
+    }
+    if (action.isGame) {
+        loadGame(action.libPath);
+        inMenu = false;
+        return;
+    }
+    changeGraphicLib(action.libPath);
+}
+
+bool Core::handleSwitchGraphics(Menu &arcadeMenu)
+{
+    MenuAction action = arcadeMenu.getNextGraphic();
+
+    if (action.libPath.empty()) {
+        return false;
+    }
+    changeGraphicLib(action.libPath);
+    _graphic->init();
+    return true;
+}
+
+void Core::handleCommand(const Arcade::InputCommand &command, bool &inMenu, bool &skipFrame, Menu &arcadeMenu)
+{
+    if (command == Arcade::InputCommand::QUIT) {
+        if (inMenu) {
+            _isRunning = false;
+            return;
+        }
+        inMenu = true;
+        unloadGame();
+        _graphic->clear();
+        skipFrame = true;
+        return;
+    }
+    if (command == Arcade::InputCommand::BACK && !inMenu) {
+        unloadGame();
+        inMenu = true;
+        skipFrame = true;
+        return;
+    }
+    if (command == Arcade::InputCommand::SWITCH_GRAPHICS) {
+        skipFrame = handleSwitchGraphics(arcadeMenu);
+    }
+}
+
+bool Core::processGlobalCommands(const std::vector<Arcade::InputCommand> &commands, bool &inMenu, Menu &arcadeMenu)
+{
+    bool skipFrame = false;
+
+    for (const auto &command : commands) {
+        handleCommand(command, inMenu, skipFrame, arcadeMenu);
+        if (!_isRunning || skipFrame) {
+            break;
+        }
+    }
+    return skipFrame;
+}
+
+void Core::renderMenuFrame(Menu &arcadeMenu, const std::vector<Arcade::InputCommand> &commands, bool &inMenu)
+{
+    const std::pair<int, int> screenSize = _graphic->getScreenSize();
+    arcadeMenu.setScreenSize(screenSize.first, screenSize.second);
+
+    MenuAction action = arcadeMenu.handleInput(commands);
+    applyMenuAction(action, inMenu);
+
+    const Arcade::DisplayData menuDisplay = arcadeMenu.getDisplayables();
+    _graphic->draw(menuDisplay);
+}
+
+void Core::renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bool &inMenu)
+{
+    if (!_currentGame) {
+        return;
+    }
+    _currentGame->handleInput(commands);
+    _currentGame->update();
+
+    const std::vector<Arcade::SpriteObject> objects = _currentGame->getDisplayables();
+    _graphic->draw(objects);
+
+    if (_currentGame->isGameOver()) {
+        unloadGame();
+        inMenu = true;
+    }
+}
+
+void Core::runFrame(Menu &arcadeMenu, bool &inMenu)
+{
+    const std::vector<Arcade::InputCommand> commands = _graphic->pollInputs();
+    const bool skipFrame = processGlobalCommands(commands, inMenu, arcadeMenu);
+
+    if (!_isRunning || skipFrame) {
+        return;
+    }
+    _graphic->clear();
+
+    if (inMenu) {
+        renderMenuFrame(arcadeMenu, commands, inMenu);
+    } else {
+        renderGameFrame(commands, inMenu);
+    }
+    _graphic->display();
+}
+
 void Core::run()
 {
     if (!_graphic)
@@ -89,89 +210,13 @@ void Core::run()
     auto lastUpdate = std::chrono::steady_clock::now();
 
     while (_isRunning) {
-        auto now = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastUpdate);
-
-        if (elapsed.count() < 16) { // ~60 FPS
+        if (!isFrameReady(lastUpdate)) {
             continue;
         }
-
-        lastUpdate = now;
         try {
-            std::vector<Arcade::InputCommand> commands = _graphic->pollInputs();
-            bool skipFrame = false;
-
-            for (const auto command : commands) {
-                if (command == Arcade::InputCommand::QUIT) {
-                    if (inMenu) {
-                        _isRunning = false;
-                    } else {
-                        inMenu = true;
-                        unloadGame();
-                        _graphic->clear();
-                        skipFrame = true;
-                    }
-                }
-                if (command == Arcade::InputCommand::BACK && !inMenu) {
-                    unloadGame();
-                    inMenu = true;
-                    skipFrame = true;
-                }
-                if (command == Arcade::InputCommand::SWITCH_GRAPHICS) {
-                    MenuAction action = arcadeMenu.getNextGraphic();
-                    if (!action.libPath.empty()) {
-                        try {
-                            changeGraphicLib(action.libPath);
-                            _graphic->init();
-                            skipFrame = true;
-                        } catch (const std::exception &e) {
-                            std::cerr << "Failed to switch graphic lib: " << e.what() << std::endl;
-                        }
-                    }
-                }
-            }
-
-            if (!_isRunning || skipFrame) {
-                continue;
-            }
-
-            _graphic->clear();
-
-            if (inMenu) {
-                MenuAction action = arcadeMenu.handleInput(commands);
-
-                if (!action.libPath.empty()) {
-                    try {
-                        if (action.isGame) {
-                            loadGame(action.libPath);
-                            inMenu = false;
-                        } else {
-                            changeGraphicLib(action.libPath);
-                        }
-                    } catch (const std::exception &e) {
-                        std::cerr << "Failed to load library: " << e.what() << std::endl;
-                    }
-                }
-                arcadeMenu.draw(*_graphic);
-            } else {
-                // Jeu en cours
-                if (_currentGame) {
-                    _currentGame->handleInput(commands);
-                    _currentGame->update();
-                    const std::vector<Arcade::GameObject> objects = _currentGame->getDisplayables();
-                    _graphic->draw(objects);
-
-                    if (_currentGame->isGameOver()) {
-                        unloadGame();
-                        inMenu = true;
-                    }
-                }
-            }
-
-            _graphic->display();
-            
+            runFrame(arcadeMenu, inMenu);
         } catch (const std::exception &e) {
-            std::cerr << "Game requested exit: " << e.what() << std::endl;
+            std::cerr << "Failed to process frame: " << e.what() << std::endl;
             _isRunning = false;
         }
     }

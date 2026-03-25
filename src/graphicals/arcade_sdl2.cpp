@@ -247,7 +247,7 @@ void Sdl2Adapter::drawbox(int x, int y, Arcade::Color color)
     SDL_RenderDrawRect(renderer, &rect);
 }
 
-void Sdl2Adapter::draw(const std::vector<Arcade::GameObject> &objects)
+void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
 {
     if (!assetManager) {
         return;
@@ -275,6 +275,16 @@ void Sdl2Adapter::draw(const std::vector<Arcade::GameObject> &objects)
 
         SDL_Rect dstRect = {obj.x * tileSize, obj.y * tileSize, tileSize, tileSize};
         SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
+    }
+}
+
+void Sdl2Adapter::draw(const Arcade::DisplayData &data)
+{
+    static const std::string defaultFont = "asset/font/coolvetica/Coolvetica Rg.otf";
+
+    draw(data.sprites);
+    for (const auto &text : data.texts) {
+        drawText(text.x, text.y, text.text, text.color, defaultFont, 24);
     }
 }
 

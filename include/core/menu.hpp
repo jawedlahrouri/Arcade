@@ -30,13 +30,32 @@ class Menu {
     // Retourne la prochaine lib graphique pour le switch au runtime
     MenuAction getNextGraphic();
 
-    // Dessine le menu en utilisant la librairie graphique courante
-    void draw(IGraphic& graphicLib);
+    // Fournit la taille logique de l'ecran pour produire un layout adapte
+    void setScreenSize(int width, int height);
+
+    // Exporte l'etat visuel du menu sous forme de donnees semantiques
+    Arcade::DisplayData getDisplayables() const;
 
 private:
+    enum class LibraryType {
+        UNKNOWN,
+        GAME,
+        GRAPHIC
+    };
+
+    static LibraryType detectLibraryType(const std::string &path);
+    static int centerX(int screenW, const std::string &text);
+    static void addBorderSprites(Arcade::DisplayData &data, int screenW, int screenH);
+    static void addLibraryListTexts(Arcade::DisplayData &data, const std::vector<std::string> &libs,
+        size_t selectedIndex, int startY, Arcade::Color selectedColor);
+    static void addMissingLibrariesWarnings(Arcade::DisplayData &data, bool noGames, bool noGraphics,
+        int currentY, int graphicCount);
+
     std::vector<std::string> _gameLibs;
     std::vector<std::string> _graphicLibs;
     std::string _playerName;
+    int _screenWidth;
+    int _screenHeight;
     
     size_t _selectedGameIndex;
     size_t _selectedGraphicIndex;

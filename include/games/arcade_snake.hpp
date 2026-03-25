@@ -18,7 +18,7 @@ class SnakeGame : public IGames {
     void update() override;
     void handleInput(const std::vector<Arcade::InputCommand>& inputs) override;
     bool isGameOver() override { return _isGameOver; }
-    std::vector<Arcade::GameObject> getDisplayables() const override;
+    std::vector<Arcade::SpriteObject> getDisplayables() const override;
 
     private:
     bool _isGameOver = false;

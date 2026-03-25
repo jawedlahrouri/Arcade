@@ -9,8 +9,10 @@
 #define CORE_HPP_
 #include "graphicals/IGraphic.hpp"
 #include "games/IGames.hpp"
+#include "core/menu.hpp"
 #include <string>
 #include <memory>
+#include <chrono>
 #include "./dll_cmds.hpp"
 
 class Core {
@@ -24,6 +26,15 @@ class Core {
     std::unique_ptr<DLLoader<IGames>> _gameLoader;
     std::unique_ptr<IGames> _currentGame;
     std::string _currentGameLibPath;
+
+    bool isFrameReady(std::chrono::steady_clock::time_point &lastUpdate);
+    void applyMenuAction(const MenuAction &action, bool &inMenu);
+    bool handleSwitchGraphics(Menu &arcadeMenu);
+    void handleCommand(const Arcade::InputCommand &command, bool &inMenu, bool &skipFrame, Menu &arcadeMenu);
+    bool processGlobalCommands(const std::vector<Arcade::InputCommand> &commands, bool &inMenu, Menu &arcadeMenu);
+    void renderMenuFrame(Menu &arcadeMenu, const std::vector<Arcade::InputCommand> &commands, bool &inMenu);
+    void renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bool &inMenu);
+    void runFrame(Menu &arcadeMenu, bool &inMenu);
 
     public:
     Core(const std::string& libPath);

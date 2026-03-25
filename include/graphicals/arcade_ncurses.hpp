@@ -26,7 +26,8 @@ public:
     void drawSprite(int x, int y, const std::string &spritePath) override;
     void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color) override;
     void drawbox(int x, int y, Arcade::Color color) override;
-    void draw(const std::vector<Arcade::GameObject> &objects) override;
+    void draw(const std::vector<Arcade::SpriteObject> &objects) override;
+    void draw(const Arcade::DisplayData &data) override;
     void display() override;
     std::vector<Arcade::InputCommand> pollInputs() override;
     std::pair<int,int> getScreenSize() override;

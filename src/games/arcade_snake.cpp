@@ -24,7 +24,7 @@ void SnakeGame::handleInput(const std::vector<Arcade::InputCommand>& inputs) {
     // TODO: Handle other inputs (movement, etc)
 }
 
-std::vector<Arcade::GameObject> SnakeGame::getDisplayables() const
+std::vector<Arcade::SpriteObject> SnakeGame::getDisplayables() const
 {
     return {
         {Arcade::ElementType::WALL, 10, 5},

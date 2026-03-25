@@ -131,14 +131,28 @@ void NcursesAdapter::drawbox(int x, int y, Arcade::Color color)
     attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::draw(const std::vector<Arcade::GameObject> &objects)
+void NcursesAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
 {
     for (const auto &obj : objects) {
+        if (obj.type == Arcade::ElementType::WALL) {
+            drawbox(obj.x, obj.y, Arcade::Color::WHITE);
+            continue;
+        }
         const auto it = asciiMap.find(obj.type);
         if (it == asciiMap.end()) {
             continue;
         }
-        mvaddch(obj.y, obj.x, it->second);
+        const int screenCol = obj.x * 2;
+        mvaddch(obj.y, screenCol, it->second);
+        mvaddch(obj.y, screenCol + 1, it->second);
+    }
+}
+
+void NcursesAdapter::draw(const Arcade::DisplayData &data)
+{
+    draw(data.sprites);
+    for (const auto &text : data.texts) {
+        drawText(text.x, text.y, text.text, text.color, "", 24);
     }
 }
 

@@ -40,6 +40,8 @@ namespace Arcade {
     enum class ElementType {
         EMPTY,
         WALL,
+        PLAYER,
+        ENEMY,
         PLAYER_UP,
         PLAYER_DOWN,
         PLAYER_LEFT,
@@ -48,11 +50,24 @@ namespace Arcade {
         SCORE
     };
 
-    struct GameObject {
+    struct SpriteObject {
         ElementType type;
         int x;
         int y;
     };
+
+    struct TextObject {
+        std::string text;
+        int x;
+        int y;
+        Color color;
+    };
+
+    struct DisplayData {
+        std::vector<SpriteObject> sprites;
+        std::vector<TextObject> texts;
+    };
+
 }
 
 // all the functions that the graphical library must implement
@@ -71,7 +86,8 @@ class IGraphic {
         virtual void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color) = 0;
         virtual void drawTile(int x, int y, Arcade::Color color) = 0;
         virtual void drawbox(int x, int y, Arcade::Color color) = 0;
-        virtual void draw(const std::vector<Arcade::GameObject> &objects) = 0;
+        virtual void draw(const std::vector<Arcade::SpriteObject> &objects) = 0;
+        virtual void draw(const Arcade::DisplayData &data) = 0;
         virtual std::vector<Arcade::InputCommand> pollInputs() = 0;
         virtual std::pair<int,int> getScreenSize() = 0;
 

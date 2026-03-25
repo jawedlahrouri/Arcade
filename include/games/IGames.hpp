@@ -19,7 +19,7 @@ class IGames {
         virtual void update() = 0;
         virtual void handleInput(const std::vector<Arcade::InputCommand>& inputs) = 0;
         virtual bool isGameOver() = 0;
-        virtual std::vector<Arcade::GameObject> getDisplayables() const = 0;
+        virtual std::vector<Arcade::SpriteObject> getDisplayables() const = 0;
 
     protected:
     private:
