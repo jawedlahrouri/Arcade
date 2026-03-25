@@ -12,6 +12,11 @@
 #include <filesystem>
 #include <dlfcn.h>
 
+/**
+ * @brief Detects whether a shared library exports game or graphic symbols.
+ * @param path Absolute or relative path to the .so file.
+ * @return LibraryType::GAME, GRAPHIC, or UNKNOWN.
+ */
 Menu::LibraryType Menu::detectLibraryType(const std::string &path)
 {
     void *handle = ::dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
@@ -44,6 +49,12 @@ Menu::LibraryType Menu::detectLibraryType(const std::string &path)
     return LibraryType::UNKNOWN;
 }
 
+/**
+ * @brief Computes a centered X position for a text in tile coordinates.
+ * @param screenW Screen width in tiles.
+ * @param text Text to center.
+ * @return Left X coordinate where the text should start.
+ */
 int Menu::centerX(int screenW, const std::string &text)
 {
     if (screenW <= 0)
@@ -53,6 +64,13 @@ int Menu::centerX(int screenW, const std::string &text)
     return std::max(0, centered);
 }
 
+/**
+ * @brief Appends border wall sprites around the screen bounds.
+ * @param data Display buffer to extend.
+ * @param screenW Screen width in tiles.
+ * @param screenH Screen height in tiles.
+ * @return Does not return a value.
+ */
 void Menu::addBorderSprites(Arcade::DisplayData &data, int screenW, int screenH)
 {
     if (screenW <= 1 || screenH <= 1)
@@ -67,6 +85,15 @@ void Menu::addBorderSprites(Arcade::DisplayData &data, int screenW, int screenH)
     }
 }
 
+/**
+ * @brief Adds one text line per library and highlights the selected entry.
+ * @param data Display buffer to extend.
+ * @param libs Library names to display.
+ * @param selectedIndex Index of the highlighted entry.
+ * @param startY First Y row used for the list.
+ * @param selectedColor Color used for the selected item.
+ * @return Does not return a value.
+ */
 void Menu::addLibraryListTexts(Arcade::DisplayData &data, const std::vector<std::string> &libs,
     size_t selectedIndex, int startY, Arcade::Color selectedColor)
 {
@@ -76,6 +103,15 @@ void Menu::addLibraryListTexts(Arcade::DisplayData &data, const std::vector<std:
     }
 }
 
+/**
+ * @brief Adds warning messages when game or graphic libraries are missing.
+ * @param data Display buffer to extend.
+ * @param noGames True when no game library is available.
+ * @param noGraphics True when no graphic library is available.
+ * @param currentY Current Y cursor used to place warnings.
+ * @param graphicCount Number of displayed graphic libraries.
+ * @return Does not return a value.
+ */
 void Menu::addMissingLibrariesWarnings(Arcade::DisplayData &data, bool noGames, bool noGraphics,
     int currentY, int graphicCount)
 {
@@ -89,17 +125,30 @@ void Menu::addMissingLibrariesWarnings(Arcade::DisplayData &data, bool noGames, 
     }
 }
 
+/**
+ * @brief Builds the menu with default state and loads available libraries.
+ * @return Does not return a value.
+ */
 Menu::Menu() : _playerName(""), _screenWidth(0), _screenHeight(0), _selectedGameIndex(0), _selectedGraphicIndex(0) {
     loadLibrariesList();
 }
 
+/**
+ * @brief Updates the menu viewport dimensions used for layout.
+ * @param width Screen width in tiles.
+ * @param height Screen height in tiles.
+ * @return Does not return a value.
+ */
 void Menu::setScreenSize(int width, int height)
 {
     _screenWidth = width;
     _screenHeight = height;
 }
 
-// load dynamic libraries from ./lib/ and classify them as games or graphics based on their bool
+/**
+ * @brief Scans ./lib and classifies .so files as game or graphic libraries.
+ * @return Does not return a value.
+ */
 void Menu::loadLibrariesList() {
     _gameLibs.clear();
     _graphicLibs.clear();
@@ -128,6 +177,11 @@ void Menu::loadLibrariesList() {
         _selectedGraphicIndex = 0;
 }
 
+/**
+ * @brief Handles menu navigation commands and returns the selected action.
+ * @param commands Input command list for the current frame.
+ * @return MenuAction describing the requested game or graphic change.
+ */
 MenuAction Menu::handleInput(const std::vector<Arcade::InputCommand>& commands) {
     MenuAction action = {"", false};
 
@@ -169,6 +223,10 @@ MenuAction Menu::handleInput(const std::vector<Arcade::InputCommand>& commands) 
     return action;
 }
 
+/**
+ * @brief Selects the next graphic library in cyclic order.
+ * @return MenuAction for the next graphic library, or empty action.
+ */
 MenuAction Menu::getNextGraphic() {
     MenuAction action = {"", false};
 
@@ -186,6 +244,10 @@ MenuAction Menu::getNextGraphic() {
     return action;
 }
 
+/**
+ * @brief Builds all menu sprites and texts for rendering.
+ * @return Fully populated display data for the current menu state.
+ */
 Arcade::DisplayData Menu::getDisplayables() const
 {
     Arcade::DisplayData data;

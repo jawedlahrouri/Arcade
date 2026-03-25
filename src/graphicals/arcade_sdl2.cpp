@@ -23,10 +23,19 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 
+/**
+ * @brief Initializes the asset manager with a valid SDL renderer.
+ * @param renderer Renderer used to create textures.
+ * @return Does not return a value.
+ */
 Sdl2AssetManager::Sdl2AssetManager(SDL_Renderer* renderer) : _renderer(renderer)
 {
 }
 
+/**
+ * @brief Releases every loaded texture and clears the internal cache.
+ * @return Does not return a value.
+ */
 Sdl2AssetManager::~Sdl2AssetManager()
 {
     for (auto& entry : _textures) {
@@ -37,6 +46,11 @@ Sdl2AssetManager::~Sdl2AssetManager()
     _textures.clear();
 }
 
+/**
+ * @brief Retrieves a texture from cache or loads it from disk.
+ * @param path Path to the BMP file to load.
+ * @return Pointer to the SDL texture, or nullptr on failure.
+ */
 SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
 {
     auto found = _textures.find(path);
@@ -61,6 +75,10 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
     return texture;
 }
 
+/**
+ * @brief Initializes SDL, SDL_ttf, the window, renderer, and asset manager.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -80,12 +98,23 @@ void Sdl2Adapter::init()
     assetManager = std::make_unique<Sdl2AssetManager>(renderer);
 }
 
+/**
+ * @brief Clears the current frame by filling it with black.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::clear()
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 }
 
+/**
+ * @brief Draws a filled tile at grid coordinates.
+ * @param x Horizontal position in tiles.
+ * @param y Vertical position in tiles.
+ * @param color Fill color of the tile.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::drawTile(int x, int y, Arcade::Color color)
 {
     SDL_Rect rect = {x * tileSize, y * tileSize, tileSize, tileSize};
@@ -102,6 +131,16 @@ void Sdl2Adapter::drawTile(int x, int y, Arcade::Color color)
     SDL_RenderFillRect(renderer, &rect);
 }
 
+/**
+ * @brief Renders text with the requested font and draws it on the grid.
+ * @param x Horizontal position in tiles.
+ * @param y Vertical position in tiles.
+ * @param text Text content to draw.
+ * @param color Text color.
+ * @param fontPath Path to the font file.
+ * @param fontSize Font size in pixels.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize)
 {
     std::string key = fontPath + ":" + std::to_string(fontSize);
@@ -146,6 +185,13 @@ void Sdl2Adapter::drawText(int x, int y, const std::string &text, Arcade::Color 
     SDL_DestroyTexture(Message);
 }
 
+/**
+ * @brief Measures text width and converts it to tile units.
+ * @param text Text to measure.
+ * @param fontPath Path to the font file.
+ * @param fontSize Font size in pixels.
+ * @return Text width in tiles, with fallback approximation on error.
+ */
 int Sdl2Adapter::measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize)
 {
     std::string key = fontPath + ":" + std::to_string(fontSize);
@@ -168,11 +214,19 @@ int Sdl2Adapter::measureTextWidth(const std::string &text, const std::string &fo
     return (textPxWidth + tileSize - 1) / tileSize;
 }
 
+/**
+ * @brief Presents the current render buffer on screen.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::display()
 {
     SDL_RenderPresent(renderer);
 }
 
+/**
+ * @brief Returns the current window size in tile units.
+ * @return Pair containing width and height in tiles.
+ */
 std::pair<int,int> Sdl2Adapter::getScreenSize()
 {
     int w = 0, h = 0;
@@ -182,6 +236,12 @@ std::pair<int,int> Sdl2Adapter::getScreenSize()
     return { w / tileSize, h / tileSize };
 }
 
+/**
+ * @brief Applies an Arcade color converted to SDL draw color.
+ * @param renderer Target renderer.
+ * @param color Arcade color value to convert.
+ * @return Does not return a value.
+ */
 static void sdl_set_color(SDL_Renderer* renderer, Arcade::Color color)
 {
     switch (color) {
@@ -196,6 +256,15 @@ static void sdl_set_color(SDL_Renderer* renderer, Arcade::Color color)
     }
 }
 
+/**
+ * @brief Draws a rectangle outline using grid coordinates.
+ * @param x Rectangle left position in tiles.
+ * @param y Rectangle top position in tiles.
+ * @param width Rectangle width in tiles.
+ * @param height Rectangle height in tiles.
+ * @param color Outline color.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::drawRect(int x, int y, int width, int height, Arcade::Color color)
 {
     SDL_Rect rect = {x * tileSize, y * tileSize, width * tileSize, height * tileSize};
@@ -203,6 +272,14 @@ void Sdl2Adapter::drawRect(int x, int y, int width, int height, Arcade::Color co
     SDL_RenderDrawRect(renderer, &rect);
 }
 
+/**
+ * @brief Draws a filled circle centered on grid coordinates.
+ * @param x Horizontal center position in tiles.
+ * @param y Vertical center position in tiles.
+ * @param radius Circle radius in tiles.
+ * @param color Circle color.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::drawCircle(int x, int y, int radius, Arcade::Color color)
 {
     sdl_set_color(renderer, color);
@@ -219,6 +296,13 @@ void Sdl2Adapter::drawCircle(int x, int y, int radius, Arcade::Color color)
     }
 }
 
+/**
+ * @brief Loads then draws a sprite at the requested position.
+ * @param x Horizontal position in tiles.
+ * @param y Vertical position in tiles.
+ * @param spritePath Path to the BMP sprite file.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
 {
     if (!assetManager) {
@@ -234,12 +318,28 @@ void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
     SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
 }
 
+/**
+ * @brief Draws a line between two points expressed in grid units.
+ * @param x1 Start point X coordinate.
+ * @param y1 Start point Y coordinate.
+ * @param x2 End point X coordinate.
+ * @param y2 End point Y coordinate.
+ * @param color Line color.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::drawLine(int x1, int y1, int x2, int y2, Arcade::Color color)
 {
     sdl_set_color(renderer, color);
     SDL_RenderDrawLine(renderer, x1 * tileSize, y1 * tileSize, x2 * tileSize, y2 * tileSize);
 }
 
+/**
+ * @brief Draws the outline of a single tile at the given position.
+ * @param x Horizontal position in tiles.
+ * @param y Vertical position in tiles.
+ * @param color Outline color.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::drawbox(int x, int y, Arcade::Color color)
 {
     sdl_set_color(renderer, color);
@@ -247,6 +347,11 @@ void Sdl2Adapter::drawbox(int x, int y, Arcade::Color color)
     SDL_RenderDrawRect(renderer, &rect);
 }
 
+/**
+ * @brief Draws a list of sprite objects through a texture lookup table.
+ * @param objects Logical sprite objects to render.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
 {
     if (!assetManager) {
@@ -278,6 +383,11 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
     }
 }
 
+/**
+ * @brief Draws sprites first, then text entries from display data.
+ * @param data Render data that groups sprites and texts.
+ * @return Does not return a value.
+ */
 void Sdl2Adapter::draw(const Arcade::DisplayData &data)
 {
     static const std::string defaultFont = "asset/font/coolvetica/Coolvetica Rg.otf";
@@ -288,6 +398,10 @@ void Sdl2Adapter::draw(const Arcade::DisplayData &data)
     }
 }
 
+/**
+ * @brief Polls SDL events and converts them to Arcade commands.
+ * @return Detected command list, or NONE when no input is available.
+ */
 std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
 {
     std::vector<Arcade::InputCommand> commands;
@@ -308,6 +422,10 @@ std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
     return commands;
 }
 
+/**
+ * @brief Releases allocated SDL resources, fonts, and cached assets.
+ * @return Does not return a value.
+ */
 Sdl2Adapter::~Sdl2Adapter()
 {
     assetManager.reset();
@@ -329,6 +447,10 @@ Sdl2Adapter::~Sdl2Adapter()
     SDL_Quit();
 } 
 
+/**
+ * @brief Dynamically creates an instance of the SDL2 graphic module.
+ * @return Pointer to a newly allocated IGraphic instance.
+ */
 extern "C" IGraphic* createGraphical() {
     return new Sdl2Adapter();
 }

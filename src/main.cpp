@@ -14,6 +14,12 @@
 #include "./core/core.hpp"
 
 
+/**
+ * @brief Validates that the library path starts with ./lib/.
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @return true when the path prefix is valid.
+ */
 bool check_main::check_lib_folder(int argc, const char **argv)
 {
     (void)argc;
@@ -24,6 +30,11 @@ bool check_main::check_lib_folder(int argc, const char **argv)
     return true;
 }
 
+/**
+ * @brief Checks whether the provided file path exists.
+ * @param path Path to test on disk.
+ * @return true when the file exists.
+ */
 bool check_main::check_file_exist(const std::string &path)
 {
     if (access(path.c_str(), F_OK) != 0) {
@@ -32,6 +43,12 @@ bool check_main::check_file_exist(const std::string &path)
     return true;
 }
 
+/**
+ * @brief Validates that the selected library has a .so extension.
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @return true when the extension is .so.
+ */
 bool check_main::check_is_so(int argc, const char **argv)
 {
     (void)argc;
@@ -42,6 +59,12 @@ bool check_main::check_is_so(int argc, const char **argv)
     return true;
 }
 
+/**
+ * @brief Runs all command-line validations required to start the program.
+ * @param ac Number of command-line arguments.
+ * @param av Array of command-line arguments.
+ * @return true when every validation passes.
+ */
 bool check_main::check_args(int ac, const char **av)
 {
     if (ac != 2) {
@@ -56,6 +79,12 @@ bool check_main::check_args(int ac, const char **av)
 }
 
 #ifndef UNIT_TEST
+/**
+ * @brief Program entry point that validates arguments and starts the core loop.
+ * @param argc Number of command-line arguments.
+ * @param argv Array of command-line arguments.
+ * @return 0 on success, 84 on argument or startup error.
+ */
 int main(int argc, char **argv)
 {
     try {
