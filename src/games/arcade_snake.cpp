@@ -5,57 +5,98 @@
 ** arcade_snake
 */
 #include "games/arcade_snake.hpp"
+#include <algorithm>
+#include <random>
 
-/**
- * @brief Initializes the snake game state before the loop starts.
- * @return Does not return a value.
- */
-void SnakeGame::init() {
+SnakeGame::SnakeGame()
+{
+    _score = 0;
+    _mapWidth = 17;
+    _mapHeigth = 15;
+    _body = {{8, 4}, {7, 4}, {6, 4}, {5, 4}};
+    _apple = {13, 8};
+    _currentDirection = Arcade::InputCommand::RIGHT;
     _isGameOver = false;
 }
 
-/**
- * @brief Updates one simulation step of the snake game.
- * @return Does not return a value.
- */
-void SnakeGame::update() {
-    // TODO: Update game logic here
+SnakeGame::~SnakeGame()
+{
 }
 
-/**
- * @brief Processes player commands and updates immediate game state.
- * @param inputs List of commands polled for the current frame.
- * @return Does not return a value.
- */
-void SnakeGame::handleInput(const std::vector<Arcade::InputCommand>& inputs) {
-    for (const auto input : inputs) {
-        if (input == Arcade::InputCommand::BACK || input == Arcade::InputCommand::QUIT) {
+int getScore()
+{
+    return _score;
+}
+
+void SnakeGame::handleKey(const std::vector<Arcade::InputCommand>& inputs)
+{
+    for (auto command : inputs) {
+        if (command == Arcade::InputCommand::UP && _currentDirection != Arcade::InputCommand::DOWN)
+            _currentDirection = Arcade::InputCommand::UP;
+        else if (command == Arcade::InputCommand::DOWN && _currentDirection != Arcade::InputCommand::UP)
+            _currentDirection = Arcade::InputCommand::DOWN;
+        else if (command == Arcade::InputCommand::LEFT && _currentDirection != Arcade::InputCommand::RIGHT)
+            _currentDirection = Arcade::InputCommand::LEFT;
+        else if (command == Arcade::InputCommand::RIGHT && _currentDirection != Arcade::InputCommand::LEFT)
+            _currentDirection = Arcade::InputCommand::RIGHT;
+    }
+}
+
+// TODO
+void SnakeGame::spawnApple()
+{
+}
+
+std::any SnakeGame::update()
+{
+    std::pair<int, int> snakeHead = _body.front();
+
+    if (_isGameOver)
+        return;
+
+    if (_currentDirection == Arcade::InputCommand::UP)
+        snakeHead.second--;
+    if (_currentDirection == Arcade::InputCommand::DOWN)
+        snakeHead.second++;
+    if (_currentDirection == Arcade::InputCommand::LEFT)
+        snakeHead.first--;
+    if (_currentDirection == Arcade::InputCommand::RIGHT)
+        snakeHead.first++;
+    
+    if (snakeHead.first < 0 || snakeHead.first >= _mapWidth ||
+        snakeHead.second < 0 || snakeHead.second >= _mapHeigth) {
+        _isGameOver = true;
+        return;
+    }
+
+    for (const auto& part : _body) {
+        if (snakeHead == part) {
             _isGameOver = true;
             return;
         }
     }
-    // TODO: Handle other inputs (movement, etc)
+
+    _body.push_front(snakeHead);
+    if (snakeHead == _apple) {
+        _score += 1;
+        spawnApple();
+    } else {
+        _body.pop_back();
+    }
+    return;
 }
 
-/**
- * @brief Builds the sprite list representing the current frame.
- * @return Vector of sprite objects to render.
- */
+// TODO
 std::vector<Arcade::SpriteObject> SnakeGame::getDisplayables() const
 {
-    return {
-        {Arcade::ElementType::WALL, 10, 5},
-        {Arcade::ElementType::WALL, 11, 5},
-        {Arcade::ElementType::WALL, 12, 5},
-        {Arcade::ElementType::PLAYER_RIGHT, 11, 7},
-        {Arcade::ElementType::FOOD, 15, 7}
-    };
 }
 
-/**
- * @brief Creates a snake game instance for dynamic loading.
- * @return Pointer to a newly allocated IGames implementation.
- */
-extern "C" IGames* createGame() {
+bool isGameOver()
+{
+    return _isGameOver;
+}
+
+extern "C" Arcade::IGames* createGame()
+{
     return new SnakeGame();
 }
