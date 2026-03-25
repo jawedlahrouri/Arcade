@@ -20,6 +20,7 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_KP_ENTER, Arcade::InputCommand::ENTER},
     {SDLK_s, Arcade::InputCommand::SWITCH_GRAPHICS},
     {SDLK_ESCAPE, Arcade::InputCommand::BACK},
+    {SDLK_SPACE, Arcade::InputCommand::FLAG},
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 
@@ -359,7 +360,7 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
     }
 
     static const std::map<Arcade::ElementType, std::string> texturePathMap = {
-        {Arcade::ElementType::WALL, "asset/textures/wall.bmp"},
+        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
         {Arcade::ElementType::PLAYER_UP, "asset/textures/player_up.bmp"},
         {Arcade::ElementType::PLAYER_DOWN, "asset/textures/player_down.bmp"},
         {Arcade::ElementType::PLAYER_LEFT, "asset/textures/player_left.bmp"},

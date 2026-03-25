@@ -40,7 +40,7 @@ class IGames {
          * @brief Exports renderable objects representing the current frame.
          * @return Vector of sprite objects to draw.
          */
-        virtual std::vector<Arcade::SpriteObject> getDisplayables() const = 0;
+        virtual Arcade::DisplayData getDisplayables() const = 0;
 
     protected:
     private:

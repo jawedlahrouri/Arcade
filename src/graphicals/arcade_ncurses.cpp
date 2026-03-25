@@ -27,6 +27,7 @@ const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
     {'s', Arcade::InputCommand::SWITCH_GRAPHICS},
     {'S', Arcade::InputCommand::SWITCH_GRAPHICS},
     {27, Arcade::InputCommand::BACK},
+    {' ', Arcade::InputCommand::FLAG},
     {'q', Arcade::InputCommand::QUIT},
     {'Q', Arcade::InputCommand::QUIT}
 };
