@@ -7,6 +7,7 @@
 #include "games/arcade_snake.hpp"
 #include <algorithm>
 #include <random>
+#include <chrono>
 
 SnakeGame::SnakeGame()
 {
@@ -62,6 +63,14 @@ void SnakeGame::spawnApple()
 std::any SnakeGame::update()
 {
     std::pair<int, int> snakeHead = _body.front();
+    static auto lastMove = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastMove);
+
+    if (elapsed.count() < 150) {
+        return {}; 
+    }
+    lastMove = now;
 
     if (_isGameOver)
         return {};
