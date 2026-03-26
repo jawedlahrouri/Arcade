@@ -70,7 +70,7 @@ void NcursesAdapter::init()
     init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA);
     init_pair(7, COLOR_CYAN, COLOR_CYAN);
     init_pair(8, COLOR_WHITE, COLOR_WHITE);
-    init_pair(9, COLOR_WHITE, COLOR_GREEN); // New pair: white text on green background
+    init_pair(9, COLOR_WHITE, COLOR_GREEN);
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
 }
 
@@ -97,6 +97,7 @@ void NcursesAdapter::drawTile(int tileX, int tileY, Arcade::Color color)
     mvprintw(tileY, tileX * 2, "  ");
     attroff(COLOR_PAIR(colorPair));
 }
+
 /**
  * @brief Draws text at the given position using ncurses color attributes.
  * @param posX Text X position in tiles.
@@ -217,6 +218,10 @@ void NcursesAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
             drawbox(obj.x, obj.y, Arcade::Color::WHITE);
             continue;
         }
+        if (obj.type == Arcade::ElementType::PLAYER) {
+            mvchgat(obj.y, obj.x * 2, 2, A_NORMAL, 9, NULL);
+            continue;
+        }
         const auto it = asciiMap.find(obj.type);
         if (it == asciiMap.end()) {
             continue;
@@ -307,16 +312,6 @@ std::vector<Arcade::InputCommand> NcursesAdapter::pollInputs()
             return commands;
         }
     }
-
-    if (key == KEY_MOUSE) {
-        MEVENT event;
-        if (getmouse(&event) == OK) {
-            if (event.bstate & BUTTON1_CLICKED) {
-                std::cout << "Mouse event at (" << event.x << ", " << event.y << ")" << std::endl;
-            }
-        }
-    }
-
     if (commands.empty()) {
         commands.push_back(Arcade::InputCommand::NONE);
     }
