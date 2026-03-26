@@ -42,9 +42,21 @@ void SnakeGame::handleKey(const std::vector<Arcade::InputCommand>& inputs)
     }
 }
 
-// TODO
 void SnakeGame::spawnApple()
 {
+    bool onBody = true;
+
+    while (onBody) {
+        _apple.first = rand() % _mapWidth;
+        _apple.second = rand() % _mapHeigth;
+        onBody = false;
+        for (const auto& part : _body) {
+            if (part.first == _apple.first && part.second == _apple.second) {
+                onBody = true;
+                break;
+            }
+        }
+    }
 }
 
 std::any SnakeGame::update()
