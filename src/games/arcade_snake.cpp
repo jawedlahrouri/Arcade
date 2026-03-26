@@ -23,7 +23,7 @@ SnakeGame::~SnakeGame()
 {
 }
 
-int getScore()
+int SnakeGame::getScore()
 {
     return _score;
 }
@@ -64,7 +64,7 @@ std::any SnakeGame::update()
     std::pair<int, int> snakeHead = _body.front();
 
     if (_isGameOver)
-        return;
+        return {};
 
     if (_currentDirection == Arcade::InputCommand::UP)
         snakeHead.second--;
@@ -78,13 +78,13 @@ std::any SnakeGame::update()
     if (snakeHead.first < 0 || snakeHead.first >= _mapWidth ||
         snakeHead.second < 0 || snakeHead.second >= _mapHeigth) {
         _isGameOver = true;
-        return;
+        return {};
     }
 
     for (const auto& part : _body) {
         if (snakeHead == part) {
             _isGameOver = true;
-            return;
+            return {};
         }
     }
 
@@ -95,7 +95,7 @@ std::any SnakeGame::update()
     } else {
         _body.pop_back();
     }
-    return;
+    return {};
 }
 
 std::vector<Arcade::SpriteObject> SnakeGame::getDisplayables() const
@@ -119,9 +119,18 @@ std::vector<Arcade::SpriteObject> SnakeGame::getDisplayables() const
     return sprites;
 }
 
-bool isGameOver()
+bool SnakeGame::isGameOver()
 {
     return _isGameOver;
+}
+
+std::any SnakeGame::init() 
+{ 
+    return {}; 
+}
+
+void SnakeGame::handleMouse([[maybe_unused]] Arcade::MouseEvent inputs) 
+{ 
 }
 
 extern "C" Arcade::IGames* createGame()

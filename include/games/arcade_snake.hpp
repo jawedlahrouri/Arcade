@@ -30,6 +30,8 @@ class SnakeGame : public Arcade::IGames {
         int getScore() override;
         bool isGameOver() override;
         std::vector<Arcade::SpriteObject> getDisplayables() const override;
+        std::any init() override;
+        void handleMouse(Arcade::MouseEvent inputs) override;
 };
 
 #endif /* !ARCADE_SNAKE_HPP_ */
