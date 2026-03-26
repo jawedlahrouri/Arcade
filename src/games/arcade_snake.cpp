@@ -86,9 +86,25 @@ std::any SnakeGame::update()
     return;
 }
 
-// TODO
 std::vector<Arcade::SpriteObject> SnakeGame::getDisplayables() const
 {
+    std::vector<Arcade::SpriteObject> sprites;
+
+    for (int x = -1; x <= _mapWidth; x++) {
+        sprites.push_back({Arcade::ElementType::WALL, x, -1});
+        sprites.push_back({Arcade::ElementType::WALL, x, _mapHeigth});
+    }
+    for (int y = 0; y < _mapHeigth; y++) {
+        sprites.push_back({Arcade::ElementType::WALL, -1, y});
+        sprites.push_back({Arcade::ElementType::WALL, _mapWidth, y});
+    }
+    sprites.push_back({Arcade::ElementType::FOOD, _apple.first, _apple.second});
+    for (size_t i = 0; i < _body.size(); ++i) {
+        Arcade::ElementType type = (i == 0) ? Arcade::ElementType::PLAYER_UP : Arcade::ElementType::PLAYER;
+        sprites.push_back({type, _body[i].first, _body[i].second});
+    }
+
+    return sprites;
 }
 
 bool isGameOver()

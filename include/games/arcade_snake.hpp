@@ -29,7 +29,7 @@ class SnakeGame : public Arcade::IGames {
         void handleKey(const std::vector<Arcade::InputCommand>& inputs) override;
         int getScore() override;
         bool isGameOver() override;
-        std::vector<Arcade::SpriteObject> getDisplayables() const override; // Changé GameObject -> SpriteObject
+        std::vector<Arcade::SpriteObject> getDisplayables() const override;
 };
 
 #endif /* !ARCADE_SNAKE_HPP_ */
