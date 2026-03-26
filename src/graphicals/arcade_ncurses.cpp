@@ -34,8 +34,19 @@ const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
 
 std::map<Arcade::ElementType, char> asciiMap = {
     {Arcade::ElementType::WALL, '#'},
+    {Arcade::ElementType::BOMB, '@'},
+    {Arcade::ElementType::FLAG, '>'},
     {Arcade::ElementType::PLAYER_UP, '^'},
-    {Arcade::ElementType::FOOD, '*'}
+    {Arcade::ElementType::FOOD, '*'},
+    {Arcade::ElementType::ONE, '1'},
+    {Arcade::ElementType::TWO, '2'},
+    {Arcade::ElementType::THREE, '3'},
+    {Arcade::ElementType::FOUR, '4'},
+    {Arcade::ElementType::FIVE, '5'},
+    {Arcade::ElementType::SIX, '6'},
+    {Arcade::ElementType::SEVEN, '7'},
+    {Arcade::ElementType::EIGHT, '8'},
+    {Arcade::ElementType::EMPTY, '-'}
 };
 
 /**
@@ -59,6 +70,7 @@ void NcursesAdapter::init()
     init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA);
     init_pair(7, COLOR_CYAN, COLOR_CYAN);
     init_pair(8, COLOR_WHITE, COLOR_WHITE);
+    init_pair(9, COLOR_WHITE, COLOR_GREEN); // New pair: white text on green background
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
 }
 

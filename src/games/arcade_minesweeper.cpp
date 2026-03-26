@@ -9,34 +9,36 @@
 #include <cstdlib>
 #include <ctime>
 
+extern "C" bool isGame = true;
+
 void arcade_minesweeper::init() {
-    _width = 10;
-    _height = 10;
-    _difficulty = 0;
-    _totalBombs = 10;
+    _width = 16;
+    _height = 16;
+    _difficulty = 1; 
+    _totalBombs = 40;
+    _flagsPlaced = 0;
     _isGameOver = false;
     _hasWon = false;
-    _cursorX = 0;
-    _cursorY = 0;
-
-    std::srand(std::time(nullptr));
-    _grid = generate_bomb_field(_difficulty);
+    _firstClick = true;
+    _cursorX = _width / 2;
+    _cursorY = _height / 2;
+    std::srand(std::time(nullptr));    
+    _grid.assign(_height, std::vector<int>(_width, 0));
     _revealed.assign(_height, std::vector<bool>(_width, false));
     _flagged.assign(_height, std::vector<bool>(_width, false));
 }
 
 void arcade_minesweeper::update() {
-    int hiddenNonBombs = 0;
-    
     if (_isGameOver)
         return;
+    int hiddenNonBombs = 0;
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
             if (_grid[y][x] != BOMB && !_revealed[y][x])
                 hiddenNonBombs++;
         }
     }
-    if (hiddenNonBombs == 0) {
+    if (hiddenNonBombs == 0 && !_firstClick) {
         _hasWon = true;
         end_game();
     }
@@ -55,14 +57,13 @@ void arcade_minesweeper::handleInput(const std::vector<Arcade::InputCommand>& in
         else if (input == Arcade::InputCommand::RIGHT && _cursorX < _width - 1)
             _cursorX++;
         else if (input == Arcade::InputCommand::ENTER) {
-            if (!_flagged[_cursorY][_cursorX] && !_revealed[_cursorY][_cursorX])
+            if (!_flagged[_cursorY][_cursorX])
                 reveal_case(_cursorX, _cursorY);
         } else if (input == Arcade::InputCommand::FLAG) {
-            if (!_revealed[_cursorY][_cursorX])
+            if (!_revealed[_cursorY][_cursorX]) {
                 _flagged[_cursorY][_cursorX] = !_flagged[_cursorY][_cursorX];
-        } else if (input == Arcade::InputCommand::BACK || input == Arcade::InputCommand::QUIT) {
-            _isGameOver = true;
-            return;
+                _flagsPlaced += _flagged[_cursorY][_cursorX] ? 1 : -1;
+            }
         }
     }
 }
@@ -71,89 +72,91 @@ bool arcade_minesweeper::isGameOver() {
     return _isGameOver;
 }
 
-std::vector<Arcade::SpriteObject> arcade_minesweeper::getDisplayables() const {
-    std::vector<Arcade::SpriteObject> displayables;
+Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
+    Arcade::DisplayData data;
+    int offsetX = 5;
+    int offsetY = 5;
 
+    data.texts.push_back({"MINESWEEPER", offsetX + _width / 2, 2, Arcade::Color::YELLOW}); 
+    std::string bombCount = "Mines: " + std::to_string(_totalBombs - _flagsPlaced);
+    data.texts.push_back({bombCount, offsetX, 3, Arcade::Color::WHITE});
+    if (_isGameOver) {
+        std::string endText = _hasWon ? "YOU WIN !" : "GAME OVER !";
+        Arcade::Color endColor = _hasWon ? Arcade::Color::GREEN : Arcade::Color::RED;
+        data.texts.push_back({endText, offsetX + _width / 2 - 2, 4, endColor});
+    }
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
             Arcade::SpriteObject sprite;
-            sprite.x = x;
-            sprite.y = y;
-            if (x == _cursorX && y == _cursorY)
-                sprite.type = Arcade::ElementType::PLAYER;
-            else if (_revealed[y][x]) {
-                if (_grid[y][x] == BOMB)
-                    sprite.type = Arcade::ElementType::ENEMY;
-                else if (_grid[y][x] > 0)
-                    sprite.type = Arcade::ElementType::SCORE;
-                else
+            sprite.x = x + offsetX;
+            sprite.y = y + offsetY;
+            if (_revealed[y][x]) {
+                if (_grid[y][x] == BOMB) {
+                    sprite.type = Arcade::ElementType::BOMB;
+                } else if (_grid[y][x] == 0) {
                     sprite.type = Arcade::ElementType::EMPTY;
+                } else {
+                    switch (_grid[y][x]) {
+                        case 1: sprite.type = Arcade::ElementType::ONE; break;
+                        case 2: sprite.type = Arcade::ElementType::TWO; break;
+                        case 3: sprite.type = Arcade::ElementType::THREE; break;
+                        case 4: sprite.type = Arcade::ElementType::FOUR; break;
+                        case 5: sprite.type = Arcade::ElementType::FIVE; break;
+                        case 6: sprite.type = Arcade::ElementType::SIX; break;
+                        case 7: sprite.type = Arcade::ElementType::SEVEN; break;
+                        case 8: sprite.type = Arcade::ElementType::EIGHT; break;
+                        default: sprite.type = Arcade::ElementType::EMPTY; break;
+                    }
+                }
             } else if (_flagged[y][x])
-                sprite.type = Arcade::ElementType::FOOD;
+                sprite.type = Arcade::ElementType::FLAG;
             else
                 sprite.type = Arcade::ElementType::WALL;
-            displayables.push_back(sprite);
+            data.sprites.push_back(sprite);
+            if (x == _cursorX && y == _cursorY) {
+                Arcade::SpriteObject cursor;
+                cursor.x = x + offsetX;
+                cursor.y = y + offsetY;
+                cursor.type = Arcade::ElementType::PLAYER;
+                data.sprites.push_back(cursor);
+            }
         }
     }
-    return displayables;
+    return data;
 }
 
-void arcade_minesweeper::create_starting_zone() {
-}
-
-std::vector<std::vector<int>> arcade_minesweeper::generate_bomb_field(int difficulty) {
-    std::vector<std::vector<int>> newGrid(_height, std::vector<int>(_width, 0));
-    _totalBombs = (difficulty == 0) ? 10 : (difficulty == 1) ? 20 : 40;
+void arcade_minesweeper::generate_bomb_field(int safe_x, int safe_y, int difficulty) {
+    _totalBombs = (difficulty == 0) ? 10 : (difficulty == 1) ? 40 : 99;
     int bombsPlaced = 0;
 
     while (bombsPlaced < _totalBombs) {
         int x = std::rand() % _width;
         int y = std::rand() % _height;
 
-        if (newGrid[y][x] != BOMB) {
-            newGrid[y][x] = BOMB;
+        if (std::abs(x - safe_x) <= 1 && std::abs(y - safe_y) <= 1)
+            continue;
+        if (_grid[y][x] != BOMB) {
+            _grid[y][x] = BOMB;
             bombsPlaced++;
         }
     }
 
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
-            if (newGrid[y][x] != BOMB) {
+            if (_grid[y][x] != BOMB) {
                 int count = 0;
                 for (int dy = -1; dy <= 1; ++dy) {
                     for (int dx = -1; dx <= 1; ++dx) {
                         int nx = x + dx;
                         int ny = y + dy;
                         if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
-                            if (newGrid[ny][nx] == BOMB) count++;
+                            if (_grid[ny][nx] == BOMB) count++;
                     }
                 }
-                newGrid[y][x] = count;
+                _grid[y][x] = count;
             }
         }
     }
-    return newGrid;
-}
-
-int arcade_minesweeper::change_difficulty(int counter) {
-    _difficulty = counter % 3;
-    return _difficulty;
-}
-
-int arcade_minesweeper::get_px(int coord_x) {
-    return coord_x;
-}
-
-int arcade_minesweeper::get_py(int coord_y) {
-    return coord_y;
-}
-
-int arcade_minesweeper::count_bomb(int coord_x, int coord_y) {
-    if (coord_x < 0 || coord_x >= _width || coord_y < 0 || coord_y >= _height)
-        return 0;
-    if (_grid[coord_y][coord_x] == BOMB)
-        return BOMB;
-    return _grid[coord_y][coord_x];
 }
 
 void arcade_minesweeper::reveal_case(int coord_x, int coord_y) {
@@ -161,18 +164,17 @@ void arcade_minesweeper::reveal_case(int coord_x, int coord_y) {
         return;
     if (_revealed[coord_y][coord_x] || _flagged[coord_y][coord_x])
         return;
-    _revealed[coord_y][coord_x] = true;
-    if (is_bomb(coord_x, coord_y))
-        splode_bomb();
-    else if (_grid[coord_y][coord_x] == 0)
-        reveal_neighbor_case(coord_x, coord_y);
-}
+    if (_firstClick) {
+        generate_bomb_field(coord_x, coord_y, _difficulty);
+        _firstClick = false;
+    }
 
-int arcade_minesweeper::remove_empty(int coord_x, int coord_y, int **field) {
-    (void)coord_x;
-    (void)coord_y;
-    (void)field;
-    return 0;
+    _revealed[coord_y][coord_x] = true;
+    if (is_bomb(coord_x, coord_y)) {
+        splode_bomb();
+    } else if (_grid[coord_y][coord_x] == 0) {
+        reveal_neighbor_case(coord_x, coord_y);
+    }
 }
 
 void arcade_minesweeper::reveal_neighbor_case(int coord_x, int coord_y) {
@@ -189,21 +191,7 @@ void arcade_minesweeper::reveal_neighbor_case(int coord_x, int coord_y) {
 }
 
 bool arcade_minesweeper::is_bomb(int coord_x, int coord_y) {
-    if (coord_x < 0 || coord_x >= _width || coord_y < 0 || coord_y >= _height)
-        return false;
     return _grid[coord_y][coord_x] == BOMB;
-}
-
-bool arcade_minesweeper::is_reveal(int coord_x, int coord_y) {
-    if (coord_x < 0 || coord_x >= _width || coord_y < 0 || coord_y >= _height)
-        return false;
-    return _revealed[coord_y][coord_x];
-}
-
-bool arcade_minesweeper::is_flag(int coord_x, int coord_y) {
-    if (coord_x < 0 || coord_x >= _width || coord_y < 0 || coord_y >= _height)
-        return false;
-    return _flagged[coord_y][coord_x];
 }
 
 void arcade_minesweeper::splode_bomb() {
@@ -219,17 +207,6 @@ void arcade_minesweeper::splode_bomb() {
 
 void arcade_minesweeper::end_game() {
     _isGameOver = true;
-}
-
-int arcade_minesweeper::count_field() {
-    int total = 0;
-    for (int y = 0; y < _height; ++y) {
-        for (int x = 0; x < _width; ++x) {
-            if (_grid[y][x] == BOMB)
-                total++;
-        }
-    }
-    return total;
 }
 
 extern "C" IGames* createGame() {

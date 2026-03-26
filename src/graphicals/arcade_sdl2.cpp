@@ -361,6 +361,8 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
 
     static const std::map<Arcade::ElementType, std::string> texturePathMap = {
         {Arcade::ElementType::WALL, "asset/textures/wall.png"},
+        {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
+        {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
         {Arcade::ElementType::PLAYER_UP, "asset/textures/player_up.bmp"},
         {Arcade::ElementType::PLAYER_DOWN, "asset/textures/player_down.bmp"},
         {Arcade::ElementType::PLAYER_LEFT, "asset/textures/player_left.bmp"},
