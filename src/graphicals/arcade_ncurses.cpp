@@ -6,6 +6,7 @@
 */
 
 #include "./graphicals/arcade_ncurses.hpp"
+#include "arcade_types.hpp"
 #include <filesystem>
 #include <iostream>
 #include <ostream>
@@ -26,7 +27,14 @@ const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
     {KEY_ENTER, Arcade::InputCommand::ENTER},
     {'s', Arcade::InputCommand::SWITCH_GRAPHICS},
     {'S', Arcade::InputCommand::SWITCH_GRAPHICS},
+    {'r', Arcade::InputCommand::RELOAD_GAME},
+    {'R', Arcade::InputCommand::RELOAD_GAME},
+    {'n', Arcade::InputCommand::SWITCH_GAME},
+    {'N', Arcade::InputCommand::SWITCH_GAME},
+    {'l', Arcade::InputCommand::SWITCH_LEADERBOARD},
+    {'L', Arcade::InputCommand::SWITCH_LEADERBOARD},
     {27, Arcade::InputCommand::BACK},
+    {' ', Arcade::InputCommand::FLAG},
     {'q', Arcade::InputCommand::QUIT},
     {'Q', Arcade::InputCommand::QUIT}
 };
@@ -287,6 +295,15 @@ std::vector<Arcade::InputCommand> NcursesAdapter::pollInputs()
         return commands;
     }
 
+    if (key >= 32 && key <= 126 && key != '\n') {
+        _textInput += static_cast<char>(key);
+    }
+    if (key == '\b' || key == KEY_BACKSPACE) {
+        if (!_textInput.empty()) {
+            _textInput.pop_back();
+        }
+    }
+
     const auto mapped = NcursesAdapter::KEY_MAP.find(key);
     if (mapped != NcursesAdapter::KEY_MAP.end()) {
         commands.push_back(mapped->second);
@@ -325,6 +342,17 @@ std::pair<int,int> NcursesAdapter::getScreenSize()
         log.close();
     }
     return { termCols / 2, termRows };
+}
+
+/**
+ * @brief Gets the last text input from keyboard.
+ * @return String containing typed characters and clears buffer.
+ */
+std::string NcursesAdapter::getTextInput()
+{
+    std::string result = _textInput;
+    _textInput.clear();
+    return result;
 }
 
 /**

@@ -9,3 +9,5 @@ unit_tests
 html/
 latex/
 temp.txt
+.idea/
+scores.json

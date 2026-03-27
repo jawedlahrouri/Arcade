@@ -21,8 +21,12 @@ namespace Arcade {
         RIGHT,
         ENTER,
         SWITCH_GRAPHICS,
+        SWITCH_GAME,
+        RELOAD_GAME,
         BACK,
-        QUIT
+        FLAG,
+        QUIT,
+        SWITCH_LEADERBOARD
     };
 
     enum class Color {

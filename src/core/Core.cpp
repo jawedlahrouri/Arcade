@@ -23,7 +23,7 @@ Core::Core(const std::string& libPath) : _isRunning(true), _currentGraphicLibPat
     IGraphic* rawGraphicPtr = nullptr;
     try {
         rawGraphicPtr = _graphicLoader->getInstance("createGraphical");
-    } catch (Exception) {
+    } catch (const Exception &) {
         throw ErrorException("Error: " + libPath + " not a graphic library");
     }
 
@@ -147,6 +147,27 @@ bool Core::handleSwitchGraphics(Menu &arcadeMenu)
     return true;
 }
 
+bool Core::switchGame(const std::string &gamePath)
+{
+    if (gamePath.empty() || gamePath == _currentGameLibPath) {
+        return false;
+    }
+    loadGame(gamePath);
+    return true;
+}
+
+bool Core::handleReloadGame(Menu &arcadeMenu)
+{
+    (void)arcadeMenu;
+    if (_currentGameLibPath.empty()) {
+        return false;
+    }
+    loadGame(_currentGameLibPath);
+    return true;
+}
+
+
+
 /**
  * @brief Handles one global command affecting app state, menu, or backend.
  * @param command Input command to process.
@@ -177,7 +198,19 @@ void Core::handleCommand(const Arcade::InputCommand &command, bool &inMenu, bool
     if (command == Arcade::InputCommand::SWITCH_GRAPHICS) {
         skipFrame = handleSwitchGraphics(arcadeMenu);
     }
+    if (command == Arcade::InputCommand::SWITCH_GAME) {
+        MenuAction action = arcadeMenu.getNextGame();
+        if (!action.libPath.empty()) {
+            loadGame(action.libPath);
+            inMenu = false;
+            skipFrame = true;
+        }
+    }
+    if (command == Arcade::InputCommand::RELOAD_GAME) {
+        skipFrame = handleReloadGame(arcadeMenu);
+    }
 }
+
 
 /**
  * @brief Processes all global commands collected for the current frame.
@@ -209,9 +242,11 @@ bool Core::processGlobalCommands(const std::vector<Arcade::InputCommand> &comman
 void Core::renderMenuFrame(Menu &arcadeMenu, const std::vector<Arcade::InputCommand> &commands, bool &inMenu)
 {
     const std::pair<int, int> screenSize = _graphic->getScreenSize();
+    const std::string textInput = _graphic->getTextInput();
+
     arcadeMenu.setScreenSize(screenSize.first, screenSize.second);
 
-    MenuAction action = arcadeMenu.handleInput(commands);
+    MenuAction action = arcadeMenu.handleInput(commands, textInput);
     applyMenuAction(action, inMenu);
 
     const Arcade::DisplayData menuDisplay = arcadeMenu.getDisplayables();
@@ -232,7 +267,7 @@ void Core::renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bo
     _currentGame->handleKey(commands);
     _currentGame->update();
 
-    const std::vector<Arcade::SpriteObject> objects = _currentGame->getDisplayables();
+    const Arcade::DisplayData objects = _currentGame->getDisplayables();
     _graphic->draw(objects);
 
     if (_currentGame->isGameOver()) {

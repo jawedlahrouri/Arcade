@@ -6,6 +6,8 @@
 */
 
 #include "core/Player.hpp"
+#include <fstream>
+#include <sstream>
 
 /**
  * @brief Builds a player object with the provided display name.
@@ -23,7 +25,8 @@ Player::Player(const std::string& name) : _name(name)
  */
 int Player::getHighScore(const std::string& gameName) const
 {
-    return 0;
+    auto it = _highScores.find(gameName);
+    return (it != _highScores.end()) ? it->second : 0;
 }
 
 /**
@@ -34,7 +37,8 @@ int Player::getHighScore(const std::string& gameName) const
  */
 void Player::setHighScore(const std::string& gameName, int score)
 {
-
+    if (_highScores.find(gameName) == _highScores.end() || _highScores[gameName] < score)
+        _highScores[gameName] = score;
 }
 
 /**
@@ -44,7 +48,15 @@ void Player::setHighScore(const std::string& gameName, int score)
  */
 void Player::saveToFile(const std::string& filePath) const
 {
-
+    std::ofstream file(filePath, std::ios::app);
+    if (!file.is_open())
+        return;
+    for (const auto& entry : _highScores) {
+        const std::string name = _name;
+        const int score = entry.second;
+        file << name << ":" << score << "\n";
+    }
+    file.close();
 }
 
 /**
@@ -54,5 +66,18 @@ void Player::saveToFile(const std::string& filePath) const
  */
 void Player::loadFromFile(const std::string& filePath)
 {
+    std::ifstream file(filePath);
+    if (!file.is_open())
+        return;
     
+    std::string line;
+    while (std::getline(file, line)) {
+        size_t colonPos = line.find(':');
+        if (colonPos == std::string::npos)
+            continue;
+        std::string gameName = line.substr(0, colonPos);
+        int score = std::stoi(line.substr(colonPos + 1));
+        _highScores[gameName] = score;
+    }
+    file.close();
 }

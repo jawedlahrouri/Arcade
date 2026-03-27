@@ -50,6 +50,7 @@ private:
     const int tileSize = 32;
     std::map<std::string, TTF_Font*> fontsCache;
     std::unique_ptr<Sdl2AssetManager> assetManager;
+    std::string _textInput;
 
     static const std::unordered_map<SDL_Keycode, Arcade::InputCommand> KEY_MAP;
 
@@ -158,6 +159,11 @@ public:
      * @return Vector of input commands.
      */
     std::vector<Arcade::InputCommand> pollInputs() override;
+    /**
+     * @brief Gets the text typed since the previous call.
+     * @return Captured text input.
+     */
+    std::string getTextInput() override;
     /**
      * @brief Returns the current screen size in logical units.
      * @return Pair of width and height.

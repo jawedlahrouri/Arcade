@@ -121,6 +121,11 @@ class IGraphic {
          */
         virtual std::vector<Arcade::InputCommand> pollInputs() = 0;
         /**
+         * @brief Gets the last text input from keyboard.
+         * @return String containing typed characters, empty if none.
+         */
+        virtual std::string getTextInput() = 0;
+        /**
          * @brief Returns the current logical screen size.
          * @return Pair of width and height.
          */
