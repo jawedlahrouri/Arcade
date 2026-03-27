@@ -50,7 +50,17 @@ namespace Arcade {
         PLAYER_LEFT,
         PLAYER_RIGHT,
         FOOD,
-        SCORE
+        BOMB,
+        FLAG,
+        SCORE,
+        ONE,
+        TWO,
+        THREE,
+        FOUR,
+        FIVE,
+        SIX,
+        SEVEN,
+        EIGHT
     };
 
     struct SpriteObject {
