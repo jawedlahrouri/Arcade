@@ -33,7 +33,7 @@ public:
      * @param color Tile color.
      * @return Does not return a value.
      */
-    void drawTile(int x, int y, Arcade::Color color) override;
+    void drawTile(int x, int y, Arcade::Color color);
     /**
      * @brief Draws text using ncurses primitives.
      * @param x Text X position.
@@ -44,7 +44,7 @@ public:
      * @param fontSize Font size parameter (unused in ncurses).
      * @return Does not return a value.
      */
-    void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize) override;
+    void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize);
     /**
      * @brief Measures text width in ncurses logical units.
      * @param text Text content.
@@ -52,7 +52,7 @@ public:
      * @param fontSize Font size parameter (unused in ncurses).
      * @return Measured text width.
      */
-    int measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize) override;
+    int measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize);
     /**
      * @brief Draws a rectangle border.
      * @param x Rectangle X position.
@@ -62,7 +62,7 @@ public:
      * @param color Rectangle color.
      * @return Does not return a value.
      */
-    void drawRect(int x, int y, int width, int height, Arcade::Color color) override;
+    void drawRect(int x, int y, int width, int height, Arcade::Color color);
     /**
      * @brief Draws a circle.
      * @param x Circle center X position.
@@ -71,7 +71,7 @@ public:
      * @param color Circle color.
      * @return Does not return a value.
      */
-    void drawCircle(int x, int y, int radius, Arcade::Color color) override;
+    void drawCircle(int x, int y, int radius, Arcade::Color color);
     /**
      * @brief Draws a sprite from a path.
      * @param x Sprite X position.
@@ -79,7 +79,7 @@ public:
      * @param spritePath Path to sprite resource.
      * @return Does not return a value.
      */
-    void drawSprite(int x, int y, const std::string &spritePath) override;
+    void drawSprite(int x, int y, const std::string &spritePath);
     /**
      * @brief Draws a line between two points.
      * @param x1 Start X position.
@@ -89,7 +89,7 @@ public:
      * @param color Line color.
      * @return Does not return a value.
      */
-    void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color) override;
+    void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color);
     /**
      * @brief Draws one box tile at the given location.
      * @param x Tile X position.
@@ -97,13 +97,13 @@ public:
      * @param color Tile color.
      * @return Does not return a value.
      */
-    void drawbox(int x, int y, Arcade::Color color) override;
+    void drawbox(int x, int y, Arcade::Color color);
     /**
      * @brief Draws a list of sprite objects.
      * @param objects Sprite objects to draw.
      * @return Does not return a value.
      */
-    void draw(const std::vector<Arcade::SpriteObject> &objects) override;
+    void draw(const std::vector<Arcade::SpriteObject> &objects);
     /**
      * @brief Draws complete display data.
      * @param data Display data to render.
