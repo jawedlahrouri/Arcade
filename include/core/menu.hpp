@@ -8,8 +8,10 @@
 #ifndef MENU_HPP_
 #define MENU_HPP_
 #include "arcade_types.hpp"
+#include "core/leaderboard.hpp"
 #include <string>
 #include <vector>
+#include <memory>
 
 struct MenuAction {
     std::string libPath;
@@ -18,6 +20,10 @@ struct MenuAction {
 
 class Menu {
     public:
+    enum class Page {
+        MAIN_MENU,
+        LEADERBOARD
+    };
     /**
      * @brief Builds the menu and initializes its default state.
      * @return Does not return a value.
@@ -36,7 +42,8 @@ class Menu {
      * @param commands List of commands for the current frame.
      * @return Menu action describing the requested operation.
      */
-    MenuAction handleInput(const std::vector<Arcade::InputCommand>& commands);
+    MenuAction handleInput(const std::vector<Arcade::InputCommand>& commands,
+        const std::string &textInput = "");
     
     /**
      * @brief Selects the next graphic library for runtime switching.
@@ -62,6 +69,25 @@ class Menu {
      * @return Display data containing sprites and texts.
      */
     Arcade::DisplayData getDisplayables() const;
+
+    /**
+     * @brief Returns current active page (main or leaderboard).
+     * @return Current page state.
+     */
+    Page getCurrentPage() const { return _currentPage; }
+
+    /**
+     * @brief Changes the active page (main menu or leaderboard).
+     * @param page New page to display.
+     * @return Does not return a value.
+     */
+    void setCurrentPage(Page page);
+
+    /**
+     * @brief Gets the leaderboard instance.
+     * @return Pointer to internal leaderboard.
+     */
+    Leaderboard* getLeaderboard() { return _leaderboard.get(); }
 
 private:
     enum class LibraryType {
@@ -122,6 +148,8 @@ private:
     
     size_t _selectedGameIndex;
     size_t _selectedGraphicIndex;
+    Page _currentPage;
+    std::unique_ptr<Leaderboard> _leaderboard;
 };
 
 class MenuPage : public Menu {

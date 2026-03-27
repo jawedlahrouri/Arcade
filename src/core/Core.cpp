@@ -242,9 +242,11 @@ bool Core::processGlobalCommands(const std::vector<Arcade::InputCommand> &comman
 void Core::renderMenuFrame(Menu &arcadeMenu, const std::vector<Arcade::InputCommand> &commands, bool &inMenu)
 {
     const std::pair<int, int> screenSize = _graphic->getScreenSize();
+    const std::string textInput = _graphic->getTextInput();
+
     arcadeMenu.setScreenSize(screenSize.first, screenSize.second);
 
-    MenuAction action = arcadeMenu.handleInput(commands);
+    MenuAction action = arcadeMenu.handleInput(commands, textInput);
     applyMenuAction(action, inMenu);
 
     const Arcade::DisplayData menuDisplay = arcadeMenu.getDisplayables();

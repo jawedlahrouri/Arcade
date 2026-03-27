@@ -24,7 +24,8 @@ namespace Arcade {
         RELOAD_GAME,
         BACK,
         FLAG,
-        QUIT
+        QUIT,
+        SWITCH_LEADERBOARD
     };
 
     enum class Color {

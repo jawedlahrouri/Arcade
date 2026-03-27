@@ -121,6 +121,11 @@ public:
      */
     std::vector<Arcade::InputCommand> pollInputs() override;
     /**
+     * @brief Gets the last text input from keyboard.
+     * @return String containing typed characters.
+     */
+    std::string getTextInput() override;
+    /**
      * @brief Returns the current terminal size in logical units.
      * @return Pair of width and height.
      */
@@ -130,6 +135,9 @@ public:
      * @return Does not return a value.
      */
     ~NcursesAdapter() override;
+
+private:
+    std::string _textInput;
 };
 
 #endif /* !ARCADE_NCURSES_HPP_ */
