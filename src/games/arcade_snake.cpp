@@ -121,7 +121,19 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
     }
     data.sprites.push_back({Arcade::ElementType::FOOD, _apple.first, _apple.second});
     for (size_t i = 0; i < _body.size(); ++i) {
-        Arcade::ElementType type = (i == 0) ? Arcade::ElementType::PLAYER_UP : Arcade::ElementType::PLAYER;
+        Arcade::ElementType type;
+        if (i == 0) {
+            if (_currentDirection == Arcade::InputCommand::UP)
+                type = Arcade::ElementType::PLAYER_UP;
+            else if (_currentDirection == Arcade::InputCommand::DOWN)
+                type = Arcade::ElementType::PLAYER_DOWN;
+            else if (_currentDirection == Arcade::InputCommand::LEFT)
+                type = Arcade::ElementType::PLAYER_LEFT;
+            else
+                type = Arcade::ElementType::PLAYER_RIGHT;
+        } else {
+            type = Arcade::ElementType::PLAYER;
+        }
         data.sprites.push_back({type, _body[i].first, _body[i].second});
     }
 

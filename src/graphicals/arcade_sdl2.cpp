@@ -63,9 +63,10 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
         return found->second;
     }
 
-    SDL_Surface* surface = SDL_LoadBMP(path.c_str());
+    // --- CORRECTION : Utilisation de IMG_Load au lieu de SDL_LoadBMP ---
+    SDL_Surface* surface = IMG_Load(path.c_str());
     if (surface == nullptr) {
-        std::cerr << "Failed to load sprite '" << path << "': " << SDL_GetError() << std::endl;
+        std::cerr << "Failed to load sprite '" << path << "': " << IMG_GetError() << std::endl;
         return nullptr;
     }
 
@@ -368,11 +369,12 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
         {Arcade::ElementType::WALL, "asset/textures/wall.png"},
         {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
         {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
-        {Arcade::ElementType::PLAYER_UP, "asset/textures/player_up.bmp"},
-        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/player_down.bmp"},
-        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/player_left.bmp"},
-        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/player_right.bmp"},
-        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"}
+        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head.png"},
+        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head.png"},
+        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head.png"},
+        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head.png"},
+        {Arcade::ElementType::PLAYER, "asset/textures/snake-body.png"},
+        {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
     };
 
     for (const auto &obj : objects) {
