@@ -107,25 +107,28 @@ std::any SnakeGame::update()
     return {};
 }
 
-std::vector<Arcade::SpriteObject> SnakeGame::getDisplayables() const
+Arcade::DisplayData SnakeGame::getDisplayables() const
 {
-    std::vector<Arcade::SpriteObject> sprites;
+    Arcade::DisplayData data;
 
     for (int x = -1; x <= _mapWidth; x++) {
-        sprites.push_back({Arcade::ElementType::WALL, x, -1});
-        sprites.push_back({Arcade::ElementType::WALL, x, _mapHeigth});
+        data.sprites.push_back({Arcade::ElementType::WALL, x, -1});
+        data.sprites.push_back({Arcade::ElementType::WALL, x, _mapHeigth});
     }
     for (int y = 0; y < _mapHeigth; y++) {
-        sprites.push_back({Arcade::ElementType::WALL, -1, y});
-        sprites.push_back({Arcade::ElementType::WALL, _mapWidth, y});
+        data.sprites.push_back({Arcade::ElementType::WALL, -1, y});
+        data.sprites.push_back({Arcade::ElementType::WALL, _mapWidth, y});
     }
-    sprites.push_back({Arcade::ElementType::FOOD, _apple.first, _apple.second});
+    data.sprites.push_back({Arcade::ElementType::FOOD, _apple.first, _apple.second});
     for (size_t i = 0; i < _body.size(); ++i) {
         Arcade::ElementType type = (i == 0) ? Arcade::ElementType::PLAYER_UP : Arcade::ElementType::PLAYER;
-        sprites.push_back({type, _body[i].first, _body[i].second});
+        data.sprites.push_back({type, _body[i].first, _body[i].second});
     }
 
-    return sprites;
+    data.texts.push_back({"SNAKE", 25, 0, Arcade::Color::WHITE});
+    data.texts.push_back({"Score: " + std::to_string(_score), 25, 1, Arcade::Color::WHITE});
+
+    return data;
 }
 
 bool SnakeGame::isGameOver()

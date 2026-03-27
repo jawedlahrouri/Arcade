@@ -249,7 +249,7 @@ void Core::renderMenuFrame(Menu &arcadeMenu, const std::vector<Arcade::InputComm
     MenuAction action = arcadeMenu.handleInput(commands, textInput);
     applyMenuAction(action, inMenu);
 
-    const Arcade::DisplayData menuDisplay = arcadeMenu.getDisplayables();
+    const auto menuDisplay = arcadeMenu.getDisplayables();
     _graphic->draw(menuDisplay);
 }
 
@@ -267,8 +267,8 @@ void Core::renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bo
     _currentGame->handleKey(commands);
     _currentGame->update();
 
-    const Arcade::DisplayData objects = _currentGame->getDisplayables();
-    _graphic->draw(objects);
+    const auto frameData = _currentGame->getDisplayables();
+    _graphic->draw(frameData);
 
     if (_currentGame->isGameOver()) {
         unloadGame();

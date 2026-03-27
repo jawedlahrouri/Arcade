@@ -26,7 +26,7 @@ namespace Arcade {
         virtual void handleMouse(struct MouseEvent inputs) = 0;
         virtual int getScore() = 0;
         virtual bool isGameOver() = 0;
-        virtual std::vector<Arcade::SpriteObject> getDisplayables() const = 0;
+        virtual Arcade::DisplayData getDisplayables() const = 0;
     };
 }
 
