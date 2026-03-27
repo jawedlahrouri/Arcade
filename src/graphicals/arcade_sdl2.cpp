@@ -22,6 +22,7 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_s, Arcade::InputCommand::SWITCH_GRAPHICS},
     {SDLK_r, Arcade::InputCommand::RELOAD_GAME},
     {SDLK_n, Arcade::InputCommand::SWITCH_GAME},
+    {SDLK_l, Arcade::InputCommand::SWITCH_LEADERBOARD},
     {SDLK_ESCAPE, Arcade::InputCommand::BACK},
     {SDLK_SPACE, Arcade::InputCommand::FLAG},
     {SDLK_q, Arcade::InputCommand::QUIT}
@@ -100,6 +101,7 @@ void Sdl2Adapter::init()
         throw Exception("Renderer could not be created! SDL_Error: " + std::string(SDL_GetError()));
     }
     assetManager = std::make_unique<Sdl2AssetManager>(renderer);
+    SDL_StartTextInput();
 }
 
 /**
@@ -418,6 +420,11 @@ std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
             if (mapped != Sdl2Adapter::KEY_MAP.end()) {
                 commands.push_back(mapped->second);
             }
+            if (event.key.keysym.sym == SDLK_BACKSPACE && !_textInput.empty()) {
+                _textInput.pop_back();
+            }
+        } else if (event.type == SDL_TEXTINPUT) {
+            _textInput += event.text.text;
         }
     }
     if (commands.empty()) {
@@ -426,12 +433,21 @@ std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
     return commands;
 }
 
+std::string Sdl2Adapter::getTextInput()
+{
+    std::string result = _textInput;
+
+    _textInput.clear();
+    return result;
+}
+
 /**
  * @brief Releases allocated SDL resources, fonts, and cached assets.
  * @return Does not return a value.
  */
 Sdl2Adapter::~Sdl2Adapter()
 {
+    SDL_StopTextInput();
     assetManager.reset();
 
     for (auto& pair : fontsCache) {

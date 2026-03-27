@@ -1,7 +1,0 @@
-TROUVER DES DESIGN PATERNS POUR LE PROJET ARCADE
-- Factory Method : pour créer des instances de jeux et de graphiques sans connaître leur classe concr
-- Strategy : pour permettre de changer de jeu ou de graphique à la volée
-- Observer : pour gérer les événements et les interactions entre les composants du projet
-- Singleton : pour gérer les ressources partagées comme les textures ou les sons
-- Command : pour encapsuler les actions de l'utilisateur et les exécuter de manière flexible
-- Adapter : pour permettre l'utilisation de bibliothèques graphiques ou de jeux existants sans

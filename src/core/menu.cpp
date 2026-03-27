@@ -128,7 +128,9 @@ void Menu::addMissingLibrariesWarnings(Arcade::DisplayData &data, bool noGames, 
  * @brief Builds the menu with default state and loads available libraries.
  * @return Does not return a value.
  */
-Menu::Menu() : _playerName(""), _screenWidth(0), _screenHeight(0), _selectedGameIndex(0), _selectedGraphicIndex(0) {
+Menu::Menu() : _playerName(""), _screenWidth(0), _screenHeight(0), _selectedGameIndex(0), _selectedGraphicIndex(0),
+    _currentPage(Page::MAIN_MENU), _leaderboard(std::make_unique<Leaderboard>())
+{
     loadLibrariesList();
 }
 
@@ -142,6 +144,7 @@ void Menu::setScreenSize(int width, int height)
 {
     _screenWidth = width;
     _screenHeight = height;
+    _leaderboard->setScreenSize(width, height);
 }
 
 /**
@@ -181,24 +184,46 @@ void Menu::loadLibrariesList() {
  * @param commands Input command list for the current frame.
  * @return MenuAction describing the requested game or graphic change.
  */
-MenuAction Menu::handleInput(const std::vector<Arcade::InputCommand>& commands) {
+MenuAction Menu::handleInput(const std::vector<Arcade::InputCommand>& commands,
+    const std::string &textInput) {
     MenuAction action = {"", false};
+
+    if (_currentPage == Page::LEADERBOARD) {
+        if (!textInput.empty() && _leaderboard->isInNameInputMode()) {
+            _leaderboard->addTextToPlayerName(textInput);
+        }
+        _leaderboard->handleInput(commands);
+        for (const auto command : commands) {
+            if (command == Arcade::InputCommand::SWITCH_LEADERBOARD &&
+                !_leaderboard->isInNameInputMode()) {
+                _currentPage = Page::MAIN_MENU;
+                return action;
+            }
+        }
+        return action;
+    }
+
+    for (const auto command : commands) {
+        if (command == Arcade::InputCommand::SWITCH_LEADERBOARD) {
+            _currentPage = Page::LEADERBOARD;
+            _leaderboard->beginNameInput();
+            return action;
+        }
+    }
 
     if (_gameLibs.empty() || _graphicLibs.empty())
         return action;
 
     for (const auto command : commands) {
         if (command == Arcade::InputCommand::DOWN) {
-            if (_selectedGameIndex + 1 < _gameLibs.size()) {
+            if (_selectedGameIndex + 1 < _gameLibs.size())
                 _selectedGameIndex++;
-            }
             continue;
         }
 
         if (command == Arcade::InputCommand::UP) {
-            if (_selectedGameIndex > 0) {
+            if (_selectedGameIndex > 0)
                 _selectedGameIndex--;
-            }
             continue;
         }
 
@@ -244,6 +269,16 @@ MenuAction Menu::getNextGraphic() {
 }
 
 /**
+ * @brief Changes the active page (main menu or leaderboard).
+ * @param page New page to display.
+ * @return Does not return a value.
+ */
+void Menu::setCurrentPage(Page page)
+{
+    _currentPage = page;
+}
+
+/**
  * @brief Selects the next game library in cyclic order.
  * @return MenuAction for the next game library, or empty action.
  */
@@ -270,6 +305,9 @@ MenuAction Menu::getNextGame() {
  */
 Arcade::DisplayData Menu::getDisplayables() const
 {
+    if (_currentPage == Page::LEADERBOARD)
+        return _leaderboard->getDisplayables();
+
     Arcade::DisplayData data;
     int currentY = 2;
     const int screenW = _screenWidth;
@@ -298,5 +336,7 @@ Arcade::DisplayData Menu::getDisplayables() const
 
     Menu::addMissingLibrariesWarnings(data, _gameLibs.empty(), _graphicLibs.empty(),
         currentY, static_cast<int>(_graphicLibs.size()));
+    
+    data.texts.push_back({"Press L for leaderboard", 2, screenH - 2, Arcade::Color::MAGENTA});
     return data;
 }
