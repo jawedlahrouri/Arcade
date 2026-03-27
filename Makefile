@@ -37,7 +37,10 @@ SO_NCURSES  := lib/arcade_ncurses.so
 SRC_SDL2    := src/graphicals/arcade_sdl2.cpp
 SO_SDL2     := lib/arcade_sdl2.so
 
-GRAPHICALS  := $(SO_NCURSES) $(SO_SDL2)
+SRC_SFML    := src/graphicals/arcade_sfml.cpp
+SO_SFML     := lib/arcade_sfml.so
+
+GRAPHICALS  := $(SO_NCURSES) $(SO_SDL2) $(SO_SFML)
 
 # Tests
 TEST_NAME   := unit_tests
@@ -70,6 +73,9 @@ $(SO_NCURSES): $(SRC_NCURSES) | lib
 
 $(SO_SDL2): $(SRC_SDL2) | lib
 	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< -lSDL2 -lSDL2_ttf
+
+$(SO_SFML): $(SRC_SFML) | lib
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< -lsfml-graphics -lsfml-window -lsfml-system
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
