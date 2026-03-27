@@ -23,8 +23,8 @@ class Core {
     std::unique_ptr<DLLoader<IGraphic>> _graphicLoader; 
     std::unique_ptr<IGraphic> _graphic;
     
-    std::unique_ptr<DLLoader<IGames>> _gameLoader;
-    std::unique_ptr<IGames> _currentGame;
+    std::unique_ptr<DLLoader<Arcade::IGames>> _gameLoader;
+    std::unique_ptr<Arcade::IGames> _currentGame;
     std::string _currentGameLibPath;
 
     /**

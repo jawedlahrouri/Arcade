@@ -72,8 +72,8 @@ void Core::loadGame(const std::string& gamePath) {
 
     unloadGame();
 
-    _gameLoader = std::make_unique<DLLoader<IGames>>(gamePath);
-    IGames* rawGamePtr = _gameLoader->getInstance("createGame");
+    _gameLoader = std::make_unique<DLLoader<Arcade::IGames>>(gamePath);
+    Arcade::IGames* rawGamePtr = _gameLoader->getInstance("createGame");
 
     if (!rawGamePtr) {
         throw std::runtime_error("Failed to load game: " + gamePath);
@@ -264,7 +264,7 @@ void Core::renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bo
     if (!_currentGame) {
         return;
     }
-    _currentGame->handleInput(commands);
+    _currentGame->handleKey(commands);
     _currentGame->update();
 
     const Arcade::DisplayData objects = _currentGame->getDisplayables();
