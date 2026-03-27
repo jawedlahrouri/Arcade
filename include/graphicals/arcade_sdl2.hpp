@@ -50,6 +50,7 @@ private:
     const int tileSize = 32;
     std::map<std::string, TTF_Font*> fontsCache;
     std::unique_ptr<Sdl2AssetManager> assetManager;
+    std::string _textInput;
 
     static const std::unordered_map<SDL_Keycode, Arcade::InputCommand> KEY_MAP;
 
@@ -79,7 +80,7 @@ public:
      * @param fontSize Font size in pixels.
      * @return Does not return a value.
      */
-    void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24) override;
+    void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24);
     /**
      * @brief Measures text width in tile units.
      * @param text Text content.
@@ -87,7 +88,7 @@ public:
      * @param fontSize Font size in pixels.
      * @return Measured width in tiles.
      */
-    int measureTextWidth(const std::string &text, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24) override;
+    int measureTextWidth(const std::string &text, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24);
     /**
      * @brief Draws a rectangle border.
      * @param x Rectangle X position.
@@ -97,7 +98,7 @@ public:
      * @param color Rectangle color.
      * @return Does not return a value.
      */
-    void drawRect(int x, int y, int width, int height, Arcade::Color color) override;
+    void drawRect(int x, int y, int width, int height, Arcade::Color color);
     /**
      * @brief Draws a filled circle.
      * @param x Circle center X position.
@@ -106,7 +107,7 @@ public:
      * @param color Circle color.
      * @return Does not return a value.
      */
-    void drawCircle(int x, int y, int radius, Arcade::Color color) override;
+    void drawCircle(int x, int y, int radius, Arcade::Color color);
     /**
      * @brief Draws a sprite loaded from a path.
      * @param x Sprite X position.
@@ -114,7 +115,7 @@ public:
      * @param spritePath Path to sprite resource.
      * @return Does not return a value.
      */
-    void drawSprite(int x, int y, const std::string &spritePath) override;
+    void drawSprite(int x, int y, const std::string &spritePath);
     /**
      * @brief Draws a line between two points.
      * @param x1 Start X position.
@@ -124,7 +125,7 @@ public:
      * @param color Line color.
      * @return Does not return a value.
      */
-    void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color) override;
+    void drawLine(int x1, int y1, int x2, int y2, Arcade::Color color);
     /**
      * @brief Draws a filled tile.
      * @param x Tile X position.
@@ -132,7 +133,7 @@ public:
      * @param color Tile color.
      * @return Does not return a value.
      */
-    void drawTile(int x, int y, Arcade::Color color) override;
+    void drawTile(int x, int y, Arcade::Color color);
     /**
      * @brief Draws a single box tile border.
      * @param x Tile X position.
@@ -140,13 +141,13 @@ public:
      * @param color Tile color.
      * @return Does not return a value.
      */
-    void drawbox(int x, int y, Arcade::Color color) override;
+    void drawbox(int x, int y, Arcade::Color color);
     /**
      * @brief Draws a list of sprite objects.
      * @param objects Sprite objects to render.
      * @return Does not return a value.
      */
-    void draw(const std::vector<Arcade::SpriteObject> &objects) override;
+    void draw(const std::vector<Arcade::SpriteObject> &objects);
     /**
      * @brief Draws complete display data for one frame.
      * @param data Display data to render.
@@ -158,6 +159,11 @@ public:
      * @return Vector of input commands.
      */
     std::vector<Arcade::InputCommand> pollInputs() override;
+    /**
+     * @brief Gets the text typed since the previous call.
+     * @return Captured text input.
+     */
+    std::string getTextInput() override;
     /**
      * @brief Returns the current screen size in logical units.
      * @return Pair of width and height.

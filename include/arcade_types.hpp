@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 
 namespace Arcade {
     enum class InputCommand {
@@ -20,9 +21,12 @@ namespace Arcade {
         RIGHT,
         ENTER,
         SWITCH_GRAPHICS,
+        SWITCH_GAME,
+        RELOAD_GAME,
         BACK,
         FLAG,
-        QUIT
+        QUIT,
+        SWITCH_LEADERBOARD
     };
 
     enum class Color {
@@ -75,6 +79,19 @@ namespace Arcade {
     struct DisplayData {
         std::vector<SpriteObject> sprites;
         std::vector<TextObject> texts;
+    };
+
+    struct MouseEvent {
+        int x;
+        int y;
+        bool isClicked;
+    };
+
+    struct Snake {
+        std::string name;
+        std::pair<int, int> apple_coords;
+        std::vector<std::pair<int, int>> coords_snake;
+        int score;
     };
 }
 

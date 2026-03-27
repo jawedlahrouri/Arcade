@@ -7,43 +7,27 @@
 
 #ifndef IGAMES_HPP_
 #define IGAMES_HPP_
-
+#
 #include <vector>
+#include <any>
 #include "arcade_types.hpp"
 
-class IGames {
+namespace Arcade {
+    class IGames {
+    protected:
+    private:
+
     public:
         virtual ~IGames() = default;
 
-        /**
-         * @brief Initializes game state before entering the loop.
-         * @return Does not return a value.
-         */
-        virtual void init() = 0;
-        /**
-         * @brief Updates the game simulation for one frame.
-         * @return Does not return a value.
-         */
-        virtual void update() = 0;
-        /**
-         * @brief Processes input commands for the current frame.
-         * @param inputs List of input commands.
-         * @return Does not return a value.
-         */
-        virtual void handleInput(const std::vector<Arcade::InputCommand>& inputs) = 0;
-        /**
-         * @brief Indicates whether the game reached a terminal state.
-         * @return true when the game is over.
-         */
+        virtual std::any init() = 0;
+        virtual std::any update() = 0;
+        virtual void handleKey(const std::vector<Arcade::InputCommand>& inputs) = 0;
+        virtual void handleMouse(struct MouseEvent inputs) = 0;
+        virtual int getScore() = 0;
         virtual bool isGameOver() = 0;
-        /**
-         * @brief Exports renderable objects representing the current frame.
-         * @return Vector of sprite objects to draw.
-         */
-        virtual Arcade::DisplayData getDisplayables() const = 0;
-
-    protected:
-    private:
-};
+        virtual std::vector<Arcade::SpriteObject> getDisplayables() const = 0;
+    };
+}
 
 #endif /* !IGAMES_HPP_ */

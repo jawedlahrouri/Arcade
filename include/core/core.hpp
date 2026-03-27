@@ -23,8 +23,8 @@ class Core {
     std::unique_ptr<DLLoader<IGraphic>> _graphicLoader; 
     std::unique_ptr<IGraphic> _graphic;
     
-    std::unique_ptr<DLLoader<IGames>> _gameLoader;
-    std::unique_ptr<IGames> _currentGame;
+    std::unique_ptr<DLLoader<Arcade::IGames>> _gameLoader;
+    std::unique_ptr<Arcade::IGames> _currentGame;
     std::string _currentGameLibPath;
 
     /**
@@ -46,6 +46,18 @@ class Core {
      * @return true when a switch happened.
      */
     bool handleSwitchGraphics(Menu &arcadeMenu);
+    /**
+     * @brief Reloads the currently active game library.
+     * @param arcadeMenu Menu instance (unused but kept for parity).
+     * @return true when the game was reloaded and the frame should be skipped.
+     */
+    bool handleReloadGame(Menu &arcadeMenu);
+    /**
+     * @brief Attempts to switch to a different game library.
+     * @param gamePath Path to the game shared library.
+     * @return true when a switch occurred.
+     */
+    bool switchGame(const std::string &gamePath);
     /**
      * @brief Handles one global command affecting core execution state.
      * @param command Command to handle.
