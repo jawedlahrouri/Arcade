@@ -68,7 +68,7 @@ $(SO_NCURSES): $(SRC_NCURSES) | lib
 	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< -lncurses
 
 $(SO_SDL2): $(SRC_SDL2) | lib
-	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< -lSDL2 -lSDL2_ttf
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $< -lSDL2 -lSDL2_ttf -lSDL2_image
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<

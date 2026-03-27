@@ -10,6 +10,7 @@
 #include <iostream>
 #include <ostream>
 #include <vector>
+#include <SDL2/SDL_image.h>
 
 const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP = {
     {SDLK_UP, Arcade::InputCommand::UP},
@@ -49,7 +50,7 @@ Sdl2AssetManager::~Sdl2AssetManager()
 
 /**
  * @brief Retrieves a texture from cache or loads it from disk.
- * @param path Path to the BMP file to load.
+ * @param path Path to the image file to load (BMP, PNG, etc.).
  * @return Pointer to the SDL texture, or nullptr on failure.
  */
 SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
@@ -59,9 +60,10 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
         return found->second;
     }
 
-    SDL_Surface* surface = SDL_LoadBMP(path.c_str());
+    // --- CORRECTION : Utilisation de IMG_Load au lieu de SDL_LoadBMP ---
+    SDL_Surface* surface = IMG_Load(path.c_str());
     if (surface == nullptr) {
-        std::cerr << "Failed to load sprite '" << path << "': " << SDL_GetError() << std::endl;
+        std::cerr << "Failed to load sprite '" << path << "': " << IMG_GetError() << std::endl;
         return nullptr;
     }
 
@@ -77,7 +79,7 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
 }
 
 /**
- * @brief Initializes SDL, SDL_ttf, the window, renderer, and asset manager.
+ * @brief Initializes SDL, SDL_ttf, SDL_image, the window, renderer, and asset manager.
  * @return Does not return a value.
  */
 void Sdl2Adapter::init()
@@ -87,6 +89,10 @@ void Sdl2Adapter::init()
     }
     if (TTF_Init() == -1) {
         throw Exception("TTF could not initialize! TTF_Error: " + std::string(TTF_GetError()));
+    }
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        throw Exception("SDL_image could not initialize! IMG_Error: " + std::string(IMG_GetError()));
     }
     window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
     if (!window) {
@@ -301,7 +307,7 @@ void Sdl2Adapter::drawCircle(int x, int y, int radius, Arcade::Color color)
  * @brief Loads then draws a sprite at the requested position.
  * @param x Horizontal position in tiles.
  * @param y Vertical position in tiles.
- * @param spritePath Path to the BMP sprite file.
+ * @param spritePath Path to the BMP/PNG sprite file.
  * @return Does not return a value.
  */
 void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
@@ -446,6 +452,7 @@ Sdl2Adapter::~Sdl2Adapter()
     if (window) {
         SDL_DestroyWindow(window);
     }
+    IMG_Quit();
     TTF_Quit();
     SDL_Quit();
 } 
