@@ -15,7 +15,7 @@ enum CellType {
     BOMB = -1,
 };
 
-class arcade_minesweeper : public IGames {
+class arcade_minesweeper : public Arcade::IGames {
     private:
         int _width;                   // Largeur de la grille
         int _height;                  // Hauteur de la grille
@@ -34,18 +34,20 @@ class arcade_minesweeper : public IGames {
     public:
         arcade_minesweeper() = default;
         ~arcade_minesweeper() override = default;
-        // Méthodes héritées de IGames
-        void init() override;
-        void update() override;
-        void handleInput(const std::vector<Arcade::InputCommand>& inputs) override;
+
+        // Méthodes héritées de Arcade::IGames
+        std::any init() override;
+        std::any update() override;
+        void handleKey(const std::vector<Arcade::InputCommand>& inputs) override;
+        void handleMouse(Arcade::MouseEvent inputs) override;
+        int getScore() override;
         bool isGameOver() override;
         Arcade::DisplayData getDisplayables() const override;
 
+        // Méthodes utilitaires
         void generate_bomb_field(int safe_x, int safe_y, int difficulty); 
         void reveal_case(int coord_x, int coord_y); 
         void reveal_neighbor_case(int coord_x, int coord_y);
-
-        // Méthodes utilitaires
         bool is_bomb(int coord_x, int coord_y);
         void splode_bomb();
         void end_game();

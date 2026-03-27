@@ -17,7 +17,8 @@ OBJ_MAIN    := $(SRC_MAIN:.cpp=.o)
 
 SRC_CORE    := src/core/Core.cpp \
                 src/core/menu.cpp \
-                src/core/Player.cpp
+                src/core/Player.cpp \
+                src/core/leaderboard.cpp
 OBJ_CORE    := $(SRC_CORE:.cpp=.o)
 
 # Games
@@ -83,7 +84,9 @@ fclean: clean
 	$(RM) $(GAMES) $(GRAPHICALS)
 	$(RM) -r lib/
 
-re: fclean all
+re:
+	$(MAKE) fclean
+	$(MAKE) all
 
 tests_run:
 	@$(RM) *.gcda *.gcno

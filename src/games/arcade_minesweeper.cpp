@@ -11,7 +11,7 @@
 
 extern "C" bool isGame = true;
 
-void arcade_minesweeper::init() {
+std::any arcade_minesweeper::init() {
     _width = 16;
     _height = 16;
     _difficulty = 1; 
@@ -26,11 +26,12 @@ void arcade_minesweeper::init() {
     _grid.assign(_height, std::vector<int>(_width, 0));
     _revealed.assign(_height, std::vector<bool>(_width, false));
     _flagged.assign(_height, std::vector<bool>(_width, false));
+    return {};
 }
 
-void arcade_minesweeper::update() {
+std::any arcade_minesweeper::update() {
     if (_isGameOver)
-        return;
+        return {};
     int hiddenNonBombs = 0;
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
@@ -42,9 +43,10 @@ void arcade_minesweeper::update() {
         _hasWon = true;
         end_game();
     }
+    return {};
 }
 
-void arcade_minesweeper::handleInput(const std::vector<Arcade::InputCommand>& inputs) {
+void arcade_minesweeper::handleKey(const std::vector<Arcade::InputCommand>& inputs) {
     if (_isGameOver)
         return;
     for (auto input : inputs) {
@@ -68,6 +70,23 @@ void arcade_minesweeper::handleInput(const std::vector<Arcade::InputCommand>& in
     }
 }
 
+void arcade_minesweeper::handleMouse(Arcade::MouseEvent inputs)
+{
+    (void)inputs;
+}
+
+int arcade_minesweeper::getScore()
+{
+    int revealed = 0;
+    for (int y = 0; y < _height; ++y) {
+        for (int x = 0; x < _width; ++x) {
+            if (_revealed[y][x] && _grid[y][x] != BOMB)
+                ++revealed;
+        }
+    }
+    return revealed;
+}
+
 bool arcade_minesweeper::isGameOver() {
     return _isGameOver;
 }
@@ -85,6 +104,7 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
         Arcade::Color endColor = _hasWon ? Arcade::Color::GREEN : Arcade::Color::RED;
         data.texts.push_back({endText, offsetX + _width / 2 - 2, 4, endColor});
     }
+
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
             Arcade::SpriteObject sprite;
@@ -209,6 +229,6 @@ void arcade_minesweeper::end_game() {
     _isGameOver = true;
 }
 
-extern "C" IGames* createGame() {
+extern "C" Arcade::IGames* createGame() {
     return new arcade_minesweeper();
 }
