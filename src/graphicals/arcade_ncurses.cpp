@@ -6,17 +6,60 @@
 */
 
 #include "./graphicals/arcade_ncurses.hpp"
-#include "exception.hpp"
-#include <cstdio>
+#include "arcade_types.hpp"
 #include <filesystem>
 #include <iostream>
-#include <ncurses.h>
 #include <ostream>
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
-#include <cctype>
+#include <map>
 
+// TODO: Peut être déplaacer les touches spécifique au jeu.
+// Par exemple UP pour snake est dans snake.cpp
+//SWITCH GRAPHICS et BACK sont dans la lib graphique selon moi (TBD)
+const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
+    {KEY_UP, Arcade::InputCommand::UP},
+    {KEY_DOWN, Arcade::InputCommand::DOWN},
+    {KEY_LEFT, Arcade::InputCommand::LEFT},
+    {KEY_RIGHT, Arcade::InputCommand::RIGHT},
+    {'\n', Arcade::InputCommand::ENTER},
+    {KEY_ENTER, Arcade::InputCommand::ENTER},
+    {'s', Arcade::InputCommand::SWITCH_GRAPHICS},
+    {'S', Arcade::InputCommand::SWITCH_GRAPHICS},
+    {'r', Arcade::InputCommand::RELOAD_GAME},
+    {'R', Arcade::InputCommand::RELOAD_GAME},
+    {'n', Arcade::InputCommand::SWITCH_GAME},
+    {'N', Arcade::InputCommand::SWITCH_GAME},
+    {'l', Arcade::InputCommand::SWITCH_LEADERBOARD},
+    {'L', Arcade::InputCommand::SWITCH_LEADERBOARD},
+    {27, Arcade::InputCommand::BACK},
+    {' ', Arcade::InputCommand::FLAG},
+    {'q', Arcade::InputCommand::QUIT},
+    {'Q', Arcade::InputCommand::QUIT}
+};
+
+std::map<Arcade::ElementType, char> asciiMap = {
+    {Arcade::ElementType::WALL, '#'},
+    {Arcade::ElementType::BOMB, '@'},
+    {Arcade::ElementType::FLAG, '>'},
+    {Arcade::ElementType::PLAYER_UP, '^'},
+    {Arcade::ElementType::FOOD, '*'},
+    {Arcade::ElementType::ONE, '1'},
+    {Arcade::ElementType::TWO, '2'},
+    {Arcade::ElementType::THREE, '3'},
+    {Arcade::ElementType::FOUR, '4'},
+    {Arcade::ElementType::FIVE, '5'},
+    {Arcade::ElementType::SIX, '6'},
+    {Arcade::ElementType::SEVEN, '7'},
+    {Arcade::ElementType::EIGHT, '8'},
+    {Arcade::ElementType::EMPTY, '-'}
+};
+
+/**
+ * @brief Initializes ncurses mode, color pairs, and input settings.
+ * @return Does not return a value.
+ */
 void NcursesAdapter::init()
 {
     initscr();
@@ -34,47 +77,101 @@ void NcursesAdapter::init()
     init_pair(6, COLOR_MAGENTA, COLOR_MAGENTA);
     init_pair(7, COLOR_CYAN, COLOR_CYAN);
     init_pair(8, COLOR_WHITE, COLOR_WHITE);
+    init_pair(9, COLOR_WHITE, COLOR_GREEN);
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
 }
 
+/**
+ * @brief Clears the ncurses back buffer.
+ * @return Does not return a value.
+ */
 void NcursesAdapter::clear()
 {
     ::clear();
 }
 
-void NcursesAdapter::drawTile(int tileX, int tileY, ArcadeColor color)
+/**
+ * @brief Draws one filled tile at the given grid coordinates.
+ * @param tileX Tile X position.
+ * @param tileY Tile Y position.
+ * @param color Tile color.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::drawTile(int tileX, int tileY, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
     mvprintw(tileY, tileX * 2, "  ");
     attroff(COLOR_PAIR(colorPair));
 }
-// default path: "asset/font/coolvetica/Coolvetica Rg.otf"
-// defult size: 24
-void NcursesAdapter::drawText(int posX, int posY, const std::string &text, ArcadeColor color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
+
+/**
+ * @brief Draws text at the given position using ncurses color attributes.
+ * @param posX Text X position in tiles.
+ * @param posY Text Y position in rows.
+ * @param text Text content to display.
+ * @param color Text color.
+ * @param fontPath Unused in ncurses backend.
+ * @param fontSize Unused in ncurses backend.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::drawText(int posX, int posY, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
 {
+    (void)fontSize;
+    (void)fontPath;
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
     mvprintw(posY, posX * 2, "%s", text.c_str());
     attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHeight, ArcadeColor color)
+/**
+ * @brief Estimates text width in tile units for layout logic.
+ * @param text Text to measure.
+ * @param fontPath Unused in ncurses backend.
+ * @param fontSize Unused in ncurses backend.
+ * @return Estimated width in tiles.
+ */
+int NcursesAdapter::measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize)
+{
+    (void)fontPath;
+    (void)fontSize;
+    return static_cast<int>((text.length() + 1) / 2);
+}
+
+/**
+ * @brief Draws a rectangle border in tile coordinates.
+ * @param startX Left X position.
+ * @param startY Top Y position.
+ * @param rectWidth Rectangle width in tiles.
+ * @param rectHeight Rectangle height in tiles.
+ * @param color Border color.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::drawRect(int startX, int startY, int rectWidth, int rectHeight, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
     for (int col = startX; col < startX + rectWidth; ++col) {
-        mvaddch(startY, col * 2, '#');
-        mvaddch(startY + rectHeight - 1, col * 2, '#');
+        mvprintw(startY, col * 2, "##");
+        mvprintw(startY + rectHeight - 1, col * 2, "##");
     }
     for (int row = startY; row < startY + rectHeight; ++row) {
-        mvaddch(row, startX * 2, '#');
-        mvaddch(row, (startX + rectWidth - 1) * 2, '#');
+        mvprintw(row, startX * 2, "##");
+        mvprintw(row, (startX + rectWidth - 1) * 2, "##");
     }
     attroff(COLOR_PAIR(colorPair));
 }
 
-void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, ArcadeColor color)
+/**
+ * @brief Draws a simple circle marker around a center position.
+ * @param centerX Circle center X.
+ * @param centerY Circle center Y.
+ * @param radius Circle radius in tiles.
+ * @param color Circle color.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
@@ -86,13 +183,85 @@ void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, ArcadeColo
     attroff(COLOR_PAIR(colorPair));
 }
 
+/**
+ * @brief Placeholder for sprite rendering in ncurses backend.
+ * @param posX Sprite X position.
+ * @param posY Sprite Y position.
+ * @param spritePath Path to sprite resource.
+ * @return Does not return a value.
+ */
 void NcursesAdapter::drawSprite(int posX, int posY, const std::string &spritePath)
 {
-    (void)posX; (void)posY; (void)spritePath;
-    //TODO: A VOIR COMMENT IMPLEMENTER CA EN MODE ASCII ART LES SPRITES
+    (void)posX;
+    (void)posY;
+    (void)spritePath;
 }
 
-void NcursesAdapter::drawLine(int xStart, int yStart, int xEnd, int yEnd, ArcadeColor color)
+/**
+ * @brief Draws a single boxed tile with the requested color.
+ * @param x Tile X position.
+ * @param y Tile Y position.
+ * @param color Box color.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::drawbox(int x, int y, Arcade::Color color)
+{
+    int colorPair = static_cast<int>(color) + 1;
+    attron(COLOR_PAIR(colorPair));
+    mvaddch(y, x * 2, '#');
+    mvaddch(y, x * 2 + 1, '#');
+    attroff(COLOR_PAIR(colorPair));
+}
+
+/**
+ * @brief Draws a list of sprite objects using ASCII mappings.
+ * @param objects Sprite objects to render.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
+{
+    for (const auto &obj : objects) {
+        if (obj.type == Arcade::ElementType::WALL) {
+            drawbox(obj.x, obj.y, Arcade::Color::WHITE);
+            continue;
+        }
+        if (obj.type == Arcade::ElementType::PLAYER) {
+            mvchgat(obj.y, obj.x * 2, 2, A_NORMAL, 9, NULL);
+            continue;
+        }
+        const auto it = asciiMap.find(obj.type);
+        if (it == asciiMap.end()) {
+            continue;
+        }
+        const int screenCol = obj.x * 2;
+        mvaddch(obj.y, screenCol, it->second);
+        mvaddch(obj.y, screenCol + 1, it->second);
+    }
+}
+
+/**
+ * @brief Draws a complete display frame containing sprites and text.
+ * @param data Aggregated display data to render.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::draw(const Arcade::DisplayData &data)
+{
+    draw(data.sprites);
+    for (const auto &text : data.texts) {
+        drawText(text.x, text.y, text.text, text.color, "", 24);
+    }
+}
+
+/**
+ * @brief Draws a line between two points using a Bresenham-like algorithm.
+ * @param xStart Start X position.
+ * @param yStart Start Y position.
+ * @param xEnd End X position.
+ * @param yEnd End Y position.
+ * @param color Line color.
+ * @return Does not return a value.
+ */
+void NcursesAdapter::drawLine(int xStart, int yStart, int xEnd, int yEnd, Arcade::Color color)
 {
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
@@ -120,51 +289,55 @@ void NcursesAdapter::drawLine(int xStart, int yStart, int xEnd, int yEnd, Arcade
     attroff(COLOR_PAIR(colorPair));
 }
 
+/**
+ * @brief Flushes the ncurses buffer to the terminal screen.
+ * @return Does not return a value.
+ */
 void NcursesAdapter::display()
 {
     refresh();
 }
 
-std::string NcursesAdapter::handleEvents()
+/**
+ * @brief Polls keyboard and mouse events and maps them to Arcade commands.
+ * @return Command vector containing detected input or NONE.
+ */
+std::vector<Arcade::InputCommand> NcursesAdapter::pollInputs()
 {
+    std::vector<Arcade::InputCommand> commands;
     int key = getch();
 
     if (key == ERR) {
-        return "NONE";
+        commands.push_back(Arcade::InputCommand::NONE);
+        return commands;
     }
 
-    if (key == 'q' || key == 'Q') {
-        return "QUIT";
+    if (key >= 32 && key <= 126 && key != '\n') {
+        _textInput += static_cast<char>(key);
     }
-    if (key == KEY_UP) return "UP";
-    if (key == KEY_DOWN) return "DOWN";
-    if (key == KEY_LEFT) return "LEFT";
-    if (key == KEY_RIGHT) return "RIGHT";
-    if (key == '\n' || key == KEY_ENTER) return "ENTER";
-
-    if (key == KEY_MOUSE) {
-        MEVENT event;
-        if (getmouse(&event) == OK) {
-            if (event.bstate & BUTTON1_CLICKED) {
-                std::cout << "Mouse event at (" << event.x << ", " << event.y << ")" << std::endl;
-            }
+    if (key == '\b' || key == KEY_BACKSPACE) {
+        if (!_textInput.empty()) {
+            _textInput.pop_back();
         }
     }
 
-    if (key >= 0 && key <= 255) {
-        unsigned char c = static_cast<unsigned char>(key);
-
-        if (std::isalpha(c)) {
-            return std::string(1, static_cast<char>(std::toupper(c)));
-        }
-        if (std::isdigit(c) || std::ispunct(c) || std::isspace(c)) {
-            return std::string(1, static_cast<char>(c));
+    const auto mapped = NcursesAdapter::KEY_MAP.find(key);
+    if (mapped != NcursesAdapter::KEY_MAP.end()) {
+        commands.push_back(mapped->second);
+        if (mapped->second == Arcade::InputCommand::QUIT) {
+            return commands;
         }
     }
-
-    return "NONE";
+    if (commands.empty()) {
+        commands.push_back(Arcade::InputCommand::NONE);
+    }
+    return commands;
 }
 
+/**
+ * @brief Returns the current terminal size converted to tile units.
+ * @return Pair containing width and height in tiles.
+ */
 std::pair<int,int> NcursesAdapter::getScreenSize()
 {
     int termRows, termCols;
@@ -175,15 +348,33 @@ std::pair<int,int> NcursesAdapter::getScreenSize()
         log << "Screen size: " << termCols << "x" << termRows << std::endl;
         log.close();
     }
-    // width in "tiles" - each tile uses 2 columns
     return { termCols / 2, termRows };
 }
 
+/**
+ * @brief Gets the last text input from keyboard.
+ * @return String containing typed characters and clears buffer.
+ */
+std::string NcursesAdapter::getTextInput()
+{
+    std::string result = _textInput;
+    _textInput.clear();
+    return result;
+}
+
+/**
+ * @brief Restores terminal state by leaving ncurses mode.
+ * @return Does not return a value.
+ */
 NcursesAdapter::~NcursesAdapter()
 {
     endwin();
 }
 
+/**
+ * @brief Creates an ncurses graphical adapter for dynamic loading.
+ * @return Pointer to a newly allocated IGraphic implementation.
+ */
 extern "C" IGraphic* createGraphical() {
     return new NcursesAdapter();
 }

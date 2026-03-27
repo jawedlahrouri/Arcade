@@ -8,21 +8,31 @@
 #ifndef ARCADE_SNAKE_HPP_
 #define ARCADE_SNAKE_HPP_
 #include "./games/IGames.hpp"
-#include "./graphicals/IGraphic.hpp"
+#include <deque>
+#include <map>
 
-class SnakeGame : public IGames {
+class SnakeGame : public Arcade::IGames {
     public:
-    SnakeGame() = default;
-    ~SnakeGame() = default;
-
-    void init(IGraphic &graphicLib) override;
-    void update() override;
-    void handleInput(const std::string& input) override;
-    void draw(IGraphic& graphicLib) override;
-    bool isGameOver() override { return _isGameOver; }
-
     private:
-    bool _isGameOver = false;
+        int _score;
+        int _mapWidth;
+        int _mapHeigth;
+        std::deque<std::pair<int, int>> _body;
+        std::pair<int, int> _apple;
+        Arcade::InputCommand _currentDirection;
+        bool _isGameOver;
+        void spawnApple();
+
+    public:
+        SnakeGame();
+        ~SnakeGame() override;
+        std::any update() override;
+        void handleKey(const std::vector<Arcade::InputCommand>& inputs) override;
+        int getScore() override;
+        bool isGameOver() override;
+        Arcade::DisplayData getDisplayables() const override;
+        std::any init() override;
+        void handleMouse(Arcade::MouseEvent inputs) override;
 };
 
 #endif /* !ARCADE_SNAKE_HPP_ */

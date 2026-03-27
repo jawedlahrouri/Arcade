@@ -7,22 +7,27 @@
 
 #ifndef IGAMES_HPP_
 #define IGAMES_HPP_
+#
+#include <vector>
+#include <any>
+#include "arcade_types.hpp"
 
-#include <string>
-#include "graphicals/IGraphic.hpp"
+namespace Arcade {
+    class IGames {
+    protected:
+    private:
 
-class IGames {
     public:
         virtual ~IGames() = default;
 
-        virtual void init(IGraphic& graphicLib) = 0;
-        virtual void update() = 0;
-        virtual void handleInput(const std::string& input) = 0;
-        virtual void draw(IGraphic& graphicLib) = 0;
+        virtual std::any init() = 0;
+        virtual std::any update() = 0;
+        virtual void handleKey(const std::vector<Arcade::InputCommand>& inputs) = 0;
+        virtual void handleMouse(struct MouseEvent inputs) = 0;
+        virtual int getScore() = 0;
         virtual bool isGameOver() = 0;
-
-    protected:
-    private:
-};
+        virtual Arcade::DisplayData getDisplayables() const = 0;
+    };
+}
 
 #endif /* !IGAMES_HPP_ */

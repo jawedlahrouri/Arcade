@@ -20,16 +20,29 @@
 
         public:
 
+        /**
+         * @brief Hook called when the shared library is loaded.
+         * @return Does not return a value.
+         */
         __attribute__((constructor))
         static void initLibrary() {
             //TODO: any initialization code if needed when the library is loaded
         }
 
+        /**
+         * @brief Hook called when the shared library is unloaded.
+         * @return Does not return a value.
+         */
         __attribute__((destructor))
         static void cleanupLibrary() {
             //TODO: any cleanup code if needed when the library is unloaded
         }
 
+        /**
+         * @brief Opens a dynamic library handle from a filesystem path.
+         * @param path Path to the shared object file.
+         * @return Does not return a value.
+         */
         DLLoader(const std::string &path) {
             _handle = ::dlopen(path.c_str(), RTLD_LAZY); 
             if (!_handle) {
@@ -37,12 +50,21 @@
             }
         }
 
+        /**
+         * @brief Closes the dynamic library handle if it is open.
+         * @return Does not return a value.
+         */
         ~DLLoader() {
             if (_handle) {
                 ::dlclose(_handle);
             }
         }
 
+        /**
+         * @brief Resolves a factory symbol and returns a typed instance.
+         * @param symbol Name of the exported factory symbol.
+         * @return Pointer to the created instance.
+         */
         T* getInstance(const std::string &symbol) {
             ::dlerror();
             void* raw_sym = ::dlsym(_handle, symbol.c_str());
