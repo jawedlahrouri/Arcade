@@ -28,6 +28,17 @@ namespace Arcade {
         virtual bool isGameOver() = 0;
         virtual Arcade::DisplayData getDisplayables() const = 0;
     };
+
+    struct Minesweeper {
+        std::string name;
+        std::vector<std::pair<int, int>> bombs_coords;
+        std::vector<std::pair<int, int>> reveal_case;
+        std::vector<std::pair<int, int>> hidden_case;
+        std::vector<std::pair<int, int>> flag_case;
+        std::vector<std::pair<int,std::pair <int, int>>> values_case;
+        int difficulty;
+        int flag_left;
+    };
 }
 
 #endif /* !IGAMES_HPP_ */
