@@ -131,8 +131,11 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
                 type = Arcade::ElementType::PLAYER_LEFT;
             else
                 type = Arcade::ElementType::PLAYER_RIGHT;
+        }
+        else if (i == _body.size() - 1) {
+            type = Arcade::ElementType::PLAYER_TAIL; 
         } else {
-            type = Arcade::ElementType::PLAYER;
+            type = Arcade::ElementType::PLAYER_BODY;
         }
         data.sprites.push_back({type, _body[i].first, _body[i].second});
     }
