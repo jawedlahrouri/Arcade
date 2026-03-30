@@ -48,8 +48,8 @@ void SnakeGame::spawnApple()
     bool onBody = true;
 
     while (onBody) {
-        _apple.first = rand() % _mapWidth;
-        _apple.second = rand() % _mapHeigth;
+        _apple.first = (rand() % (_mapWidth - 1)) + 1; 
+        _apple.second = (rand() % (_mapHeigth - 1)) + 1;
         onBody = false;
         for (const auto& part : _body) {
             if (part.first == _apple.first && part.second == _apple.second) {
@@ -111,16 +111,16 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
 {
     Arcade::DisplayData data;
 
-    for (int x = -1; x <= _mapWidth; x++) {
-        data.sprites.push_back({Arcade::ElementType::WALL, x, -1});
+    for (int x = 0; x <= _mapWidth; x++) {
+        data.sprites.push_back({Arcade::ElementType::WALL, x, 0});
         data.sprites.push_back({Arcade::ElementType::WALL, x, _mapHeigth});
     }
     for (int y = 0; y < _mapHeigth; y++) {
-        data.sprites.push_back({Arcade::ElementType::WALL, -1, y});
+        data.sprites.push_back({Arcade::ElementType::WALL, 0, y});
         data.sprites.push_back({Arcade::ElementType::WALL, _mapWidth, y});
     }
     data.sprites.push_back({Arcade::ElementType::FOOD, _apple.first, _apple.second});
-    for (size_t i = 0; i < _body.size(); ++i) {
+    for (size_t i = 0; i < _body.size(); i++) {
         Arcade::ElementType type;
         if (i == 0) {
             if (_currentDirection == Arcade::InputCommand::UP)
