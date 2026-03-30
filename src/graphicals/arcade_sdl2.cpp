@@ -11,6 +11,7 @@
 #include <iostream>
 #include <ostream>
 #include <vector>
+#include <SDL2/SDL_image.h>
 
 const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP = {
     {SDLK_UP, Arcade::InputCommand::UP},
@@ -53,7 +54,7 @@ Sdl2AssetManager::~Sdl2AssetManager()
 
 /**
  * @brief Retrieves a texture from cache or loads it from disk.
- * @param path Path to the BMP file to load.
+ * @param path Path to the image file to load (BMP, PNG, etc.).
  * @return Pointer to the SDL texture, or nullptr on failure.
  */
 SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
@@ -63,9 +64,9 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
         return found->second;
     }
 
-    SDL_Surface* surface = SDL_LoadBMP(path.c_str());
+    SDL_Surface* surface = IMG_Load(path.c_str());
     if (surface == nullptr) {
-        std::cerr << "Failed to load sprite '" << path << "': " << SDL_GetError() << std::endl;
+        std::cerr << "Failed to load sprite '" << path << "': " << IMG_GetError() << std::endl;
         return nullptr;
     }
 
@@ -81,7 +82,7 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
 }
 
 /**
- * @brief Initializes SDL, SDL_ttf, the window, renderer, and asset manager.
+ * @brief Initializes SDL, SDL_ttf, SDL_image, the window, renderer, and asset manager.
  * @return Does not return a value.
  */
 void Sdl2Adapter::init()
@@ -91,6 +92,10 @@ void Sdl2Adapter::init()
     }
     if (TTF_Init() == -1) {
         throw Exception("TTF could not initialize! TTF_Error: " + std::string(TTF_GetError()));
+    }
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        throw Exception("SDL_image could not initialize! IMG_Error: " + std::string(IMG_GetError()));
     }
     window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
     if (!window) {
@@ -306,7 +311,7 @@ void Sdl2Adapter::drawCircle(int x, int y, int radius, Arcade::Color color)
  * @brief Loads then draws a sprite at the requested position.
  * @param x Horizontal position in tiles.
  * @param y Vertical position in tiles.
- * @param spritePath Path to the BMP sprite file.
+ * @param spritePath Path to the BMP/PNG sprite file.
  * @return Does not return a value.
  */
 void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
@@ -365,14 +370,23 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
     }
 
     static const std::map<Arcade::ElementType, std::string> texturePathMap = {
-        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
-        {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
-        {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
         {Arcade::ElementType::PLAYER_UP, "asset/textures/player_up.bmp"},
         {Arcade::ElementType::PLAYER_DOWN, "asset/textures/player_down.bmp"},
         {Arcade::ElementType::PLAYER_LEFT, "asset/textures/player_left.bmp"},
         {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/player_right.bmp"},
-        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"}
+        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"},
+        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
+        {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
+        {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
+        {Arcade::ElementType::EMPTY, "asset/textures/TileEmpty.png"},
+        {Arcade::ElementType::ONE, "asset/textures/Tile1.png"},
+        {Arcade::ElementType::TWO, "asset/textures/Tile2.png"},
+        {Arcade::ElementType::THREE, "asset/textures/Tile3.png"},
+        {Arcade::ElementType::FOUR, "asset/textures/Tile4.png"},
+        {Arcade::ElementType::FIVE, "asset/textures/Tile5.png"},
+        {Arcade::ElementType::SIX, "asset/textures/Tile6.png"},
+        {Arcade::ElementType::SEVEN, "asset/textures/Tile7.png"},
+        {Arcade::ElementType::EIGHT, "asset/textures/Tile8.png"}
     };
 
     for (const auto &obj : objects) {
@@ -465,6 +479,7 @@ Sdl2Adapter::~Sdl2Adapter()
     if (window) {
         SDL_DestroyWindow(window);
     }
+    IMG_Quit();
     TTF_Quit();
     SDL_Quit();
 } 
