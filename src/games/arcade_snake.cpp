@@ -84,8 +84,8 @@ std::any SnakeGame::update()
     if (_currentDirection == Arcade::InputCommand::RIGHT)
         snakeHead.first++;
     
-    if (snakeHead.first < 0 || snakeHead.first >= _mapWidth ||
-        snakeHead.second < 0 || snakeHead.second >= _mapHeigth) {
+    if (snakeHead.first <= 0 || snakeHead.first >= _mapWidth ||
+        snakeHead.second <= 0 || snakeHead.second >= _mapHeigth) {
         _isGameOver = true;
         return {};
     }
