@@ -44,6 +44,11 @@ std::map<Arcade::ElementType, char> asciiMap = {
     {Arcade::ElementType::BOMB, '@'},
     {Arcade::ElementType::FLAG, '>'},
     {Arcade::ElementType::PLAYER_UP, '^'},
+    {Arcade::ElementType::PLAYER_DOWN, '^'},
+    {Arcade::ElementType::PLAYER_LEFT, '^'},
+    {Arcade::ElementType::PLAYER_RIGHT, '^'},
+    {Arcade::ElementType::PLAYER_BODY, '0'},
+    {Arcade::ElementType::PLAYER_TAIL, '~'},
     {Arcade::ElementType::FOOD, '*'},
     {Arcade::ElementType::ONE, '1'},
     {Arcade::ElementType::TWO, '2'},
@@ -227,6 +232,15 @@ void NcursesAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
         }
         if (obj.type == Arcade::ElementType::PLAYER) {
             mvchgat(obj.y, obj.x * 2, 2, A_NORMAL, 9, NULL);
+            continue;
+        }
+        if (obj.type == Arcade::ElementType::PLAYER_BODY || obj.type == Arcade::ElementType::PLAYER_TAIL) {
+            mvchgat(obj.y, obj.x * 2, 2, A_NORMAL, 3, NULL); 
+            const auto it = asciiMap.find(obj.type);
+            if (it != asciiMap.end()) {
+                mvaddch(obj.y, obj.x * 2, it->second);
+                mvaddch(obj.y, obj.x * 2 + 1, it->second);
+            }
             continue;
         }
         const auto it = asciiMap.find(obj.type);
