@@ -131,14 +131,19 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
                 type = Arcade::ElementType::PLAYER_LEFT;
             else
                 type = Arcade::ElementType::PLAYER_RIGHT;
-        }
-        else if (i == _body.size() - 1) {
-            type = Arcade::ElementType::PLAYER_TAIL; 
+        } else if (i == _body.size() - 1) {
+            type = Arcade::ElementType::PLAYER_TAIL;
         } else {
-            type = Arcade::ElementType::PLAYER_BODY;
+            auto& prev = _body[i - 1];
+            auto& next = _body[i + 1];
+            if (prev.first != next.first && prev.second != next.second) {
+                type = Arcade::ElementType::PLAYER_TURN;
+            } else {
+                type = Arcade::ElementType::PLAYER_BODY;
+            }
         }
         data.sprites.push_back({type, _body[i].first, _body[i].second});
-    }
+}
 
     data.texts.push_back({"SNAKE", 25, 0, Arcade::Color::WHITE});
     data.texts.push_back({"Score: " + std::to_string(_score), 25, 1, Arcade::Color::WHITE});
