@@ -9,9 +9,34 @@
 #include "exception.hpp"
 #include <string>
 #include <exception>
+#include <csignal>
+#include <cstring>
 #include <unistd.h>
 #include "check_main.hpp"
 #include "./core/core.hpp"
+
+namespace {
+    const char *gLibPath = nullptr;
+    std::size_t gLibPathLen = 0;
+
+    void handleSigill(int)
+    {
+        const char msgPrefix[] = "CrashException: Incompatible library detected";
+        const char msgMid[] = " while loading: ";
+        const char msgSuffix[] = "\nReason: plugin does not match current interfaces (IGraphic/IGames) or exported entry (getType/entryPoint).\nRecompile the plugin against current project headers.\n";
+
+        ::write(STDERR_FILENO, msgPrefix, sizeof(msgPrefix) - 1);
+        ::write(STDERR_FILENO, msgMid, sizeof(msgMid) - 1);
+        if (gLibPath != nullptr && gLibPathLen > 0) {
+            ::write(STDERR_FILENO, gLibPath, gLibPathLen);
+        } else {
+            const char unknown[] = "<unknown>";
+            ::write(STDERR_FILENO, unknown, sizeof(unknown) - 1);
+        }
+        ::write(STDERR_FILENO, msgSuffix, sizeof(msgSuffix) - 1);
+        _exit(84);
+    }
+}
 
 
 /**
@@ -87,15 +112,32 @@ bool check_main::check_args(int ac, const char **av)
  */
 int main(int argc, char **argv)
 {
+    if (argc > 1 && argv[1] != nullptr) {
+        gLibPath = argv[1];
+        gLibPathLen = std::strlen(argv[1]);
+    }
+    std::signal(SIGILL, handleSigill);
+
     try {
         check_main::check_args(argc, const_cast<const char **>(argv));
-    } catch (const std::exception &e) {
+        Core core = Core(argv[1]);
+        core.run();
+    } catch (const WarningException &e) {
+        std::cerr << "Warning: " << e.what() << std::endl;
+        return 0;
+    } catch (const ErrorException &e) {
         std::cerr << e.what() << std::endl;
         return 84;
+    } catch (const CrashException &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    } catch (const Exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    } catch (const std::exception &e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+        return 84;
     }
-    // launch program
-    Core core = Core(argv[1]);
-    core.run();
     return 0;
 }
 #endif

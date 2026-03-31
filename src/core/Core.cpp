@@ -13,6 +13,11 @@
 #include "./exception"
 #include "exception.hpp"
 
+namespace {
+    constexpr int GRAPHIC_LIBRARY_TYPE = 1;
+    constexpr int GAME_LIBRARY_TYPE = 2;
+}
+
 /**
  * @brief Builds the core, loads the initial graphic library, and creates its instance.
  * @param libPath Path to the first graphic shared library.
@@ -22,13 +27,16 @@ Core::Core(const std::string& libPath) : _isRunning(true), _currentGraphicLibPat
     _graphicLoader = std::make_unique<DLLoader<IGraphic>>(libPath);
     IGraphic* rawGraphicPtr = nullptr;
     try {
-        rawGraphicPtr = _graphicLoader->getInstance("createGraphical");
+        if (_graphicLoader->getType() != GRAPHIC_LIBRARY_TYPE) {
+            throw ErrorException("Error: " + libPath + " not a graphic library");
+        }
+        rawGraphicPtr = _graphicLoader->getInstance("entryPoint");
     } catch (const Exception &) {
         throw ErrorException("Error: " + libPath + " not a graphic library");
     }
 
     if (!rawGraphicPtr) {
-        throw std::runtime_error("Failed to load graphic lib");
+        throw CrashException("Failed to load graphic lib");
     }
     
     _graphic.reset(rawGraphicPtr);
@@ -44,20 +52,31 @@ void Core::changeGraphicLib(const std::string& newLibPath) {
         return;
     }
 
-    std::unique_ptr<DLLoader<IGraphic>> newLoader = std::make_unique<DLLoader<IGraphic>>(newLibPath);
-    IGraphic* rawGraphicPtr = newLoader->getInstance("createGraphical"); 
-    
-    if (!rawGraphicPtr) {
-        throw std::runtime_error("Failed to load new graphic lib");
-    }
-    std::unique_ptr<IGraphic> newGraphic(rawGraphicPtr);
+    try {
+        std::unique_ptr<DLLoader<IGraphic>> newLoader = std::make_unique<DLLoader<IGraphic>>(newLibPath);
+        IGraphic* rawGraphicPtr = nullptr;
 
-    _graphic.reset();
-    _graphicLoader.reset();
-    _graphicLoader = std::move(newLoader);
-    _graphic = std::move(newGraphic);
-    _graphic->init();
-    _currentGraphicLibPath = newLibPath;
+        if (newLoader->getType() != GRAPHIC_LIBRARY_TYPE) {
+            throw ErrorException("Error: " + newLibPath + " not a graphic library");
+        }
+        rawGraphicPtr = newLoader->getInstance("entryPoint");
+
+        if (!rawGraphicPtr) {
+            throw CrashException("Failed to load new graphic lib");
+        }
+        std::unique_ptr<IGraphic> newGraphic(rawGraphicPtr);
+
+        _graphic.reset();
+        _graphicLoader.reset();
+        _graphicLoader = std::move(newLoader);
+        _graphic = std::move(newGraphic);
+        _graphic->init();
+        _currentGraphicLibPath = newLibPath;
+    } catch (const Exception &) {
+        throw;
+    } catch (const std::exception &e) {
+        throw CrashException("Failed to switch graphic library: " + std::string(e.what()));
+    }
 }
 
 /**
@@ -70,18 +89,29 @@ void Core::loadGame(const std::string& gamePath) {
         return;
     }
 
-    unloadGame();
+    try {
+        unloadGame();
 
-    _gameLoader = std::make_unique<DLLoader<Arcade::IGames>>(gamePath);
-    Arcade::IGames* rawGamePtr = _gameLoader->getInstance("createGame");
+        _gameLoader = std::make_unique<DLLoader<Arcade::IGames>>(gamePath);
+        Arcade::IGames* rawGamePtr = nullptr;
 
-    if (!rawGamePtr) {
-        throw std::runtime_error("Failed to load game: " + gamePath);
+        if (_gameLoader->getType() != GAME_LIBRARY_TYPE) {
+            throw ErrorException("Error: " + gamePath + " not a game library");
+        }
+        rawGamePtr = _gameLoader->getInstance("entryPoint");
+
+        if (!rawGamePtr) {
+            throw CrashException("Failed to load game: " + gamePath);
+        }
+
+        _currentGame.reset(rawGamePtr);
+        _currentGameLibPath = gamePath;
+        _currentGame->init();
+    } catch (const Exception &) {
+        throw;
+    } catch (const std::exception &e) {
+        throw CrashException("Failed to load game library: " + gamePath + " (" + e.what() + ")");
     }
-
-    _currentGame.reset(rawGamePtr);
-    _currentGameLibPath = gamePath;
-    _currentGame->init();
 }
 
 /**
@@ -284,20 +314,26 @@ void Core::renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bo
  */
 void Core::runFrame(Menu &arcadeMenu, bool &inMenu)
 {
-    const std::vector<Arcade::InputCommand> commands = _graphic->pollInputs();
-    const bool skipFrame = processGlobalCommands(commands, inMenu, arcadeMenu);
+    try {
+        const std::vector<Arcade::InputCommand> commands = _graphic->pollInputs();
+        const bool skipFrame = processGlobalCommands(commands, inMenu, arcadeMenu);
 
-    if (!_isRunning || skipFrame) {
-        return;
-    }
-    _graphic->clear();
+        if (!_isRunning || skipFrame) {
+            return;
+        }
+        _graphic->clear();
 
-    if (inMenu) {
-        renderMenuFrame(arcadeMenu, commands, inMenu);
-    } else {
-        renderGameFrame(commands, inMenu);
+        if (inMenu) {
+            renderMenuFrame(arcadeMenu, commands, inMenu);
+        } else {
+            renderGameFrame(commands, inMenu);
+        }
+        _graphic->display();
+    } catch (const Exception &) {
+        throw;
+    } catch (const std::exception &e) {
+        throw CrashException("Frame execution failed: " + std::string(e.what()));
     }
-    _graphic->display();
 }
 
 /**
@@ -309,10 +345,16 @@ void Core::run()
     if (!_graphic)
         return;
 
-    _graphic->init();
-    
     Menu arcadeMenu;
-    arcadeMenu.loadLibrariesList();
+
+    try {
+        _graphic->init();
+        arcadeMenu.loadLibrariesList();
+    } catch (const Exception &) {
+        throw;
+    } catch (const std::exception &e) {
+        throw CrashException("Core startup failed: " + std::string(e.what()));
+    }
     
     bool inMenu = true;
     auto lastUpdate = std::chrono::steady_clock::now();
@@ -323,8 +365,13 @@ void Core::run()
         }
         try {
             runFrame(arcadeMenu, inMenu);
-        } catch (const std::exception &e) {
+        } catch (const WarningException &e) {
+            std::cerr << "Warning: " << e.what() << std::endl;
+        } catch (const Exception &e) {
             std::cerr << "Failed to process frame: " << e.what() << std::endl;
+            _isRunning = false;
+        } catch (const std::exception &e) {
+            std::cerr << "Unexpected runtime error: " << e.what() << std::endl;
             _isRunning = false;
         }
     }
