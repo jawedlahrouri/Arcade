@@ -10,16 +10,30 @@
 #include <string>
 #include <exception>
 #include <csignal>
+#include <cstring>
 #include <unistd.h>
 #include "check_main.hpp"
 #include "./core/core.hpp"
 
 namespace {
+    const char *gLibPath = nullptr;
+    std::size_t gLibPathLen = 0;
+
     void handleSigill(int)
     {
-        const char msg[] = "CrashException: Incompatible Library\n";
+        const char msgPrefix[] = "CrashException: Incompatible library detected";
+        const char msgMid[] = " while loading: ";
+        const char msgSuffix[] = "\nReason: plugin does not match current interfaces (IGraphic/IGames) or exported entry (getType/entryPoint).\nRecompile the plugin against current project headers.\n";
 
-        std::cerr << msg;
+        ::write(STDERR_FILENO, msgPrefix, sizeof(msgPrefix) - 1);
+        ::write(STDERR_FILENO, msgMid, sizeof(msgMid) - 1);
+        if (gLibPath != nullptr && gLibPathLen > 0) {
+            ::write(STDERR_FILENO, gLibPath, gLibPathLen);
+        } else {
+            const char unknown[] = "<unknown>";
+            ::write(STDERR_FILENO, unknown, sizeof(unknown) - 1);
+        }
+        ::write(STDERR_FILENO, msgSuffix, sizeof(msgSuffix) - 1);
         _exit(84);
     }
 }
@@ -98,6 +112,10 @@ bool check_main::check_args(int ac, const char **av)
  */
 int main(int argc, char **argv)
 {
+    if (argc > 1 && argv[1] != nullptr) {
+        gLibPath = argv[1];
+        gLibPathLen = std::strlen(argv[1]);
+    }
     std::signal(SIGILL, handleSigill);
 
     try {
