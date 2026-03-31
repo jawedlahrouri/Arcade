@@ -372,9 +372,17 @@ NcursesAdapter::~NcursesAdapter()
 }
 
 /**
+ * @brief Returns the library type used by the loader.
+ * @return 1 for a graphical library.
+ */
+extern "C" int getType() {
+    return 1;
+}
+
+/**
  * @brief Creates an ncurses graphical adapter for dynamic loading.
  * @return Pointer to a newly allocated IGraphic implementation.
  */
-extern "C" IGraphic* createGraphical() {
+extern "C" IGraphic* entryPoint() {
     return new NcursesAdapter();
 }

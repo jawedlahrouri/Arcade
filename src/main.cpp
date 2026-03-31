@@ -9,9 +9,20 @@
 #include "exception.hpp"
 #include <string>
 #include <exception>
+#include <csignal>
 #include <unistd.h>
 #include "check_main.hpp"
 #include "./core/core.hpp"
+
+namespace {
+    void handleSigill(int)
+    {
+        const char msg[] = "CrashException: Incompatible Library\n";
+
+        std::cerr << msg;
+        _exit(84);
+    }
+}
 
 
 /**
@@ -87,15 +98,28 @@ bool check_main::check_args(int ac, const char **av)
  */
 int main(int argc, char **argv)
 {
+    std::signal(SIGILL, handleSigill);
+
     try {
         check_main::check_args(argc, const_cast<const char **>(argv));
-    } catch (const std::exception &e) {
+        Core core = Core(argv[1]);
+        core.run();
+    } catch (const WarningException &e) {
+        std::cerr << "Warning: " << e.what() << std::endl;
+        return 0;
+    } catch (const ErrorException &e) {
         std::cerr << e.what() << std::endl;
         return 84;
+    } catch (const CrashException &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    } catch (const Exception &e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    } catch (const std::exception &e) {
+        std::cerr << "Unexpected error: " << e.what() << std::endl;
+        return 84;
     }
-    // launch program
-    Core core = Core(argv[1]);
-    core.run();
     return 0;
 }
 #endif

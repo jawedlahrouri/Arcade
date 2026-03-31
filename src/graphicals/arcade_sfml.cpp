@@ -106,7 +106,7 @@ void SfmlAdapter::drawText(int x, int y, const std::string &text, Arcade::Color 
     }
 
     sf::Text sfText(text, _fonts[fontPath], fontSize);
-    sfText.setPosition(x * 20.f, y * 20.f); // Base multiplier can be adjusted based on requirements
+    sfText.setPosition(x * 20.f, y * 20.f);
     sfText.setFillColor(getSfmlColor(color));
     _window->draw(sfText);
 }
@@ -163,12 +163,16 @@ std::pair<int, int> SfmlAdapter::getScreenSize()
 {
     if (_window) {
         sf::Vector2u size = _window->getSize();
-        return {size.x / 20, size.y / 20}; // Returning logical size in tiles (assuming 20x20 tile size)
+        return {size.x / 20, size.y / 20};
     }
     return {0, 0};
 }
 
-extern "C" IGraphic* createGraphical() {
+extern "C" int getType() {
+    return 1;
+}
+
+extern "C" IGraphic* entryPoint() {
     return new SfmlAdapter();
 }
 

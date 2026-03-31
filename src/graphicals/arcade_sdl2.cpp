@@ -470,9 +470,17 @@ Sdl2Adapter::~Sdl2Adapter()
 } 
 
 /**
+ * @brief Returns the library type used by the loader.
+ * @return 1 for a graphical library.
+ */
+extern "C" int getType() {
+    return 1;
+}
+
+/**
  * @brief Dynamically creates an instance of the SDL2 graphic module.
  * @return Pointer to a newly allocated IGraphic instance.
  */
-extern "C" IGraphic* createGraphical() {
+extern "C" IGraphic* entryPoint() {
     return new Sdl2Adapter();
 }
