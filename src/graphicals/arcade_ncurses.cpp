@@ -49,6 +49,7 @@ std::map<Arcade::ElementType, char> asciiMap = {
     {Arcade::ElementType::PLAYER_RIGHT, '^'},
     {Arcade::ElementType::PLAYER_BODY, '0'},
     {Arcade::ElementType::PLAYER_TAIL, '~'},
+    {Arcade::ElementType::PLAYER_TURN, '%'},
     {Arcade::ElementType::FOOD, '*'},
     {Arcade::ElementType::ONE, '1'},
     {Arcade::ElementType::TWO, '2'},
