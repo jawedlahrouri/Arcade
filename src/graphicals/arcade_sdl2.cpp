@@ -370,13 +370,13 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
     }
 
     static const std::map<Arcade::ElementType, std::string> texturePathMap = {
-        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head.png"},
-        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head.png"},
-        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head.png"},
-        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head.png"},
-        {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn.png"},
-        {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail.png"},
-        {Arcade::ElementType::PLAYER_BODY, "asset/textures/snake-body.png"},
+        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn1.png"},
+        {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail1.png"},
+        {Arcade::ElementType::PLAYER_BODY, "asset/textures/snake-body1.png"},
         {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
         {Arcade::ElementType::WALL, "asset/textures/wall.png"},
         {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
@@ -401,28 +401,47 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
         SDL_Texture *texture = assetManager->getTexture(texIt->second);
         if (!texture)
             continue;
-        SDL_Rect dstRect = {obj.x * tileSize, obj.y * tileSize, tileSize, tileSize};
+        SDL_Rect dstRect = {obj.x * tileSize, obj.y * tileSize, tileSize + 1, tileSize + 1};
         double angle = 0.0;
+
         if (obj.type == Arcade::ElementType::PLAYER_UP)
-            angle = 0.0;
-        else if (obj.type == Arcade::ElementType::PLAYER_DOWN)
-            angle = 180.0;
-        else if (obj.type == Arcade::ElementType::PLAYER_LEFT)
-            angle = 270.0;
-        else if (obj.type == Arcade::ElementType::PLAYER_RIGHT)
             angle = 90.0;
-        else if (obj.type == Arcade::ElementType::PLAYER_BODY || obj.type == Arcade::ElementType::PLAYER_TAIL) {
+        else if (obj.type == Arcade::ElementType::PLAYER_DOWN)
+            angle = 270.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_LEFT)
+            angle = 0.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_RIGHT)
+            angle = 180.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_BODY) {
             if (i > 0) {
                 const auto &prev = objects[i - 1];
-                if (prev.x < obj.x)
-                    angle = 270.0; 
-                else if (prev.x > obj.x)
-                    angle = 90.0;
-                else if (prev.y < obj.y)
-                    angle = 0.0;
-                else if (prev.y > obj.y)
-                    angle = 180.0;
+                angle = (prev.x != obj.x) ? 0.0 : 90.0;
             }
+        } else if (obj.type == Arcade::ElementType::PLAYER_TAIL) {
+            if (i > 0) {
+                const auto &prev = objects[i - 1];
+                if (prev.x != obj.x) {
+                    angle = (prev.x > obj.x) ? 180.0 : 0.0;
+                } else {
+                    angle = (prev.y > obj.y) ? 270.0 : 90.0;
+                }
+            }
+        } else if (obj.type == Arcade::ElementType::PLAYER_TURN && i > 0 && i < objects.size() - 1) {
+            const auto &prev = objects[i - 1];
+            const auto &next = objects[i + 1];
+            bool hasNeighborRight = (prev.x > obj.x || next.x > obj.x);
+            bool hasNeighborLeft  = (prev.x < obj.x || next.x < obj.x);
+            bool hasNeighborDown  = (prev.y > obj.y || next.y > obj.y);
+            bool hasNeighborUp    = (prev.y < obj.y || next.y < obj.y);
+
+            if (hasNeighborRight && hasNeighborDown)
+                angle = 270.0;
+            else if (hasNeighborLeft && hasNeighborDown)
+                angle = 0.0;
+            else if (hasNeighborLeft && hasNeighborUp)
+                angle = 90.0;
+            else if (hasNeighborRight && hasNeighborUp)
+                angle = 180.0;
         }
         SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, angle, nullptr, SDL_FLIP_NONE);
     }
