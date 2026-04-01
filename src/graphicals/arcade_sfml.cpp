@@ -242,7 +242,11 @@ std::pair<int, int> SfmlAdapter::getScreenSize()
     return {0, 0};
 }
 
-extern "C" IGraphic* createGraphical() {
+extern "C" int getType() {
+    return 1;
+}
+
+extern "C" IGraphic* entryPoint() {
     return new SfmlAdapter();
 }
 

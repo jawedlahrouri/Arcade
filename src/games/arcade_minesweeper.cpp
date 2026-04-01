@@ -9,8 +9,6 @@
 #include <cstdlib>
 #include <ctime>
 
-extern "C" bool isGame = true;
-
 std::any arcade_minesweeper::init() {
     _width = 16;
     _height = 16;
@@ -229,6 +227,10 @@ void arcade_minesweeper::end_game() {
     _isGameOver = true;
 }
 
-extern "C" Arcade::IGames* createGame() {
+extern "C" int getType() {
+    return 2;
+}
+
+extern "C" Arcade::IGames* entryPoint() {
     return new arcade_minesweeper();
 }

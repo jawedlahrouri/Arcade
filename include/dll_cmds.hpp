@@ -8,6 +8,7 @@
 #ifndef DL_CMDS_HPP_
 #define DL_CMDS_HPP_
 #include <dlfcn.h>
+#include <string>
 #include <vector>
 #include <memory>
 #include "exception.hpp"
@@ -77,6 +78,24 @@
             CreatorFunc creator = reinterpret_cast<CreatorFunc>(raw_sym);
             T* instance = creator();
             return instance;
+        }
+
+        /**
+         * @brief Resolves and calls a type getter symbol from the loaded library.
+         * @param symbol Name of the exported type symbol.
+         * @return Integer identifying the library kind.
+         */
+        int getType(const std::string &symbol = "getType") {
+            ::dlerror();
+            void* raw_sym = ::dlsym(_handle, symbol.c_str());
+            const char* dlsym_error = ::dlerror();
+
+            if (dlsym_error) {
+                throw Exception(dlsym_error);
+            }
+            typedef int (*TypeGetterFunc)();
+            TypeGetterFunc getter = reinterpret_cast<TypeGetterFunc>(raw_sym);
+            return getter();
         }
     };
 
