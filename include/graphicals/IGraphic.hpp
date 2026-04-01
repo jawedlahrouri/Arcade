@@ -2,16 +2,17 @@
 ** EPITECH PROJECT, 2026
 ** ARCADE-1
 ** File description:
-** Igraphic
+** IGraphic
 */
 
-#ifndef IGRAPHIC_HPP_
-#define IGRAPHIC_HPP_
+#ifndef IGRAPHICAL_HPP_
+#define IGRAPHICAL_HPP_
 #include "arcade_types.hpp"
 #include <string>
 #include <utility>
 
 // all the functions that the graphical library must implement
+namespace Arcade {
 class IGraphic {
     public:
         virtual ~IGraphic() = default;
@@ -41,12 +42,12 @@ class IGraphic {
          * @brief Polls pending input commands.
          * @return Vector of detected input commands.
          */
-        virtual std::vector<Arcade::InputCommand> pollInputs() = 0;
-        /**
-         * @brief Gets the last text input from keyboard.
-         * @return String containing typed characters, empty if none.
-         */
         virtual std::string getTextInput() = 0;
+        /**
+         * @brief Polls pending input commands.
+         * @return Vector of detected input commands.
+         */
+        virtual std::vector<Arcade::InputCommand> getKeyboardEvents() = 0;
         /**
          * @brief Returns the current logical screen size.
          * @return Pair of width and height.
@@ -56,5 +57,6 @@ class IGraphic {
     protected:
     private:
 };
+}
 
-#endif /* !IGRAPHIC_HPP_ */
+#endif /* !IGRAPHICAL_HPP_ */

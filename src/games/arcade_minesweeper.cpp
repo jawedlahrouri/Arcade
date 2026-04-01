@@ -237,6 +237,12 @@ void arcade_minesweeper::end_game() {
     _isGameOver = true;
 }
 
-extern "C" Arcade::IGames* createGame() {
-    return new arcade_minesweeper();
+extern "C" {
+    int getType() {
+        return 2;
+    }
+
+    Arcade::IGames* entryPoint() {
+        return new arcade_minesweeper();
+    }
 }

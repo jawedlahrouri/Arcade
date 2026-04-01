@@ -9,7 +9,7 @@ Le projet est structure autour d'un executable coeur (`arcade`) qui charge dynam
 - l'affichage (graphical plugins),
 - les jeux (game plugins).
 
-Le chargement dynamique repose sur des interfaces C++ communes (`IGraphic`, `IGames`) et des points d'entree C (`createGraphical`, `createGame`).
+Le chargement dynamique repose sur des interfaces C++ communes (`IGraphical`, `IGames`) et des points d'entree C (`createGraphical`, `createGame`).
 
 ## 2) Arborescence actuelle (texte)
 
@@ -47,7 +47,7 @@ ARCADE-1/
 │   └── graphicals/
 │       ├── arcade_ncurses.hpp
 │       ├── arcade_sdl2.hpp
-│       └── IGraphic.hpp            # Interface plugin graphique
+│       └── IGraphical.hpp            # Interface plugin graphique
 ├── lib/
 │   ├── arcade_ncurses.so           # Plugin graphique ncurses
 │   ├── arcade_sdl2.so              # Plugin graphique SDL2
@@ -79,7 +79,7 @@ ARCADE-1/
   - Liste les jeux/libs graphiques disponibles (actuellement liste codee en dur).
   - Retourne une action de chargement selon les entrees utilisateur.
 - Interfaces:
-  - `IGraphic` definit le contrat des backends d'affichage.
+  - `IGraphical` definit le contrat des backends d'affichage.
   - `IGames` definit le contrat des jeux chargeables.
 - Plugins graphiques:
   - `arcade_ncurses.so` implemente le rendu terminal.
@@ -100,10 +100,10 @@ ARCADE-1/
     v
 [Core]
     |
-    | charge dynamiquement IGraphic via DLLoader
+    | charge dynamiquement IGraphical via DLLoader
     | symbole attendu: createGraphical
     v
-[IGraphic concret]
+[IGraphical concret]
 (ncurses OU sdl2)
     |
     | init + boucle evenement/rendu
@@ -125,7 +125,7 @@ ARCADE-1/
     |
     | handleInput -> update -> draw
     v
-[IGraphic concret]
+[IGraphical concret]
     |
     | display()
     v
@@ -156,14 +156,14 @@ ARCADE-1/
   - `Core` charge ainsi un backend graphique ou un jeu sans dependance compilee sur l'implementation concrete.
 - Effet concret:
   - Ajout d'une nouvelle lib = nouveau `.so` + respect de l'interface.
-  - Le core reste stable tant que le contrat `IGraphic`/`IGames` est respecte.
+  - Le core reste stable tant que le contrat `IGraphical`/`IGames` est respecte.
 
 ### 6.2) Strategy via interfaces (actif)
 
 - Idee:
   - Le comportement varie selon l'implementation choisie d'une interface commune.
 - Dans ce projet:
-  - `IGraphic` est la strategie d'affichage.
+  - `IGraphical` est la strategie d'affichage.
   - `NcursesAdapter` et `Sdl2Adapter` sont deux strategies interchangeables.
   - `IGames` est la strategie de gameplay chargee dynamiquement (`SnakeGame` actuellement).
 - Effet concret:
@@ -175,8 +175,8 @@ ARCADE-1/
 - Idee:
   - Encapsuler une API externe (ncurses, SDL2) derriere une interface projet unique.
 - Dans ce projet:
-  - `NcursesAdapter` traduit les appels `IGraphic` vers ncurses.
-  - `Sdl2Adapter` traduit les appels `IGraphic` vers SDL2/SDL_ttf.
+  - `NcursesAdapter` traduit les appels `IGraphical` vers ncurses.
+  - `Sdl2Adapter` traduit les appels `IGraphical` vers SDL2/SDL_ttf.
 - Effet concret:
   - Les jeux et le core dessinent avec une API unique, independamment de la techno graphique.
 
@@ -187,7 +187,7 @@ ARCADE-1/
 - Dans ce projet:
   - `IEvents` expose `Attach`, `Detach`, `Notify`.
   - `IObserver` expose `Update`.
-  - `ArcadeEvent` herite de `IEvents` dans `IGraphic.hpp`.
+  - `ArcadeEvent` herite de `IEvents` dans `IGraphical.hpp`.
 - Etat actuel:
   - Le mecanisme est structurellement present, mais la boucle principale manipule surtout des evenements sous forme de `std::string`.
   - L'Observer n'est pas encore au centre du flux runtime.
@@ -213,7 +213,7 @@ ARCADE-1/
   => Impact: chargement runtime de plugins sans liaison compilee directe.
 
 [Strategy]
-  -> include/graphicals/IGraphic.hpp:77
+  -> include/graphicals/IGraphical.hpp:77
   -> include/games/IGames.hpp:14
   -> include/graphicals/arcade_ncurses.hpp:13, include/graphicals/arcade_sdl2.hpp:17
   -> include/games/arcade_snake.hpp:13
@@ -223,13 +223,13 @@ ARCADE-1/
 [Adapter]
   -> include/graphicals/arcade_ncurses.hpp:13 + src/graphicals/arcade_ncurses.cpp
   -> include/graphicals/arcade_sdl2.hpp:17 + src/graphicals/arcade_sdl2.cpp
-  -> cible adaptee: include/graphicals/IGraphic.hpp:77
+  -> cible adaptee: include/graphicals/IGraphical.hpp:77
   => Impact: ncurses/SDL2 exposes via une API projet unifiee.
 
 [Observer]
   -> include/IObserver.hpp:13
   -> include/games/IEvents.hpp:14 (Attach/Detach/Notify aux lignes 19/23/27)
-  -> include/graphicals/IGraphic.hpp:52 (ArcadeEvent : IEvents)
+  -> include/graphicals/IGraphical.hpp:52 (ArcadeEvent : IEvents)
   => Impact actuel: infrastructure presente, exploitation runtime encore limitee.
 
 [Singleton]

@@ -11,3 +11,6 @@ latex/
 temp.txt
 .idea/
 scores.json
+
+#lib other team
+arcade_caca*

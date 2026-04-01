@@ -43,7 +43,7 @@ public:
     SDL_Texture* getTexture(const std::string& path);
 };
 
-class Sdl2Adapter : public IGraphic {
+class Sdl2Adapter : public Arcade::IGraphic {
 private:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
@@ -158,7 +158,7 @@ public:
      * @brief Polls SDL events and maps them to Arcade commands.
      * @return Vector of input commands.
      */
-    std::vector<Arcade::InputCommand> pollInputs() override;
+    std::vector<Arcade::InputCommand> getKeyboardEvents() override;
     /**
      * @brief Gets the text typed since the previous call.
      * @return Captured text input.

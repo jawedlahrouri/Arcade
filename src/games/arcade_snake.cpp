@@ -48,8 +48,8 @@ void SnakeGame::spawnApple()
     bool onBody = true;
 
     while (onBody) {
-        _apple.first = rand() % _mapWidth;
-        _apple.second = rand() % _mapHeigth;
+        _apple.first = (rand() % (_mapWidth - 1)) + 1; 
+        _apple.second = (rand() % (_mapHeigth - 1)) + 1;
         onBody = false;
         for (const auto& part : _body) {
             if (part.first == _apple.first && part.second == _apple.second) {
@@ -84,8 +84,8 @@ std::any SnakeGame::update()
     if (_currentDirection == Arcade::InputCommand::RIGHT)
         snakeHead.first++;
     
-    if (snakeHead.first < 0 || snakeHead.first >= _mapWidth ||
-        snakeHead.second < 0 || snakeHead.second >= _mapHeigth) {
+    if (snakeHead.first <= 0 || snakeHead.first >= _mapWidth ||
+        snakeHead.second <= 0 || snakeHead.second >= _mapHeigth) {
         _isGameOver = true;
         return {};
     }
@@ -111,17 +111,37 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
 {
     Arcade::DisplayData data;
 
-    for (int x = -1; x <= _mapWidth; x++) {
-        data.sprites.push_back({Arcade::ElementType::WALL, x, -1});
+    for (int x = 0; x <= _mapWidth; x++) {
+        data.sprites.push_back({Arcade::ElementType::WALL, x, 0});
         data.sprites.push_back({Arcade::ElementType::WALL, x, _mapHeigth});
     }
     for (int y = 0; y < _mapHeigth; y++) {
-        data.sprites.push_back({Arcade::ElementType::WALL, -1, y});
+        data.sprites.push_back({Arcade::ElementType::WALL, 0, y});
         data.sprites.push_back({Arcade::ElementType::WALL, _mapWidth, y});
     }
     data.sprites.push_back({Arcade::ElementType::FOOD, _apple.first, _apple.second});
-    for (size_t i = 0; i < _body.size(); ++i) {
-        Arcade::ElementType type = (i == 0) ? Arcade::ElementType::PLAYER_UP : Arcade::ElementType::PLAYER;
+    for (size_t i = 0; i < _body.size(); i++) {
+        Arcade::ElementType type;
+        if (i == 0) {
+            if (_currentDirection == Arcade::InputCommand::UP)
+                type = Arcade::ElementType::PLAYER_UP;
+            else if (_currentDirection == Arcade::InputCommand::DOWN)
+                type = Arcade::ElementType::PLAYER_DOWN;
+            else if (_currentDirection == Arcade::InputCommand::LEFT)
+                type = Arcade::ElementType::PLAYER_LEFT;
+            else
+                type = Arcade::ElementType::PLAYER_RIGHT;
+        } else if (i == _body.size() - 1) {
+            type = Arcade::ElementType::PLAYER_TAIL;
+        } else {
+            auto& prev = _body[i - 1];
+            auto& next = _body[i + 1];
+            if (prev.first != next.first && prev.second != next.second) {
+                type = Arcade::ElementType::PLAYER_TURN;
+            } else {
+                type = Arcade::ElementType::PLAYER_BODY;
+            }
+        }
         data.sprites.push_back({type, _body[i].first, _body[i].second});
     }
 
@@ -145,7 +165,14 @@ void SnakeGame::handleMouse([[maybe_unused]] Arcade::MouseEvent inputs)
 { 
 }
 
-extern "C" Arcade::IGames* createGame()
-{
-    return new SnakeGame();
+extern "C" {
+    int getType()
+    {
+        return 2;
+    }
+
+    Arcade::IGames* entryPoint()
+    {
+        return new SnakeGame();
+    }
 }
