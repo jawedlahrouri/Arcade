@@ -198,11 +198,11 @@ void SfmlAdapter::draw(const Arcade::DisplayData &data)
 
     draw(data.sprites);
     for (const auto &textObj : data.texts) {
-        drawText(textObj.x, textObj.y, textObj.text, textObj.color, defaultFont, 24);
+        drawText(textObj.x, textObj.y, textObj.content, textObj.color, defaultFont, 24);
     }
 }
 
-std::vector<Arcade::InputCommand> SfmlAdapter::pollInputs()
+std::vector<Arcade::InputCommand> SfmlAdapter::getKeyboardEvents()
 {
     std::vector<Arcade::InputCommand> commands;
     if (!_window) return commands;
@@ -242,11 +242,13 @@ std::pair<int, int> SfmlAdapter::getScreenSize()
     return {0, 0};
 }
 
-extern "C" int getType() {
-    return 1;
-}
-
-extern "C" IGraphic* entryPoint() {
-    return new SfmlAdapter();
+extern "C" { 
+    int getType() {
+        return 1;
+    }
+    
+    Arcade::IGraphic* entryPoint() {
+        return new SfmlAdapter();
+    }
 }
 

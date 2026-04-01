@@ -165,12 +165,14 @@ void SnakeGame::handleMouse([[maybe_unused]] Arcade::MouseEvent inputs)
 { 
 }
 
-extern "C" int getType()
-{
-    return 2;
-}
+extern "C" {
+    int getType()
+    {
+        return 2;
+    }
 
-extern "C" Arcade::IGames* entryPoint()
-{
-    return new SnakeGame();
+    Arcade::IGames* entryPoint()
+    {
+        return new SnakeGame();
+    }
 }
