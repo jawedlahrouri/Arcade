@@ -34,7 +34,8 @@ SfmlAdapter::~SfmlAdapter()
 
 void SfmlAdapter::init()
 {
-    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1000, 800), "Arcade - SFML");
+    sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+    _window = std::make_unique<sf::RenderWindow>(desktopMode, "Arcade - SFML", sf::Style::Fullscreen);
     _window->setFramerateLimit(60);
 }
 
