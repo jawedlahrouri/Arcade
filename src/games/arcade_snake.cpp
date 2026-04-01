@@ -143,7 +143,7 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
             }
         }
         data.sprites.push_back({type, _body[i].first, _body[i].second});
-}
+    }
 
     data.texts.push_back({"SNAKE", 25, 0, Arcade::Color::WHITE});
     data.texts.push_back({"Score: " + std::to_string(_score), 25, 1, Arcade::Color::WHITE});
