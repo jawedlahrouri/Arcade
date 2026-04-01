@@ -14,32 +14,53 @@ std::any arcade_minesweeper::init() {
         _width = 16;
         _height = 16;
         _totalBombs = 10;
+        _timeLimit = 300;
     } else if (_difficulty == 1) {
         _width = 18;
         _height = 18;
         _totalBombs = 40;
+        _timeLimit = 600;
     } else {
         _width = 24;
         _height = 24;
         _totalBombs = 100;
+        _timeLimit = 900;
     }
-
     _flagsPlaced = 0;
     _isGameOver = false;
     _hasWon = false;
     _firstClick = true;
     _cursorX = _width / 2;
     _cursorY = _height / 2;
+    _remainingTime = _timeLimit;
     std::srand(std::time(nullptr));    
     _grid.assign(_height, std::vector<int>(_width, 0));
     _revealed.assign(_height, std::vector<bool>(_width, false));
     _flagged.assign(_height, std::vector<bool>(_width, false));
+    _startTime = std::chrono::steady_clock::now();
     return {};
 }
 
 std::any arcade_minesweeper::update() {
     if (_isGameOver)
         return {};
+
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - _startTime).count();
+
+    _remainingTime = _timeLimit - static_cast<int>(elapsed);
+    if (_remainingTime <= 0) {
+        _remainingTime = 0;
+        _isGameOver = true;
+        _hasWon = false;
+        for (int y = 0; y < _height; ++y) {
+            for (int x = 0; x < _width; ++x) {
+                if (_grid[y][x] == BOMB) 
+                    _revealed[y][x] = true;
+            }
+        }
+        return {};
+    }
     int hiddenNonBombs = 0;
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
@@ -99,6 +120,8 @@ int arcade_minesweeper::getScore()
                 ++revealed;
         }
     }
+    if (_hasWon)
+        return revealed + _remainingTime;
     return revealed;
 }
 
@@ -116,6 +139,8 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     data.texts.push_back({bombCount, offsetX, 3, Arcade::Color::WHITE});
     std::string diffStr = (_difficulty == 0) ? "EASY" : (_difficulty == 1) ? "MEDIUM" : "HARD";
     data.texts.push_back({"Diff: " + diffStr, offsetX, 4, Arcade::Color::CYAN});
+    std::string timeStr = "Time: " + std::to_string(_remainingTime) + "s";
+    data.texts.push_back({timeStr, offsetX + _width - 6, 3, Arcade::Color::WHITE});
 
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
@@ -195,8 +220,10 @@ void arcade_minesweeper::generate_bomb_field(int safe_x, int safe_y) {
                     for (int dx = -1; dx <= 1; ++dx) {
                         int nx = x + dx;
                         int ny = y + dy;
-                        if (nx >= 0 && nx < _width && ny >= 0 && ny < _height)
-                            if (_grid[ny][nx] == BOMB) count++;
+                        if (nx >= 0 && nx < _width && ny >= 0 && ny < _height) {
+                            if (_grid[ny][nx] == BOMB)
+                                count++;
+                        }
                     }
                 }
                 _grid[y][x] = count;

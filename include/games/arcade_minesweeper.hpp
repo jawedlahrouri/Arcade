@@ -9,6 +9,7 @@
 #define ARCADE_1_ARCADE_MINESWEEPER_HPP
 
 #include "IGames.hpp"
+#include <chrono>
 
 enum CellType {
     EMPTY = 0,
@@ -19,12 +20,15 @@ class arcade_minesweeper : public Arcade::IGames {
     private:
         int _width;
         int _height;
-        int _difficulty = 1;
+        int _difficulty = 1; 
         int _totalBombs;
         int _flagsPlaced;
         bool _isGameOver;
         bool _hasWon;
         bool _firstClick;
+        std::chrono::steady_clock::time_point _startTime;
+        int _timeLimit;
+        int _remainingTime;
         std::vector<std::vector<int>> _grid;
         std::vector<std::vector<bool>> _revealed;
         std::vector<std::vector<bool>> _flagged;
