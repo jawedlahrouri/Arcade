@@ -18,7 +18,7 @@ flowchart LR
  - `main.cpp`: vérifie les arguments et instancie `Core` avec la bibliothèque graphique de départ.
  - `Core`: boucle principale, chargement dynamique des plugins, routage des commandes vers `Menu` ou `Game` et ordonnancement des appels de rendu.
  - `Menu`: découverte des plugins, gestion de la sélection, construction d'une `DisplayData` pour le rendu.
- - `IGraphic` et ses implémentations: lecture des entrées natives, conversion en `InputCommand`, dessin des objets et présentation à l'écran.
+ - `IGraphical` et ses implémentations: lecture des entrées natives, conversion en `InputCommand`, dessin des objets et présentation à l'écran.
  - `IGames` et ses implémentations: logique du jeu, traitement des commandes, exposition des objets à dessiner.
  - `arcade_types.hpp`: contrat de types partagés (évite le couplage direct entre jeux et interface graphique).
 
@@ -76,7 +76,7 @@ participant GameSo
 Main->>Core: start(initialGraphic)
 Core->>Loader: open(graphic)
 Loader->>GfxSo: resolve(createGraphical)
-GfxSo-->>Core: IGraphic instance
+GfxSo-->>Core: IGraphical instance
 
 Note over Core: boucle d'exécution
 
@@ -86,7 +86,7 @@ GameSo-->>Core: IGames instance
 
 Core->>Loader: reload(graphic)
 Loader->>GfxSo: resolve(createGraphical)
-GfxSo-->>Core: new IGraphic
+GfxSo-->>Core: new IGraphical
 ```
 
  ## 6. Résumé

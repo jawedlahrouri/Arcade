@@ -11,6 +11,7 @@
 #include <iostream>
 #include <ostream>
 #include <vector>
+#include <SDL2/SDL_image.h>
 
 const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP = {
     {SDLK_UP, Arcade::InputCommand::UP},
@@ -25,6 +26,7 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_l, Arcade::InputCommand::SWITCH_LEADERBOARD},
     {SDLK_ESCAPE, Arcade::InputCommand::BACK},
     {SDLK_SPACE, Arcade::InputCommand::FLAG},
+    {SDLK_d, Arcade::InputCommand::SWITCH_DIFFICULTY},
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 
@@ -53,7 +55,7 @@ Sdl2AssetManager::~Sdl2AssetManager()
 
 /**
  * @brief Retrieves a texture from cache or loads it from disk.
- * @param path Path to the BMP file to load.
+ * @param path Path to the image file to load (BMP, PNG, etc.).
  * @return Pointer to the SDL texture, or nullptr on failure.
  */
 SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
@@ -63,9 +65,9 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
         return found->second;
     }
 
-    SDL_Surface* surface = SDL_LoadBMP(path.c_str());
+    SDL_Surface* surface = IMG_Load(path.c_str());
     if (surface == nullptr) {
-        std::cerr << "Failed to load sprite '" << path << "': " << SDL_GetError() << std::endl;
+        std::cerr << "Failed to load sprite '" << path << "': " << IMG_GetError() << std::endl;
         return nullptr;
     }
 
@@ -81,7 +83,7 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
 }
 
 /**
- * @brief Initializes SDL, SDL_ttf, the window, renderer, and asset manager.
+ * @brief Initializes SDL, SDL_ttf, SDL_image, the window, renderer, and asset manager.
  * @return Does not return a value.
  */
 void Sdl2Adapter::init()
@@ -92,7 +94,11 @@ void Sdl2Adapter::init()
     if (TTF_Init() == -1) {
         throw Exception("TTF could not initialize! TTF_Error: " + std::string(TTF_GetError()));
     }
-    window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
+    int imgFlags = IMG_INIT_PNG;
+    if (!(IMG_Init(imgFlags) & imgFlags)) {
+        throw Exception("SDL_image could not initialize! IMG_Error: " + std::string(IMG_GetError()));
+    }
+    window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (!window) {
         throw Exception("Window could not be created! SDL_Error: " + std::string(SDL_GetError()));
     }
@@ -306,7 +312,7 @@ void Sdl2Adapter::drawCircle(int x, int y, int radius, Arcade::Color color)
  * @brief Loads then draws a sprite at the requested position.
  * @param x Horizontal position in tiles.
  * @param y Vertical position in tiles.
- * @param spritePath Path to the BMP sprite file.
+ * @param spritePath Path to the BMP/PNG sprite file.
  * @return Does not return a value.
  */
 void Sdl2Adapter::drawSprite(int x, int y, const std::string &spritePath)
@@ -365,29 +371,81 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
     }
 
     static const std::map<Arcade::ElementType, std::string> texturePathMap = {
+        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn1.png"},
+        {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail1.png"},
+        {Arcade::ElementType::PLAYER_BODY, "asset/textures/snake-body1.png"},
+        {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
         {Arcade::ElementType::WALL, "asset/textures/wall.png"},
         {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
         {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
-        {Arcade::ElementType::PLAYER_UP, "asset/textures/player_up.bmp"},
-        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/player_down.bmp"},
-        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/player_left.bmp"},
-        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/player_right.bmp"},
-        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"}
+        {Arcade::ElementType::EMPTY, "asset/textures/TileEmpty.png"},
+        {Arcade::ElementType::ONE, "asset/textures/Tile1.png"},
+        {Arcade::ElementType::TWO, "asset/textures/Tile2.png"},
+        {Arcade::ElementType::THREE, "asset/textures/Tile3.png"},
+        {Arcade::ElementType::FOUR, "asset/textures/Tile4.png"},
+        {Arcade::ElementType::FIVE, "asset/textures/Tile5.png"},
+        {Arcade::ElementType::SIX, "asset/textures/Tile6.png"},
+        {Arcade::ElementType::SEVEN, "asset/textures/Tile7.png"},
+        {Arcade::ElementType::EIGHT, "asset/textures/Tile8.png"},
+        {Arcade::ElementType::PLAYER, "asset/textures/Miner.png"}
     };
 
-    for (const auto &obj : objects) {
+    for (size_t i = 0; i < objects.size(); i++) {
+        const auto &obj = objects[i];
         const auto texIt = texturePathMap.find(obj.type);
-        if (texIt == texturePathMap.end()) {
-            continue;
-        }
 
+        if (texIt == texturePathMap.end())
+            continue;
         SDL_Texture *texture = assetManager->getTexture(texIt->second);
-        if (!texture) {
+        if (!texture)
             continue;
-        }
+        SDL_Rect dstRect = {obj.x * tileSize, obj.y * tileSize, tileSize + 1, tileSize + 1};
+        double angle = 0.0;
 
-        SDL_Rect dstRect = {obj.x * tileSize, obj.y * tileSize, tileSize, tileSize};
-        SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
+        if (obj.type == Arcade::ElementType::PLAYER_UP)
+            angle = 90.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_DOWN)
+            angle = 270.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_LEFT)
+            angle = 0.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_RIGHT)
+            angle = 180.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_BODY) {
+            if (i > 0) {
+                const auto &prev = objects[i - 1];
+                angle = (prev.x != obj.x) ? 0.0 : 90.0;
+            }
+        } else if (obj.type == Arcade::ElementType::PLAYER_TAIL) {
+            if (i > 0) {
+                const auto &prev = objects[i - 1];
+                if (prev.x != obj.x) {
+                    angle = (prev.x > obj.x) ? 180.0 : 0.0;
+                } else {
+                    angle = (prev.y > obj.y) ? 270.0 : 90.0;
+                }
+            }
+        } else if (obj.type == Arcade::ElementType::PLAYER_TURN && i > 0 && i < objects.size() - 1) {
+            const auto &prev = objects[i - 1];
+            const auto &next = objects[i + 1];
+            bool hasNeighborRight = (prev.x > obj.x || next.x > obj.x);
+            bool hasNeighborLeft  = (prev.x < obj.x || next.x < obj.x);
+            bool hasNeighborDown  = (prev.y > obj.y || next.y > obj.y);
+            bool hasNeighborUp    = (prev.y < obj.y || next.y < obj.y);
+
+            if (hasNeighborRight && hasNeighborDown)
+                angle = 270.0;
+            else if (hasNeighborLeft && hasNeighborDown)
+                angle = 0.0;
+            else if (hasNeighborLeft && hasNeighborUp)
+                angle = 90.0;
+            else if (hasNeighborRight && hasNeighborUp)
+                angle = 180.0;
+        }
+        SDL_RenderCopyEx(renderer, texture, nullptr, &dstRect, angle, nullptr, SDL_FLIP_NONE);
     }
 }
 
@@ -402,7 +460,7 @@ void Sdl2Adapter::draw(const Arcade::DisplayData &data)
 
     draw(data.sprites);
     for (const auto &text : data.texts) {
-        drawText(text.x, text.y, text.text, text.color, defaultFont, 24);
+        drawText(text.x, text.y, text.content, text.color, defaultFont, 24);
     }
 }
 
@@ -410,7 +468,7 @@ void Sdl2Adapter::draw(const Arcade::DisplayData &data)
  * @brief Polls SDL events and converts them to Arcade commands.
  * @return Detected command list, or NONE when no input is available.
  */
-std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
+std::vector<Arcade::InputCommand> Sdl2Adapter::getKeyboardEvents()
 {
     std::vector<Arcade::InputCommand> commands;
     SDL_Event event;
@@ -465,14 +523,25 @@ Sdl2Adapter::~Sdl2Adapter()
     if (window) {
         SDL_DestroyWindow(window);
     }
+    IMG_Quit();
     TTF_Quit();
     SDL_Quit();
 } 
 
 /**
- * @brief Dynamically creates an instance of the SDL2 graphic module.
- * @return Pointer to a newly allocated IGraphic instance.
+ * @brief Returns the library type used by the loader.
+ * @return 1 for a graphical library.
  */
-extern "C" IGraphic* createGraphical() {
-    return new Sdl2Adapter();
+extern "C" {
+    int getType() {
+        return 1;
+    }
+
+    /**
+     * @brief Dynamically creates an instance of the SDL2 graphic module.
+     * @return Pointer to a newly allocated IGraphic instance.
+     */
+    Arcade::IGraphic* entryPoint() {
+        return new Sdl2Adapter();
+    }
 }

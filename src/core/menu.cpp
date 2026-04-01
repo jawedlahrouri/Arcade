@@ -18,32 +18,30 @@
  */
 Menu::LibraryType Menu::detectLibraryType(const std::string &path)
 {
+    constexpr int GRAPHIC_LIBRARY_TYPE = 1;
+    constexpr int GAME_LIBRARY_TYPE = 2;
+
     void *handle = ::dlopen(path.c_str(), RTLD_LAZY | RTLD_LOCAL);
 
     if (!handle)
         return LibraryType::UNKNOWN;
     ::dlerror();
-    void *isGameSym = ::dlsym(handle, "isGame");
-    const char *flagError = ::dlerror();
+    void *typeGetterSym = ::dlsym(handle, "getType");
+    const char *typeError = ::dlerror();
 
-    if (!flagError && isGameSym) {
-        bool isGame = *reinterpret_cast<bool *>(isGameSym);
+    if (typeError || !typeGetterSym) {
         ::dlclose(handle);
-        return isGame ? LibraryType::GAME : LibraryType::GRAPHIC;
+        return LibraryType::UNKNOWN;
     }
-    ::dlerror();
-    void *gameFactory = ::dlsym(handle, "createGame");
-    const char *gameError = ::dlerror();
 
-    ::dlerror();
-    void *graphicFactory = ::dlsym(handle, "createGraphical");
-    const char *graphicError = ::dlerror();
-
+    using TypeGetter = int (*)();
+    TypeGetter getType = reinterpret_cast<TypeGetter>(typeGetterSym);
+    const int type = getType();
     ::dlclose(handle);
 
-    if (!gameError && gameFactory)
+    if (type == GAME_LIBRARY_TYPE)
         return LibraryType::GAME;
-    if (!graphicError && graphicFactory)
+    if (type == GRAPHIC_LIBRARY_TYPE)
         return LibraryType::GRAPHIC;
     return LibraryType::UNKNOWN;
 }

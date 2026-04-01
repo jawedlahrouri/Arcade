@@ -10,7 +10,6 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
 
 namespace Arcade {
     enum class InputCommand {
@@ -26,7 +25,15 @@ namespace Arcade {
         BACK,
         FLAG,
         QUIT,
-        SWITCH_LEADERBOARD
+        SWITCH_LEADERBOARD,
+        SWITCH_DIFFICULTY
+    };
+
+    struct MouseEvent {
+        int x;
+        int y;
+        bool leftClick;
+        bool rightClick;
     };
 
     enum class Color {
@@ -49,6 +56,9 @@ namespace Arcade {
         PLAYER_DOWN,
         PLAYER_LEFT,
         PLAYER_RIGHT,
+        PLAYER_TAIL,
+        PLAYER_TURN,
+        PLAYER_BODY,
         FOOD,
         BOMB,
         FLAG,
@@ -69,22 +79,26 @@ namespace Arcade {
         int y;
     };
 
-    struct TextObject {
-        std::string text;
+    struct TextEntity {
+        std::string content;
         int x;
         int y;
-        Color color;
+        bool isHighlighted = false;
+        std::string fontPath = "";
+        int fontSize = 24;
+        Color color = Color::WHITE;
+
+        TextEntity() = default;
+
+        TextEntity(const std::string &content_, int x_, int y_, Color color_)
+            : content(content_), x(x_), y(y_), color(color_)
+        {}
     };
+
 
     struct DisplayData {
         std::vector<SpriteObject> sprites;
-        std::vector<TextObject> texts;
-    };
-
-    struct MouseEvent {
-        int x;
-        int y;
-        bool isClicked;
+        std::vector<TextEntity> texts;
     };
 
     struct Snake {
@@ -92,6 +106,17 @@ namespace Arcade {
         std::pair<int, int> apple_coords;
         std::vector<std::pair<int, int>> coords_snake;
         int score;
+    };
+
+    struct Minesweeper {
+        std::string name;
+        std::vector<std::pair<int, int>> bombs_coords;
+        std::vector<std::pair<int, int>> reveal_case;
+        std::vector<std::pair<int, int>> hidden_case;
+        std::vector<std::pair<int, int>> flag_case;
+        std::vector<std::pair<int, std::pair<int, int>>> values_case;
+        int difficulty;
+        int flag_left;
     };
 }
 

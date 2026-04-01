@@ -11,7 +11,7 @@
 #include <ncurses.h>
 #include <unordered_map>
 
-class NcursesAdapter : public IGraphic {
+class NcursesAdapter : public Arcade::IGraphic {
 private:
     static const std::unordered_map<int, Arcade::InputCommand> KEY_MAP;
 
@@ -119,7 +119,7 @@ public:
      * @brief Polls inputs and maps them to Arcade commands.
      * @return Vector of input commands.
      */
-    std::vector<Arcade::InputCommand> pollInputs() override;
+    std::vector<Arcade::InputCommand> getKeyboardEvents() override;
     /**
      * @brief Gets the last text input from keyboard.
      * @return String containing typed characters.

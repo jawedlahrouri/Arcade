@@ -34,6 +34,8 @@ const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
     {'l', Arcade::InputCommand::SWITCH_LEADERBOARD},
     {'L', Arcade::InputCommand::SWITCH_LEADERBOARD},
     {27, Arcade::InputCommand::BACK},
+    {'d', Arcade::InputCommand::SWITCH_DIFFICULTY},
+    {'D', Arcade::InputCommand::SWITCH_DIFFICULTY},
     {' ', Arcade::InputCommand::FLAG},
     {'q', Arcade::InputCommand::QUIT},
     {'Q', Arcade::InputCommand::QUIT}
@@ -44,6 +46,12 @@ std::map<Arcade::ElementType, char> asciiMap = {
     {Arcade::ElementType::BOMB, '@'},
     {Arcade::ElementType::FLAG, '>'},
     {Arcade::ElementType::PLAYER_UP, '^'},
+    {Arcade::ElementType::PLAYER_DOWN, '^'},
+    {Arcade::ElementType::PLAYER_LEFT, '^'},
+    {Arcade::ElementType::PLAYER_RIGHT, '^'},
+    {Arcade::ElementType::PLAYER_BODY, '0'},
+    {Arcade::ElementType::PLAYER_TAIL, '~'},
+    {Arcade::ElementType::PLAYER_TURN, '%'},
     {Arcade::ElementType::FOOD, '*'},
     {Arcade::ElementType::ONE, '1'},
     {Arcade::ElementType::TWO, '2'},
@@ -229,6 +237,15 @@ void NcursesAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
             mvchgat(obj.y, obj.x * 2, 2, A_NORMAL, 9, NULL);
             continue;
         }
+        if (obj.type == Arcade::ElementType::PLAYER_BODY || obj.type == Arcade::ElementType::PLAYER_TAIL) {
+            mvchgat(obj.y, obj.x * 2, 2, A_NORMAL, 3, NULL); 
+            const auto it = asciiMap.find(obj.type);
+            if (it != asciiMap.end()) {
+                mvaddch(obj.y, obj.x * 2, it->second);
+                mvaddch(obj.y, obj.x * 2 + 1, it->second);
+            }
+            continue;
+        }
         const auto it = asciiMap.find(obj.type);
         if (it == asciiMap.end()) {
             continue;
@@ -248,7 +265,7 @@ void NcursesAdapter::draw(const Arcade::DisplayData &data)
 {
     draw(data.sprites);
     for (const auto &text : data.texts) {
-        drawText(text.x, text.y, text.text, text.color, "", 24);
+        drawText(text.x, text.y, text.content, text.color, "", 24);
     }
 }
 
@@ -302,7 +319,7 @@ void NcursesAdapter::display()
  * @brief Polls keyboard and mouse events and maps them to Arcade commands.
  * @return Command vector containing detected input or NONE.
  */
-std::vector<Arcade::InputCommand> NcursesAdapter::pollInputs()
+std::vector<Arcade::InputCommand> NcursesAdapter::getKeyboardEvents()
 {
     std::vector<Arcade::InputCommand> commands;
     int key = getch();
@@ -372,9 +389,19 @@ NcursesAdapter::~NcursesAdapter()
 }
 
 /**
- * @brief Creates an ncurses graphical adapter for dynamic loading.
- * @return Pointer to a newly allocated IGraphic implementation.
+ * @brief Returns the library type used by the loader.
+ * @return 1 for a graphical library.
  */
-extern "C" IGraphic* createGraphical() {
-    return new NcursesAdapter();
+extern "C" {
+    int getType() {
+        return 1;
+    }
+
+    /**
+     * @brief Creates an ncurses graphical adapter for dynamic loading.
+     * @return Pointer to a newly allocated IGraphic implementation.
+     */
+    Arcade::IGraphic* entryPoint() {
+        return new NcursesAdapter();
+    }
 }

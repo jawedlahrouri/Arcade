@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <memory>
 
-class SfmlAdapter : public IGraphic {
+class SfmlAdapter : public Arcade::IGraphic {
 private:
     std::unique_ptr<sf::RenderWindow> _window;
     std::unordered_map<std::string, sf::Texture> _textures;
@@ -27,6 +27,7 @@ private:
     void drawTile(int x, int y, Arcade::Color color);
     void drawSprite(int x, int y, const std::string &spritePath);
     void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize);
+    void draw(const std::vector<Arcade::SpriteObject> &objects);
 
 public:
     SfmlAdapter() = default;
@@ -36,7 +37,7 @@ public:
     void clear() override;
     void display() override;
     void draw(const Arcade::DisplayData &data) override;
-    std::vector<Arcade::InputCommand> pollInputs() override;
+    std::vector<Arcade::InputCommand> getKeyboardEvents() override;
     std::string getTextInput() override;
     std::pair<int, int> getScreenSize() override;
 };
