@@ -21,6 +21,7 @@ const std::unordered_map<sf::Keyboard::Key, Arcade::InputCommand> SfmlAdapter::K
     {sf::Keyboard::L, Arcade::InputCommand::SWITCH_LEADERBOARD},
     {sf::Keyboard::Escape, Arcade::InputCommand::BACK},
     {sf::Keyboard::Space, Arcade::InputCommand::FLAG},
+    {sf::Keyboard::D, Arcade::InputCommand::SWITCH_DIFFICULTY},
     {sf::Keyboard::Q, Arcade::InputCommand::QUIT}
 };
 
@@ -33,7 +34,8 @@ SfmlAdapter::~SfmlAdapter()
 
 void SfmlAdapter::init()
 {
-    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1000, 800), "Arcade - SFML");
+    sf::VideoMode desktopMode = sf::VideoMode::getDesktopMode();
+    _window = std::make_unique<sf::RenderWindow>(desktopMode, "Arcade - SFML", sf::Style::Fullscreen);
     _window->setFramerateLimit(60);
 }
 

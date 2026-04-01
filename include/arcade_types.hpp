@@ -25,7 +25,8 @@ namespace Arcade {
         BACK,
         FLAG,
         QUIT,
-        SWITCH_LEADERBOARD
+        SWITCH_LEADERBOARD,
+        SWITCH_DIFFICULTY
     };
 
     struct MouseEvent {

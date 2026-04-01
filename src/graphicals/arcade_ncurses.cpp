@@ -34,6 +34,8 @@ const std::unordered_map<int, Arcade::InputCommand> NcursesAdapter::KEY_MAP = {
     {'l', Arcade::InputCommand::SWITCH_LEADERBOARD},
     {'L', Arcade::InputCommand::SWITCH_LEADERBOARD},
     {27, Arcade::InputCommand::BACK},
+    {'d', Arcade::InputCommand::SWITCH_DIFFICULTY},
+    {'D', Arcade::InputCommand::SWITCH_DIFFICULTY},
     {' ', Arcade::InputCommand::FLAG},
     {'q', Arcade::InputCommand::QUIT},
     {'Q', Arcade::InputCommand::QUIT}

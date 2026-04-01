@@ -26,6 +26,7 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_l, Arcade::InputCommand::SWITCH_LEADERBOARD},
     {SDLK_ESCAPE, Arcade::InputCommand::BACK},
     {SDLK_SPACE, Arcade::InputCommand::FLAG},
+    {SDLK_d, Arcade::InputCommand::SWITCH_DIFFICULTY},
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 
@@ -97,7 +98,7 @@ void Sdl2Adapter::init()
     if (!(IMG_Init(imgFlags) & imgFlags)) {
         throw Exception("SDL_image could not initialize! IMG_Error: " + std::string(IMG_GetError()));
     }
-    window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 800, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (!window) {
         throw Exception("Window could not be created! SDL_Error: " + std::string(SDL_GetError()));
     }
