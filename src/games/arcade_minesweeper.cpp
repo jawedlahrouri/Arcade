@@ -119,10 +119,12 @@ int arcade_minesweeper::getScore()
             if (_revealed[y][x] && _grid[y][x] != BOMB)
                 ++revealed;
         }
-    }
+    } 
+    int score = revealed * 10;
+
     if (_hasWon)
-        return revealed + _remainingTime;
-    return revealed;
+        score += _remainingTime;    
+    return score;
 }
 
 bool arcade_minesweeper::isGameOver() {
@@ -134,14 +136,25 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     int offsetX = 5;
     int offsetY = 5;
 
-    data.texts.push_back({"MINESWEEPER", offsetX + _width / 2 - 4, 2, Arcade::Color::YELLOW}); 
+    data.texts.push_back({"MINESWEEPER", offsetX + _width / 2 - 4, 2, Arcade::Color::YELLOW});
     std::string bombCount = "Mines: " + std::to_string(_totalBombs - _flagsPlaced);
     data.texts.push_back({bombCount, offsetX, 3, Arcade::Color::WHITE});
     std::string diffStr = (_difficulty == 0) ? "EASY" : (_difficulty == 1) ? "MEDIUM" : "HARD";
     data.texts.push_back({"Diff: " + diffStr, offsetX, 4, Arcade::Color::CYAN});
     std::string timeStr = "Time: " + std::to_string(_remainingTime) + "s";
     data.texts.push_back({timeStr, offsetX + _width - 6, 3, Arcade::Color::WHITE});
-
+    int currentScore = 0;
+    for (int y = 0; y < _height; ++y) {
+        for (int x = 0; x < _width; ++x) {
+            if (_revealed[y][x] && _grid[y][x] != BOMB) {
+                currentScore += 10;
+            }
+        }
+    }
+    if (_hasWon)
+        currentScore += _remainingTime;
+    std::string scoreStr = "Score: " + std::to_string(currentScore);
+    data.texts.push_back({scoreStr, offsetX + _width - 6, 4, Arcade::Color::MAGENTA});
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
             Arcade::SpriteObject sprite;
