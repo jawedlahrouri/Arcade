@@ -21,6 +21,7 @@ const std::unordered_map<sf::Keyboard::Key, Arcade::InputCommand> SfmlAdapter::K
     {sf::Keyboard::L, Arcade::InputCommand::SWITCH_LEADERBOARD},
     {sf::Keyboard::Escape, Arcade::InputCommand::BACK},
     {sf::Keyboard::Space, Arcade::InputCommand::FLAG},
+    {sf::Keyboard::D, Arcade::InputCommand::SWITCH_DIFFICULTY},
     {sf::Keyboard::Q, Arcade::InputCommand::QUIT}
 };
 

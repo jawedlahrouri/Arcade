@@ -26,6 +26,7 @@ const std::unordered_map<SDL_Keycode, Arcade::InputCommand> Sdl2Adapter::KEY_MAP
     {SDLK_l, Arcade::InputCommand::SWITCH_LEADERBOARD},
     {SDLK_ESCAPE, Arcade::InputCommand::BACK},
     {SDLK_SPACE, Arcade::InputCommand::FLAG},
+    {SDLK_d, Arcade::InputCommand::SWITCH_DIFFICULTY},
     {SDLK_q, Arcade::InputCommand::QUIT}
 };
 

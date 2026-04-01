@@ -10,10 +10,20 @@
 #include <ctime>
 
 std::any arcade_minesweeper::init() {
-    _width = 16;
-    _height = 16;
-    _difficulty = 1; 
-    _totalBombs = 40;
+    if (_difficulty == 0) {
+        _width = 16;
+        _height = 16;
+        _totalBombs = 10;
+    } else if (_difficulty == 1) {
+        _width = 18;
+        _height = 18;
+        _totalBombs = 40;
+    } else {
+        _width = 24;
+        _height = 24;
+        _totalBombs = 100;
+    }
+
     _flagsPlaced = 0;
     _isGameOver = false;
     _hasWon = false;
@@ -45,6 +55,13 @@ std::any arcade_minesweeper::update() {
 }
 
 void arcade_minesweeper::handleKey(const std::vector<Arcade::InputCommand>& inputs) {
+    for (auto input : inputs) {
+        if (input == Arcade::InputCommand::SWITCH_DIFFICULTY) {
+            _difficulty = (_difficulty + 1) % 3;
+            init();
+            return;
+        }
+    }
     if (_isGameOver)
         return;
     for (auto input : inputs) {
@@ -86,7 +103,7 @@ int arcade_minesweeper::getScore()
 }
 
 bool arcade_minesweeper::isGameOver() {
-    return false;
+    return false; 
 }
 
 Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
@@ -97,6 +114,8 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     data.texts.push_back({"MINESWEEPER", offsetX + _width / 2 - 4, 2, Arcade::Color::YELLOW}); 
     std::string bombCount = "Mines: " + std::to_string(_totalBombs - _flagsPlaced);
     data.texts.push_back({bombCount, offsetX, 3, Arcade::Color::WHITE});
+    std::string diffStr = (_difficulty == 0) ? "EASY" : (_difficulty == 1) ? "MEDIUM" : "HARD";
+    data.texts.push_back({"Diff: " + diffStr, offsetX, 4, Arcade::Color::CYAN});
 
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
@@ -153,8 +172,7 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     return data;
 }
 
-void arcade_minesweeper::generate_bomb_field(int safe_x, int safe_y, int difficulty) {
-    _totalBombs = (difficulty == 0) ? 10 : (difficulty == 1) ? 40 : 99;
+void arcade_minesweeper::generate_bomb_field(int safe_x, int safe_y) {
     int bombsPlaced = 0;
 
     while (bombsPlaced < _totalBombs) {
@@ -193,7 +211,7 @@ void arcade_minesweeper::reveal_case(int coord_x, int coord_y) {
     if (_revealed[coord_y][coord_x] || _flagged[coord_y][coord_x])
         return;
     if (_firstClick) {
-        generate_bomb_field(coord_x, coord_y, _difficulty);
+        generate_bomb_field(coord_x, coord_y);
         _firstClick = false;
     }
 
