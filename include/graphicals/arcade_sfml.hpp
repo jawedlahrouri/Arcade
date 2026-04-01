@@ -27,6 +27,7 @@ private:
     void drawTile(int x, int y, Arcade::Color color);
     void drawSprite(int x, int y, const std::string &spritePath);
     void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize);
+    void draw(const std::vector<Arcade::SpriteObject> &objects);
 
 public:
     SfmlAdapter() = default;

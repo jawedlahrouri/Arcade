@@ -7,6 +7,7 @@
 
 #include "graphicals/arcade_sfml.hpp"
 #include <iostream>
+#include <map>
 
 const std::unordered_map<sf::Keyboard::Key, Arcade::InputCommand> SfmlAdapter::KEY_MAP = {
     {sf::Keyboard::Up, Arcade::InputCommand::UP},
@@ -32,7 +33,7 @@ SfmlAdapter::~SfmlAdapter()
 
 void SfmlAdapter::init()
 {
-    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(800, 600), "Arcade - SFML");
+    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1000, 800), "Arcade - SFML");
     _window->setFramerateLimit(60);
 }
 
@@ -106,25 +107,98 @@ void SfmlAdapter::drawText(int x, int y, const std::string &text, Arcade::Color 
     }
 
     sf::Text sfText(text, _fonts[fontPath], fontSize);
-    sfText.setPosition(x * 20.f, y * 20.f); // Base multiplier can be adjusted based on requirements
+    sfText.setPosition(x * 30.f, y * 30.f);
     sfText.setFillColor(getSfmlColor(color));
     _window->draw(sfText);
 }
 
+void SfmlAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
+{
+    float tSize = 40.f;
+    static const std::map<Arcade::ElementType, std::string> texturePathMap = {
+        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn1.png"},
+        {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail1.png"},
+        {Arcade::ElementType::PLAYER_BODY, "asset/textures/snake-body1.png"},
+        {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
+        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
+    };
+
+    if (!_window)
+        return;
+    for (size_t i = 0; i < objects.size(); i++) {
+        const auto &obj = objects[i];
+        const auto texIt = texturePathMap.find(obj.type);
+
+        if (texIt == texturePathMap.end())
+            continue;
+        if (_textures.find(texIt->second) == _textures.end()) {
+            sf::Texture tex;
+            if (!tex.loadFromFile(texIt->second))
+                continue;
+            _textures[texIt->second] = tex;
+        }
+        sf::Sprite sprite(_textures[texIt->second]);
+        double angle = 0.0;
+
+        if (obj.type == Arcade::ElementType::PLAYER_UP)
+            angle = 90.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_DOWN)
+            angle = 270.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_LEFT)
+            angle = 0.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_RIGHT)
+            angle = 180.0;
+        else if (obj.type == Arcade::ElementType::PLAYER_BODY) {
+            if (i > 0) {
+                const auto &prev = objects[i - 1];
+                angle = (prev.x != obj.x) ? 0.0 : 90.0;
+            }
+        } else if (obj.type == Arcade::ElementType::PLAYER_TAIL) {
+            if (i > 0) {
+                const auto &prev = objects[i - 1];
+                if (prev.x != obj.x)
+                    angle = (prev.x > obj.x) ? 180.0 : 0.0;
+                else
+                    angle = (prev.y > obj.y) ? 270.0 : 90.0;
+            }
+        } else if (obj.type == Arcade::ElementType::PLAYER_TURN && i > 0 && i < objects.size() - 1) {
+            const auto &prev = objects[i - 1];
+            const auto &next = objects[i + 1];
+            bool hasNeighborRight = (prev.x > obj.x || next.x > obj.x);
+            bool hasNeighborLeft  = (prev.x < obj.x || next.x < obj.x);
+            bool hasNeighborDown  = (prev.y > obj.y || next.y > obj.y);
+            bool hasNeighborUp    = (prev.y < obj.y || next.y < obj.y);
+
+            if (hasNeighborRight && hasNeighborDown)
+                angle = 270.0;
+            else if (hasNeighborLeft && hasNeighborDown)
+                angle = 0.0;
+            else if (hasNeighborLeft && hasNeighborUp)
+                angle = 90.0;
+            else if (hasNeighborRight && hasNeighborUp)
+                angle = 180.0;
+        }
+        float scaleX = tSize / sprite.getLocalBounds().width;
+        float scaleY = tSize / sprite.getLocalBounds().height;
+        sprite.setScale(scaleX, scaleY);
+        sprite.setOrigin(sprite.getLocalBounds().width / 2.f, sprite.getLocalBounds().height / 2.f);
+        sprite.setRotation(angle);
+        sprite.setPosition(obj.x * tSize + tSize / 2.f, obj.y * tSize + tSize / 2.f);
+        _window->draw(sprite);
+    }
+}
+
 void SfmlAdapter::draw(const Arcade::DisplayData &data)
 {
-    for (const auto &obj : data.sprites) {
-        Arcade::Color color = Arcade::Color::WHITE;
-        switch (obj.type) {
-            case Arcade::ElementType::WALL: color = Arcade::Color::BLUE; break;
-            case Arcade::ElementType::PLAYER: color = Arcade::Color::YELLOW; break;
-            case Arcade::ElementType::FOOD: color = Arcade::Color::RED; break;
-            default: color = Arcade::Color::WHITE; break;
-        }
-        drawTile(obj.x, obj.y, color);
-    }
+    static const std::string defaultFont = "asset/font/coolvetica/Coolvetica Rg.otf";
+
+    draw(data.sprites);
     for (const auto &textObj : data.texts) {
-        drawText(textObj.x, textObj.y, textObj.text, textObj.color, "asset/font/coolvetica/Coolvetica Rg.otf", 24);
+        drawText(textObj.x, textObj.y, textObj.text, textObj.color, defaultFont, 24);
     }
 }
 
@@ -163,7 +237,7 @@ std::pair<int, int> SfmlAdapter::getScreenSize()
 {
     if (_window) {
         sf::Vector2u size = _window->getSize();
-        return {size.x / 20, size.y / 20}; // Returning logical size in tiles (assuming 20x20 tile size)
+        return {size.x / 20, size.y / 20};
     }
     return {0, 0};
 }
