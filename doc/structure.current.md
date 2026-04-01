@@ -5,7 +5,7 @@
 ARCADE-1 est un framework de jeux arcade modulaire base sur une architecture plugin avec:
 
 - Un noyau statique (`arcade`) qui charge dynamiquement des bibliotheques graphiques et des jeux.
-- Des interfaces communes (`IGraphic`, `IGames`) qui definissent les contrats entre plugins.
+- Des interfaces communes (`IGraphical`, `IGames`) qui definissent les contrats entre plugins.
 - Un systeme d'entrees unifie (`Arcade::InputCommand`) partage entre le core, le menu et les jeux.
 - Une base de gestion joueur (`Player`) prete pour la persistance des scores (implementation encore partielle).
 
@@ -45,7 +45,7 @@ ARCADE-1/
 │   │   ├── IGames.hpp              # Contrat plugin jeu
 │   │   └── arcade_snake.hpp        # Header SnakeGame
 │   └── graphicals/
-│       ├── IGraphic.hpp            # Contrat plugin graphique + types communs
+│       ├── IGraphical.hpp            # Contrat plugin graphique + types communs
 │       ├── arcade_ncurses.hpp      # Adapter ncurses
 │       └── arcade_sdl2.hpp         # Adapter SDL2
 │
@@ -138,9 +138,9 @@ ARCADE-1/
 
 ---
 
-### 3.4. Contrats de plugins (`IGraphic`, `IGames`)
+### 3.4. Contrats de plugins (`IGraphical`, `IGames`)
 
-#### `IGraphic` (`include/graphicals/IGraphic.hpp`)
+#### `IGraphical` (`include/graphicals/IGraphical.hpp`)
 
 Expose:
 
@@ -211,12 +211,12 @@ Plugins actuels:
 
 ### 6.2. Strategy (actif)
 
-- Le core manipule `IGraphic` et `IGames`.
+- Le core manipule `IGraphical` et `IGames`.
 - Les implementations concretes sont interchangeables (`NcursesAdapter`, `Sdl2Adapter`, `SnakeGame`).
 
 ### 6.3. Adapter (actif)
 
-- Chaque backend traduit son API native (ncurses / SDL2) vers le contrat `IGraphic`.
+- Chaque backend traduit son API native (ncurses / SDL2) vers le contrat `IGraphical`.
 
 ### 6.4. Command (actif)
 

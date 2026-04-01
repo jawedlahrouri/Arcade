@@ -24,8 +24,8 @@ namespace {
  * @return Does not return a value.
  */
 Core::Core(const std::string& libPath) : _isRunning(true), _currentGraphicLibPath(libPath) {
-    _graphicLoader = std::make_unique<DLLoader<IGraphic>>(libPath);
-    IGraphic* rawGraphicPtr = nullptr;
+    _graphicLoader = std::make_unique<DLLoader<Arcade::IGraphic>>(libPath);
+    Arcade::IGraphic* rawGraphicPtr = nullptr;
     try {
         if (_graphicLoader->getType() != GRAPHIC_LIBRARY_TYPE) {
             throw ErrorException("Error: " + libPath + " not a graphic library");
@@ -53,8 +53,8 @@ void Core::changeGraphicLib(const std::string& newLibPath) {
     }
 
     try {
-        std::unique_ptr<DLLoader<IGraphic>> newLoader = std::make_unique<DLLoader<IGraphic>>(newLibPath);
-        IGraphic* rawGraphicPtr = nullptr;
+        std::unique_ptr<DLLoader<Arcade::IGraphic>> newLoader = std::make_unique<DLLoader<Arcade::IGraphic>>(newLibPath);
+        Arcade::IGraphic* rawGraphicPtr = nullptr;
 
         if (newLoader->getType() != GRAPHIC_LIBRARY_TYPE) {
             throw ErrorException("Error: " + newLibPath + " not a graphic library");
@@ -64,7 +64,7 @@ void Core::changeGraphicLib(const std::string& newLibPath) {
         if (!rawGraphicPtr) {
             throw CrashException("Failed to load new graphic lib");
         }
-        std::unique_ptr<IGraphic> newGraphic(rawGraphicPtr);
+        std::unique_ptr<Arcade::IGraphic> newGraphic(rawGraphicPtr);
 
         _graphic.reset();
         _graphicLoader.reset();
@@ -315,7 +315,7 @@ void Core::renderGameFrame(const std::vector<Arcade::InputCommand> &commands, bo
 void Core::runFrame(Menu &arcadeMenu, bool &inMenu)
 {
     try {
-        const std::vector<Arcade::InputCommand> commands = _graphic->pollInputs();
+        const std::vector<Arcade::InputCommand> commands = _graphic->getKeyboardEvents();
         const bool skipFrame = processGlobalCommands(commands, inMenu, arcadeMenu);
 
         if (!_isRunning || skipFrame) {

@@ -20,8 +20,8 @@ class Core {
     bool _isRunning;
     std::string _currentGraphicLibPath;
     
-    std::unique_ptr<DLLoader<IGraphic>> _graphicLoader; 
-    std::unique_ptr<IGraphic> _graphic;
+    std::unique_ptr<DLLoader<Arcade::IGraphic>> _graphicLoader; 
+    std::unique_ptr<Arcade::IGraphic> _graphic;
     
     std::unique_ptr<DLLoader<Arcade::IGames>> _gameLoader;
     std::unique_ptr<Arcade::IGames> _currentGame;

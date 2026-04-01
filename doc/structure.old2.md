@@ -5,7 +5,7 @@
 ARCADE-1 est un framework de jeux arcade modulaire basé sur une **architecture plugin** avec:
 
 - Un **noyau statique** (`arcade`) qui charge dynamiquement des bibliothèques graphiques et des jeux.
-- Des **interface communes** (`IGraphic`, `IGames`) qui définissent les contrats entre plugins.
+- Des **interface communes** (`IGraphical`, `IGames`) qui définissent les contrats entre plugins.
 - Un **système d'événements unifié** (`Arcade::InputCommand`) traversant tous les composants.
 - Une **gestion de joueur** (`Player`) pour persister les scores par jeu.
 
@@ -48,7 +48,7 @@ ARCADE-1/ (268 fichiers total, 23 en src/include)
 │   │   ├── arcade_snake.hpp        # Header jeu Snake
 │   │   └── IGames.hpp              # Interface jeux (Strategy pattern)
 │   └── graphicals/
-│       ├── IGraphic.hpp            # Interface affichage + enum InputCommand
+│       ├── IGraphical.hpp            # Interface affichage + enum InputCommand
 │       ├── arcade_ncurses.hpp      # Adapter ncurses
 │       └── arcade_sdl2.hpp         # Adapter SDL2
 │
@@ -83,19 +83,19 @@ ARCADE-1/ (268 fichiers total, 23 en src/include)
 
 **Responsabilités:**
 
-- Charge et initialise le backend graphique (IGraphic) au démarrage.
+- Charge et initialise le backend graphique (IGraphical) au démarrage.
 - Gère la boucle principale avec FPS cap ~60 (16ms par frame).
 - Orchestre Menu ↔ Jeu avec transitions fluides.
 - Permet le changement de backend graphique en direct (Ctrl+S).
 
 **Flux principal:**
 
-1. Instantiation `Core(libPath)` charge via `DLLoader<IGraphic>::getInstance("createGraphical")`.
+1. Instantiation `Core(libPath)` charge via `DLLoader<IGraphical>::getInstance("createGraphical")`.
 2. Boucle `run()`:
    - Récupère les événements unifiés: `std::vector<Arcade::InputCommand>`.
    - En mode Menu: délègue au Menu, qui retourne une `MenuAction`.
    - En mode Jeu: délègue au jeu actuel qui traite les inputs + update + draw.
-   - Affiche le rendu via `IGraphic::display()`.
+   - Affiche le rendu via `IGraphical::display()`.
 
 **Clés techniques:**
 
@@ -144,9 +144,9 @@ ARCADE-1/ (268 fichiers total, 23 en src/include)
 
 ---
 
-### 3.4. Interfaces de contrat (`IGraphic`, `IGames`)
+### 3.4. Interfaces de contrat (`IGraphical`, `IGames`)
 
-#### IGraphic (include/graphicals/IGraphic.hpp)
+#### IGraphical (include/graphicals/IGraphical.hpp)
 
 **Définit le contrat pour tout backend d'affichage:**
 
@@ -158,7 +158,7 @@ namespace Arcade {
   };
 }
 
-class IGraphic {
+class IGraphical {
   virtual void init() = 0;
   virtual void clear() = 0;
   virtual void display() = 0;
@@ -186,10 +186,10 @@ class IGraphic {
 
 ```cpp
 class IGames {
-  virtual void init(IGraphic& graphicLib) = 0;
+  virtual void init(IGraphical& graphicLib) = 0;
   virtual void update() = 0;
   virtual void handleInput(const std::vector<Arcade::InputCommand>& inputs) = 0;
-  virtual void draw(IGraphic& graphicLib) = 0;
+  virtual void draw(IGraphical& graphicLib) = 0;
   virtual bool isGameOver() = 0;
 };
 ```
@@ -204,7 +204,7 @@ class IGames {
 
 ### 4.1. Arcade::InputCommand
 
-**Défini dans:** `include/graphicals/IGraphic.hpp` ligne 14-24
+**Défini dans:** `include/graphicals/IGraphical.hpp` ligne 14-24
 
 ```cpp
 namespace Arcade {
@@ -263,7 +263,7 @@ namespace Arcade {
 
 **Implémentation:**
 
-- `IGraphic` / `IGames` définissent le contrat.
+- `IGraphical` / `IGames` définissent le contrat.
 - `NcursesAdapter` / `Sdl2Adapter` / `SnakeGame` varient l'implémentation.
 - `Core` manipule l'interface abstraite sans connaître l'implémentation.
 
@@ -271,7 +271,7 @@ namespace Arcade {
 
 | Pattern        | Fichier                       | Ligne                                |
 | -------------- | ----------------------------- | ------------------------------------ |
-| IGraphic       | graphicals/IGraphic.hpp       | 77                                   |
+| IGraphical       | graphicals/IGraphical.hpp       | 77                                   |
 | IGames         | games/IGames.hpp              | 14                                   |
 | NcursesAdapter | graphicals/arcade_ncurses.hpp | 13                                   |
 | Sdl2Adapter    | graphicals/arcade_sdl2.hpp    | 17                                   |
@@ -288,9 +288,9 @@ namespace Arcade {
 
 **Implémentation:**
 
-- `NcursesAdapter` encapsule ncurses derrière `IGraphic`.
-- `Sdl2Adapter` encapsule SDL2/TTF derrière `IGraphic`.
-- Les jeux et le core appellent `IGraphic` sans connaître ncurses/SDL2.
+- `NcursesAdapter` encapsule ncurses derrière `IGraphical`.
+- `Sdl2Adapter` encapsule SDL2/TTF derrière `IGraphical`.
+- Les jeux et le core appellent `IGraphical` sans connaître ncurses/SDL2.
 
 **Fichiers:**
 
@@ -309,7 +309,7 @@ namespace Arcade {
 
 **Implémentation (nouvelle):**
 
-- `Arcade::InputCommand` enum (include/graphicals/IGraphic.hpp:15-23) centralise toutes les commandes.
+- `Arcade::InputCommand` enum (include/graphicals/IGraphical.hpp:15-23) centralise toutes les commandes.
 - Chaque backend graphique (`pollInputs()`) exporte les touches brutes en commandes enum.
 - `Core`, `Menu`, `IGames` reçoivent `std::vector<Arcade::InputCommand>` et traitent uniformément.
 - Mappage clavier:
@@ -320,7 +320,7 @@ namespace Arcade {
 
 | Fichier            | Ligne   | Rôle                                |
 | ------------------ | ------- | ------------------------------------ |
-| IGraphic.hpp       | 15-23   | enum InputCommand (`NONE` ajouté) |
+| IGraphical.hpp       | 15-23   | enum InputCommand (`NONE` ajouté) |
 | arcade_ncurses.hpp | 15-26   | keymap ncurses                       |
 | arcade_sdl2.hpp    | 21-30   | keymap SDL2                          |
 | arcade_ncurses.cpp | 127-157 | `pollInputs()` impl                |
@@ -334,11 +334,11 @@ namespace Arcade {
 
 ### Pattern 5: **Composition + Injection de Dépendances** ✅ Actif (remplace Singleton)
 
-**Objectif:** Passer les dépendances (IGraphic, Player, etc.) en constructeur plutôt que les demander globalement.
+**Objectif:** Passer les dépendances (IGraphical, Player, etc.) en constructeur plutôt que les demander globalement.
 
 **Implémentation (nouvelle):**
 
-- `Core` reçoit `IGraphic*` et la passe aux jeux: `game->init(*_graphic)`.
+- `Core` reçoit `IGraphical*` et la passe aux jeux: `game->init(*_graphic)`.
 - `Player` est construit avec le nom : `Player("PlayerName")`.
 - Chaque composant (Menu, Jeu) reçoit ce dont il a besoin plutôt que de chercher une instance globale.
 - Pas de `Singleton::GetInstance()`, pas de state global caché.
@@ -348,10 +348,10 @@ namespace Arcade {
 | Fichier    | Ligne   | Rôle                                                     |
 | ---------- | ------- | --------------------------------------------------------- |
 | core.hpp   | ~20-30  | membres `_graphicLoader`, `_graphic`, `_gameLoader` |
-| Core.cpp   | 8-20    | constructeur charge IGraphic                              |
-| Core.cpp   | 113-118 | passe IGraphic aux jeux                                   |
+| Core.cpp   | 8-20    | constructeur charge IGraphical                              |
+| Core.cpp   | 113-118 | passe IGraphical aux jeux                                   |
 | Player.hpp | ~14     | constructeur explicit                                     |
-| IGames.hpp | 18      | param `IGraphic& graphicLib` explicite                  |
+| IGames.hpp | 18      | param `IGraphical& graphicLib` explicite                  |
 
 **Impact:** Dépendances visibles et testables. Structure claire du flux d'execution (pas de magic global). Facilite les tests unitaires et multi-backends.
 
@@ -436,7 +436,7 @@ make re           # fclean + all
 | **IObserver.hpp supprimé** | Ancien pattern Observer remplacé par Command                 |
 | **Singleton.hpp supprimé** | Ancien pattern Singleton remplacé par Composition+Injection  |
 | **Command pattern actif**   | `Arcade::InputCommand` enum centralise toutes les commandes |
-| **Injection dépendances**  | Core, Menu, Jeu reçoivent IGraphic, Player en paramètre     |
+| **Injection dépendances**  | Core, Menu, Jeu reçoivent IGraphical, Player en paramètre     |
 | Classe Player ajoutée            | `include/core/Player.hpp`, `src/core/Player.cpp`          |
 | IGames::handleInput refactorisé  | `std::string` → `std::vector<Arcade::InputCommand>`      |
 | Menu::handleInput refactorisé    | Idem, itération sur commands batch                           |

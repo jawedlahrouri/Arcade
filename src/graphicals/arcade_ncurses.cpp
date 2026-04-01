@@ -263,7 +263,7 @@ void NcursesAdapter::draw(const Arcade::DisplayData &data)
 {
     draw(data.sprites);
     for (const auto &text : data.texts) {
-        drawText(text.x, text.y, text.text, text.color, "", 24);
+        drawText(text.x, text.y, text.content, text.color, "", 24);
     }
 }
 
@@ -317,7 +317,7 @@ void NcursesAdapter::display()
  * @brief Polls keyboard and mouse events and maps them to Arcade commands.
  * @return Command vector containing detected input or NONE.
  */
-std::vector<Arcade::InputCommand> NcursesAdapter::pollInputs()
+std::vector<Arcade::InputCommand> NcursesAdapter::getKeyboardEvents()
 {
     std::vector<Arcade::InputCommand> commands;
     int key = getch();
@@ -390,14 +390,16 @@ NcursesAdapter::~NcursesAdapter()
  * @brief Returns the library type used by the loader.
  * @return 1 for a graphical library.
  */
-extern "C" int getType() {
-    return 1;
-}
+extern "C" {
+    int getType() {
+        return 1;
+    }
 
-/**
- * @brief Creates an ncurses graphical adapter for dynamic loading.
- * @return Pointer to a newly allocated IGraphic implementation.
- */
-extern "C" IGraphic* entryPoint() {
-    return new NcursesAdapter();
+    /**
+     * @brief Creates an ncurses graphical adapter for dynamic loading.
+     * @return Pointer to a newly allocated IGraphic implementation.
+     */
+    Arcade::IGraphic* entryPoint() {
+        return new NcursesAdapter();
+    }
 }

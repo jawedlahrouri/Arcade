@@ -459,7 +459,7 @@ void Sdl2Adapter::draw(const Arcade::DisplayData &data)
 
     draw(data.sprites);
     for (const auto &text : data.texts) {
-        drawText(text.x, text.y, text.text, text.color, defaultFont, 24);
+        drawText(text.x, text.y, text.content, text.color, defaultFont, 24);
     }
 }
 
@@ -467,7 +467,7 @@ void Sdl2Adapter::draw(const Arcade::DisplayData &data)
  * @brief Polls SDL events and converts them to Arcade commands.
  * @return Detected command list, or NONE when no input is available.
  */
-std::vector<Arcade::InputCommand> Sdl2Adapter::pollInputs()
+std::vector<Arcade::InputCommand> Sdl2Adapter::getKeyboardEvents()
 {
     std::vector<Arcade::InputCommand> commands;
     SDL_Event event;
@@ -531,14 +531,16 @@ Sdl2Adapter::~Sdl2Adapter()
  * @brief Returns the library type used by the loader.
  * @return 1 for a graphical library.
  */
-extern "C" int getType() {
-    return 1;
-}
+extern "C" {
+    int getType() {
+        return 1;
+    }
 
-/**
- * @brief Dynamically creates an instance of the SDL2 graphic module.
- * @return Pointer to a newly allocated IGraphic instance.
- */
-extern "C" IGraphic* entryPoint() {
-    return new Sdl2Adapter();
+    /**
+     * @brief Dynamically creates an instance of the SDL2 graphic module.
+     * @return Pointer to a newly allocated IGraphic instance.
+     */
+    Arcade::IGraphic* entryPoint() {
+        return new Sdl2Adapter();
+    }
 }
