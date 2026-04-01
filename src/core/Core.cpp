@@ -159,11 +159,9 @@ bool Core::switchGame(const std::string &gamePath)
 bool Core::handleReloadGame(Menu &arcadeMenu)
 {
     (void)arcadeMenu;
-    if (_currentGameLibPath.empty()) {
-        return false;
-    }
-    loadGame(_currentGameLibPath);
-    return true;
+    if (_currentGame)
+        _currentGame->init();
+    return false;
 }
 
 

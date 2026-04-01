@@ -9,8 +9,6 @@
 #include <cstdlib>
 #include <ctime>
 
-extern "C" bool isGame = true;
-
 std::any arcade_minesweeper::init() {
     _width = 16;
     _height = 16;
@@ -88,7 +86,7 @@ int arcade_minesweeper::getScore()
 }
 
 bool arcade_minesweeper::isGameOver() {
-    return _isGameOver;
+    return false;
 }
 
 Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
@@ -96,14 +94,9 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     int offsetX = 5;
     int offsetY = 5;
 
-    data.texts.push_back({"MINESWEEPER", offsetX + _width / 2, 2, Arcade::Color::YELLOW}); 
+    data.texts.push_back({"MINESWEEPER", offsetX + _width / 2 - 4, 2, Arcade::Color::YELLOW}); 
     std::string bombCount = "Mines: " + std::to_string(_totalBombs - _flagsPlaced);
     data.texts.push_back({bombCount, offsetX, 3, Arcade::Color::WHITE});
-    if (_isGameOver) {
-        std::string endText = _hasWon ? "YOU WIN !" : "GAME OVER !";
-        Arcade::Color endColor = _hasWon ? Arcade::Color::GREEN : Arcade::Color::RED;
-        data.texts.push_back({endText, offsetX + _width / 2 - 2, 4, endColor});
-    }
 
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
@@ -133,7 +126,7 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
             else
                 sprite.type = Arcade::ElementType::WALL;
             data.sprites.push_back(sprite);
-            if (x == _cursorX && y == _cursorY) {
+            if (!_isGameOver && x == _cursorX && y == _cursorY) {
                 Arcade::SpriteObject cursor;
                 cursor.x = x + offsetX;
                 cursor.y = y + offsetY;
@@ -142,6 +135,21 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
             }
         }
     }
+    if (_isGameOver) {
+        int rightX = offsetX + _width + 4;
+        int textY = offsetY + (_height / 2) - 2;
+
+        if (_hasWon) {
+            data.texts.push_back({"  YOU  ", rightX, textY, Arcade::Color::GREEN});
+            data.texts.push_back({" WIN !!", rightX, textY + 1, Arcade::Color::GREEN});
+        } else {
+            data.texts.push_back({" GAME ", rightX, textY, Arcade::Color::RED});
+            data.texts.push_back({"OVER !", rightX, textY + 1, Arcade::Color::RED});
+        }
+        data.texts.push_back({"Press R to restart", rightX - 2, textY + 4, Arcade::Color::WHITE});
+        data.texts.push_back({"Press ESC for menu", rightX - 2, textY + 5, Arcade::Color::WHITE});
+    }
+
     return data;
 }
 
