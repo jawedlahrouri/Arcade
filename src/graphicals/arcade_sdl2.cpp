@@ -389,7 +389,8 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
         {Arcade::ElementType::FIVE, "asset/textures/Tile5.png"},
         {Arcade::ElementType::SIX, "asset/textures/Tile6.png"},
         {Arcade::ElementType::SEVEN, "asset/textures/Tile7.png"},
-        {Arcade::ElementType::EIGHT, "asset/textures/Tile8.png"}
+        {Arcade::ElementType::EIGHT, "asset/textures/Tile8.png"},
+        {Arcade::ElementType::PLAYER, "asset/textures/Miner.png"}
     };
 
     for (size_t i = 0; i < objects.size(); i++) {
