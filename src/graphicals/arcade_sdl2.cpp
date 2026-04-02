@@ -98,7 +98,7 @@ void Sdl2Adapter::init()
     if (!(IMG_Init(imgFlags) & imgFlags)) {
         throw Exception("SDL_image could not initialize! IMG_Error: " + std::string(IMG_GetError()));
     }
-    window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    window = SDL_CreateWindow("Arcade - SDL2", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_SHOWN);
     if (!window) {
         throw Exception("Window could not be created! SDL_Error: " + std::string(SDL_GetError()));
     }
