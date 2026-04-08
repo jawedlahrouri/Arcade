@@ -21,6 +21,7 @@ class Sdl2AssetManager {
 private:
     SDL_Renderer* _renderer;
     std::map<std::string, SDL_Texture*> _textures;
+    
 
 public:
     /**

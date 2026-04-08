@@ -78,7 +78,7 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
         return nullptr;
     }
 
-    _textures[path] = texture;
+    _textures[path] = texture;          
     return texture;
 }
 
