@@ -22,6 +22,7 @@ class SnakeGame : public Arcade::IGames {
         Arcade::InputCommand _currentDirection;
         bool _isGameOver;
         void spawnApple();
+        std::unordered_map<Arcade::ElementType, std::string> getAssets;
 
     public:
         SnakeGame();
@@ -32,7 +33,6 @@ class SnakeGame : public Arcade::IGames {
         bool isGameOver() override;
         Arcade::DisplayData getDisplayables() const override;
         std::any init() override;
-        void handleMouse(Arcade::MouseEvent inputs) override;
 };
 
 #endif /* !ARCADE_SNAKE_HPP_ */
