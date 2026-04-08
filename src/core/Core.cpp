@@ -70,7 +70,11 @@ void Core::changeGraphicLib(const std::string& newLibPath) {
         _graphicLoader.reset();
         _graphicLoader = std::move(newLoader);
         _graphic = std::move(newGraphic);
-        _graphic->init();
+        if (_currentGame) {
+            _graphic->init(_currentGame->getAssets());
+        } else {
+            _graphic->init({});
+        }
         _currentGraphicLibPath = newLibPath;
     } catch (const Exception &) {
         throw;
@@ -107,6 +111,8 @@ void Core::loadGame(const std::string& gamePath) {
         _currentGame.reset(rawGamePtr);
         _currentGameLibPath = gamePath;
         _currentGame->init();
+        if (_graphic)
+            _graphic->init(_currentGame->getAssets());
     } catch (const Exception &) {
         throw;
     } catch (const std::exception &e) {
@@ -173,7 +179,11 @@ bool Core::handleSwitchGraphics(Menu &arcadeMenu)
         return false;
     }
     changeGraphicLib(action.libPath);
-    _graphic->init();
+    if (_currentGame) {
+        _graphic->init(_currentGame->getAssets());
+    } else {
+        _graphic->init({});
+    }
     return true;
 }
 
@@ -346,7 +356,7 @@ void Core::run()
     Menu arcadeMenu;
 
     try {
-        _graphic->init();
+        _graphic->init({});
         arcadeMenu.loadLibrariesList();
     } catch (const Exception &) {
         throw;
