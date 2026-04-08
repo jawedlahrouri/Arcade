@@ -117,6 +117,7 @@ std::unordered_map<Arcade::ElementType, std::string> SnakeGame::getAssets()
         {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head1.png"},
         {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn1.png"},
         {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail1.png"},
+        {Arcade::ElementType::PLAYER_BODY, "asset/textures/snake-body1.png"},
         {Arcade::ElementType::PLAYER, "asset/textures/snake-body1.png"},
         {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
         {Arcade::ElementType::FOOD, "asset/textures/food.bmp"},

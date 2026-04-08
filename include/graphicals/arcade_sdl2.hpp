@@ -21,7 +21,6 @@ class Sdl2AssetManager {
 private:
     SDL_Renderer* _renderer;
     std::map<std::string, SDL_Texture*> _textures;
-    
 
 public:
     /**
@@ -52,7 +51,7 @@ private:
     std::map<std::string, TTF_Font*> fontsCache;
     std::unique_ptr<Sdl2AssetManager> assetManager;
     std::string _textInput;
-
+    std::unordered_map<Arcade::ElementType, std::string> _assetsMap;
     static const std::unordered_map<SDL_Keycode, Arcade::InputCommand> KEY_MAP;
 
 public:
@@ -60,11 +59,11 @@ public:
      * @brief Initializes SDL2 resources for rendering.
      * @return Does not return a value.
      */
-    void init() override;
+    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets) override;    
     /**
      * @brief Clears the current render target.
      * @return Does not return a value.
-     */
+    */
     void clear() override;
     /**
      * @brief Presents the rendered frame on screen.
