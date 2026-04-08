@@ -304,3 +304,21 @@ extern "C" {
         return new arcade_minesweeper();
     }
 }
+
+std::unordered_map<Arcade::ElementType, std::string> arcade_minesweeper::getAssets() {
+    return {
+        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
+        {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
+        {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
+        {Arcade::ElementType::PLAYER, "asset/textures/cursor.png"},
+        {Arcade::ElementType::EMPTY, "asset/textures/empty.png"},
+        {Arcade::ElementType::ONE, "asset/textures/Tile1.png"},
+        {Arcade::ElementType::TWO, "asset/textures/Tile2.png"},
+        {Arcade::ElementType::THREE, "asset/textures/Tile3.png"},
+        {Arcade::ElementType::FOUR, "asset/textures/Tile4.png"},
+        {Arcade::ElementType::FIVE, "asset/textures/Tile5.png"},
+        {Arcade::ElementType::SIX, "asset/textures/Tile6.png"},
+        {Arcade::ElementType::SEVEN, "asset/textures/Tile7.png"},
+        {Arcade::ElementType::EIGHT, "asset/textures/Tile8.png"},
+    };
+}
