@@ -7,7 +7,7 @@
 
 #ifndef IGAMES_HPP_
 #define IGAMES_HPP_
-#
+#include <unordered_map>
 #include <vector>
 #include <any>
 #include "arcade_types.hpp"
@@ -27,6 +27,7 @@ namespace Arcade {
         virtual int getScore() = 0;
         virtual bool isGameOver() = 0;
         virtual Arcade::DisplayData getDisplayables() const = 0;
+        virtual std::unordered_map<Arcade::ElementType, std::string> getAssets() = 0;
     };
 }
 

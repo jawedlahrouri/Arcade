@@ -68,8 +68,14 @@ std::map<Arcade::ElementType, char> asciiMap = {
  * @brief Initializes ncurses mode, color pairs, and input settings.
  * @return Does not return a value.
  */
-void NcursesAdapter::init()
+void NcursesAdapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets)
 {
+    (void)assets;
+    if (_isInit)
+        return;
+    initscr();
+    cbreak();
+    noecho();
     initscr();
     cbreak();
     noecho();
@@ -87,6 +93,7 @@ void NcursesAdapter::init()
     init_pair(8, COLOR_WHITE, COLOR_WHITE);
     init_pair(9, COLOR_WHITE, COLOR_GREEN);
     mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, nullptr);
+    _isInit = true;
 }
 
 /**

@@ -32,10 +32,14 @@ SfmlAdapter::~SfmlAdapter()
     }
 }
 
-void SfmlAdapter::init()
+void SfmlAdapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets)
 {
-    _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1920, 1080), "Arcade - SFML");
-    _window->setFramerateLimit(60);
+    _assetsMap = assets;
+
+    if (!_window) {
+        _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1920, 1080), "Arcade - SFML");
+        _window->setFramerateLimit(60);
+    }
 }
 
 void SfmlAdapter::clear()
@@ -121,10 +125,10 @@ void SfmlAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
         return;
     for (size_t i = 0; i < objects.size(); i++) {
         const auto &obj = objects[i];
-        const auto texIt = texturePathMap.find(obj.type);
+        const auto texIt = _assetsMap.find(obj.type);
 
-        if (texIt == texturePathMap.end())
-            continue;
+        if (texIt == _assetsMap.end())
+            continue;        
         if (_textures.find(texIt->second) == _textures.end()) {
             sf::Texture tex;
             if (!tex.loadFromFile(texIt->second))
