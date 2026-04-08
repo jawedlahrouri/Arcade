@@ -128,7 +128,7 @@ void SfmlAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
         const auto texIt = _assetsMap.find(obj.type);
 
         if (texIt == _assetsMap.end())
-            continue;        
+            continue;
         if (_textures.find(texIt->second) == _textures.end()) {
             sf::Texture tex;
             if (!tex.loadFromFile(texIt->second))

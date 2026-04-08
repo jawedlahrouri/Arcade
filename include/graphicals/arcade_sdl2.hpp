@@ -59,7 +59,7 @@ public:
      * @brief Initializes SDL2 resources for rendering.
      * @return Does not return a value.
      */
-    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets) override; // <-- À MODIFIER    
+    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets) override;    
     /**
      * @brief Clears the current render target.
      * @return Does not return a value.
