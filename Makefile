@@ -28,7 +28,7 @@ SO_SNAKE    := lib/arcade_snake.so
 SRC_MINESWEEPER := src/games/arcade_minesweeper.cpp
 SO_MINESWEEPER    := lib/arcade_minesweeper.so
 
-GAMES       := $(SO_MINESWEEPER)
+GAMES       := $(SO_SNAKE) $(SO_MINESWEEPER)
 
 # Graphicals
 SRC_NCURSES := src/graphicals/arcade_ncurses.cpp
@@ -61,6 +61,9 @@ graphicals: $(GRAPHICALS)
 
 lib:
 	mkdir -p lib
+
+$(SO_SNAKE): $(SRC_SNAKE) | lib
+	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $<
 
 $(SO_MINESWEEPER): $(SRC_MINESWEEPER) | lib
 	$(CXX) $(CXXFLAGS) -fPIC -shared -o $@ $<
