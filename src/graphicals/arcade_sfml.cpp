@@ -116,35 +116,6 @@ void SfmlAdapter::drawText(int x, int y, const std::string &text, Arcade::Color 
 void SfmlAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
 {
     float tSize = 40.f;
-    static const std::map<Arcade::ElementType, std::string> texturePathMap = {
-        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn1.png"},
-        {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail1.png"},
-        {Arcade::ElementType::PLAYER_BODY, "asset/textures/snake-body1.png"},
-        {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
-        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
-        {Arcade::ElementType::PLAYER_UP, "asset/textures/player_up.bmp"},
-        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/player_down.bmp"},
-        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/player_left.bmp"},
-        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/player_right.bmp"},
-        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"},
-        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
-        {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
-        {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
-        {Arcade::ElementType::EMPTY, "asset/textures/TileEmpty.png"},
-        {Arcade::ElementType::ONE, "asset/textures/Tile1.png"},
-        {Arcade::ElementType::TWO, "asset/textures/Tile2.png"},
-        {Arcade::ElementType::THREE, "asset/textures/Tile3.png"},
-        {Arcade::ElementType::FOUR, "asset/textures/Tile4.png"},
-        {Arcade::ElementType::FIVE, "asset/textures/Tile5.png"},
-        {Arcade::ElementType::SIX, "asset/textures/Tile6.png"},
-        {Arcade::ElementType::SEVEN, "asset/textures/Tile7.png"},
-        {Arcade::ElementType::EIGHT, "asset/textures/Tile8.png"},
-        {Arcade::ElementType::PLAYER, "asset/textures/Miner.png"}
-    };
 
     if (!_window)
         return;
