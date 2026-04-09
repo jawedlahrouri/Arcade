@@ -86,9 +86,11 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
  * @brief Initializes SDL, SDL_ttf, SDL_image, the window, renderer, and asset manager.
  * @return Does not return a value.
  */
-void Sdl2Adapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets)
+void Sdl2Adapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets, std::string font)
 {
     _assetsMap = assets;
+    _fontPath = font;
+
     if (window != nullptr)
         return;
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -435,12 +437,9 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
  */
 void Sdl2Adapter::draw(const Arcade::DisplayData &data)
 {
-    static const std::string defaultFont = "asset/font/coolvetica/Coolvetica Rg.otf";
-
     draw(data.sprites);
-    for (const auto &text : data.texts) {
-        drawText(text.x, text.y, text.content, text.color, defaultFont, 24);
-    }
+    for (const auto &text : data.texts)
+        drawText(text.x, text.y, text.content, text.color, _fontPath, 24);
 }
 
 /**

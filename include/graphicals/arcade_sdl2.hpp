@@ -52,6 +52,7 @@ private:
     std::unique_ptr<Sdl2AssetManager> assetManager;
     std::string _textInput;
     std::unordered_map<Arcade::ElementType, std::string> _assetsMap;
+    std::string _fontPath;
     static const std::unordered_map<SDL_Keycode, Arcade::InputCommand> KEY_MAP;
 
 public:
@@ -59,7 +60,7 @@ public:
      * @brief Initializes SDL2 resources for rendering.
      * @return Does not return a value.
      */
-    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets) override;    
+    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets, std::string font) override;    
     /**
      * @brief Clears the current render target.
      * @return Does not return a value.
@@ -80,7 +81,7 @@ public:
      * @param fontSize Font size in pixels.
      * @return Does not return a value.
      */
-    void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24);
+    void drawText(int x, int y, const std::string &text, Arcade::Color color, const std::string &fontPath, int fontSize);
     /**
      * @brief Measures text width in tile units.
      * @param text Text content.
@@ -88,7 +89,7 @@ public:
      * @param fontSize Font size in pixels.
      * @return Measured width in tiles.
      */
-    int measureTextWidth(const std::string &text, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24);
+    int measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize);
     /**
      * @brief Draws a rectangle border.
      * @param x Rectangle X position.

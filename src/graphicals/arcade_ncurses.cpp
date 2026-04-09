@@ -68,8 +68,9 @@ std::map<Arcade::ElementType, char> asciiMap = {
  * @brief Initializes ncurses mode, color pairs, and input settings.
  * @return Does not return a value.
  */
-void NcursesAdapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets)
+void NcursesAdapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets, std::string font)
 {
+    (void)font;
     (void)assets;
     if (_isInit)
         return;

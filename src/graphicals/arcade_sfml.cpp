@@ -32,10 +32,10 @@ SfmlAdapter::~SfmlAdapter()
     }
 }
 
-void SfmlAdapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets)
+void SfmlAdapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets, std::string font)
 {
     _assetsMap = assets;
-
+    _fontPath = font;
     if (!_window) {
         _window = std::make_unique<sf::RenderWindow>(sf::VideoMode(1920, 1080), "Arcade - SFML");
         _window->setFramerateLimit(60);
@@ -188,12 +188,9 @@ void SfmlAdapter::draw(const std::vector<Arcade::SpriteObject> &objects)
 
 void SfmlAdapter::draw(const Arcade::DisplayData &data)
 {
-    static const std::string defaultFont = "asset/font/coolvetica/Coolvetica Rg.otf";
-
     draw(data.sprites);
-    for (const auto &textObj : data.texts) {
-        drawText(textObj.x, textObj.y, textObj.content, textObj.color, defaultFont, 24);
-    }
+    for (const auto &textObj : data.texts)
+        drawText(textObj.x, textObj.y, textObj.content, textObj.color, _fontPath, 24); 
 }
 
 std::vector<Arcade::InputCommand> SfmlAdapter::getKeyboardEvents()

@@ -16,13 +16,14 @@ private:
     static const std::unordered_map<int, Arcade::InputCommand> KEY_MAP;
     std::unordered_map<Arcade::ElementType, std::string> _assetsMap;
     bool _isInit = false;
+    std::string _fontPath;
 
 public:
     /**
      * @brief Initializes the ncurses graphical backend.
      * @return Does not return a value.
      */
-    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets) override;
+    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets, std::string font) override;
     /**
     * @brief Clears the terminal render buffer.
     * @return Does not return a value.
