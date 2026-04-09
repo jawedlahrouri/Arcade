@@ -138,9 +138,26 @@ void Leaderboard::addNameInputPrompt(Arcade::DisplayData &data) const
 {
     int promptY = _screenHeight / 2 - 2;
 
-    data.texts.push_back({"Enter player name:", 4, promptY, Arcade::Color::CYAN});
-    data.texts.push_back({"> " + _playerName + "_", 4, promptY + 2, Arcade::Color::WHITE});
-    data.texts.push_back({"Press ENTER to confirm", 4, promptY + 4, Arcade::Color::MAGENTA});
+    Arcade::TextEntity text1;
+    text1.content = "Enter player name:";
+    text1.x = 4;
+    text1.y = promptY;
+    text1.color = Arcade::Color::CYAN;
+    data.texts.push_back(text1);
+    
+    Arcade::TextEntity text2;
+    text2.content = "> " + _playerName + "_";
+    text2.x = 4;
+    text2.y = promptY + 2;
+    text2.color = Arcade::Color::WHITE;
+    data.texts.push_back(text2);
+    
+    Arcade::TextEntity text3;
+    text3.content = "Press ENTER to confirm";
+    text3.x = 4;
+    text3.y = promptY + 4;
+    text3.color = Arcade::Color::MAGENTA;
+    data.texts.push_back(text3);
 }
 
 void Leaderboard::addBorderSprites(Arcade::DisplayData &data) const
@@ -163,12 +180,22 @@ void Leaderboard::addScoreEntries(Arcade::DisplayData &data) const
     std::sort(sorted.begin(), sorted.end(),
         [](const auto& a, const auto& b) { return a.second > b.second; });
 
-    data.texts.push_back({"--- LEADERBOARD ---", 4, 2, Arcade::Color::YELLOW});
+    Arcade::TextEntity titleText;
+    titleText.content = "--- LEADERBOARD ---";
+    titleText.x = 4;
+    titleText.y = 2;
+    titleText.color = Arcade::Color::YELLOW;
+    data.texts.push_back(titleText);
     int y = 4;
     for (size_t i = 0; i < sorted.size() && y < _screenHeight - 2; ++i) {
         std::string entry = std::to_string(i + 1) + ". " + sorted[i].first
             + ": " + std::to_string(sorted[i].second);
-        data.texts.push_back({entry, 4, y, Arcade::Color::WHITE});
+        Arcade::TextEntity entryText;
+        entryText.content = entry;
+        entryText.x = 4;
+        entryText.y = y;
+        entryText.color = Arcade::Color::WHITE;
+        data.texts.push_back(entryText);
         ++y;
     }
 }
@@ -182,8 +209,12 @@ Arcade::DisplayData Leaderboard::getDisplayables() const
         addNameInputPrompt(data);
     } else {
         addScoreEntries(data);
-        data.texts.push_back({"Press L to return to menu", 2, _screenHeight - 2,
-            Arcade::Color::MAGENTA});
+        Arcade::TextEntity returnText;
+        returnText.content = "Press L to return to menu";
+        returnText.x = 2;
+        returnText.y = _screenHeight - 2;
+        returnText.color = Arcade::Color::MAGENTA;
+        data.texts.push_back(returnText);
     }
     return data;
 }

@@ -111,16 +111,16 @@ std::any SnakeGame::update()
 std::unordered_map<Arcade::ElementType, std::string> SnakeGame::getAssets()
 {
     return {
-        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn1.png"},
-        {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail1.png"},
-        {Arcade::ElementType::PLAYER, "asset/textures/snake-body1.png"},
-        {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
-        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"},
-        {Arcade::ElementType::WALL, "asset/textures/wall.png"}
+        {Arcade::ElementType::PLAYER_UP, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_DOWN, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_LEFT, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_RIGHT, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_TURN, "assets/textures/snake-turn1.png"},
+        {Arcade::ElementType::PLAYER_TAIL, "assets/textures/snake-tail1.png"},
+        {Arcade::ElementType::PLAYER, "assets/textures/snake-body1.png"},
+        {Arcade::ElementType::FOOD, "assets/textures/snake-apple.png"},
+        {Arcade::ElementType::FOOD, "assets/textures/food.bmp"},
+        {Arcade::ElementType::WALL, "assets/textures/wall.png"}
     };
 }
 
@@ -162,8 +162,18 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
         data.sprites.push_back({type, _body[i].first, _body[i].second});
     }
 
-    data.texts.push_back({"SNAKE", 25, 0, Arcade::Color::WHITE});
-    data.texts.push_back({"Score: " + std::to_string(_score), 25, 1, Arcade::Color::WHITE});
+    Arcade::TextEntity titleText;
+    titleText.content = "SNAKE";
+    titleText.x = 25;
+    titleText.y = 0;
+    titleText.color = Arcade::Color::WHITE;
+    data.texts.push_back(titleText);
+    Arcade::TextEntity scoreText;
+    scoreText.content = "Score: " + std::to_string(_score);
+    scoreText.x = 25;
+    scoreText.y = 1;
+    scoreText.color = Arcade::Color::WHITE;
+    data.texts.push_back(scoreText);
 
     return data;
 }
@@ -176,10 +186,6 @@ bool SnakeGame::isGameOver()
 std::any SnakeGame::init() 
 { 
     return {}; 
-}
-
-void SnakeGame::handleMouse([[maybe_unused]] Arcade::MouseEvent inputs) 
-{ 
 }
 
 extern "C" {

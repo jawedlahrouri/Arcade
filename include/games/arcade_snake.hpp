@@ -29,7 +29,6 @@ class SnakeGame : public Arcade::IGames {
         ~SnakeGame() override;
         std::any update() override;
         void handleKey(const std::vector<Arcade::InputCommand>& inputs) override;
-        void handleMouse(Arcade::MouseEvent inputs) override; 
         int getScore() override;
         bool isGameOver() override;
         Arcade::DisplayData getDisplayables() const override;

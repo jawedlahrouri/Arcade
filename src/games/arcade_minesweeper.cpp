@@ -106,11 +106,6 @@ void arcade_minesweeper::handleKey(const std::vector<Arcade::InputCommand>& inpu
     }
 }
 
-void arcade_minesweeper::handleMouse(Arcade::MouseEvent inputs)
-{
-    (void)inputs;
-}
-
 int arcade_minesweeper::getScore()
 {
     int revealed = 0;
@@ -136,13 +131,33 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     int offsetX = 5;
     int offsetY = 5;
 
-    data.texts.push_back({"MINESWEEPER", offsetX + _width / 2 - 4, 2, Arcade::Color::YELLOW});
+    Arcade::TextEntity title;
+    title.content = "MINESWEEPER";
+    title.x = offsetX + _width / 2 - 4;
+    title.y = 2;
+    title.color = Arcade::Color::YELLOW;
+    data.texts.push_back(title);
     std::string bombCount = "Mines: " + std::to_string(_totalBombs - _flagsPlaced);
-    data.texts.push_back({bombCount, offsetX, 3, Arcade::Color::WHITE});
+    Arcade::TextEntity bombText;
+    bombText.content = bombCount;
+    bombText.x = offsetX;
+    bombText.y = 3;
+    bombText.color = Arcade::Color::WHITE;
+    data.texts.push_back(bombText);
     std::string diffStr = (_difficulty == 0) ? "EASY" : (_difficulty == 1) ? "MEDIUM" : "HARD";
-    data.texts.push_back({"Diff: " + diffStr, offsetX, 4, Arcade::Color::CYAN});
+    Arcade::TextEntity diffText;
+    diffText.content = "Diff: " + diffStr;
+    diffText.x = offsetX;
+    diffText.y = 4;
+    diffText.color = Arcade::Color::CYAN;
+    data.texts.push_back(diffText);
     std::string timeStr = "Time: " + std::to_string(_remainingTime) + "s";
-    data.texts.push_back({timeStr, offsetX + _width - 6, 3, Arcade::Color::WHITE});
+    Arcade::TextEntity timeText;
+    timeText.content = timeStr;
+    timeText.x = offsetX + _width - 6;
+    timeText.y = 3;
+    timeText.color = Arcade::Color::WHITE;
+    data.texts.push_back(timeText);
     int currentScore = 0;
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
@@ -154,7 +169,12 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     if (_hasWon)
         currentScore += _remainingTime;
     std::string scoreStr = "Score: " + std::to_string(currentScore);
-    data.texts.push_back({scoreStr, offsetX + _width - 6, 4, Arcade::Color::MAGENTA});
+    Arcade::TextEntity scoreText;
+    scoreText.content = scoreStr;
+    scoreText.x = offsetX + _width - 6;
+    scoreText.y = 4;
+    scoreText.color = Arcade::Color::MAGENTA;
+    data.texts.push_back(scoreText);
     for (int y = 0; y < _height; ++y) {
         for (int x = 0; x < _width; ++x) {
             Arcade::SpriteObject sprite;
@@ -197,14 +217,44 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
         int textY = offsetY + (_height / 2) - 2;
 
         if (_hasWon) {
-            data.texts.push_back({"  YOU  ", rightX, textY, Arcade::Color::GREEN});
-            data.texts.push_back({" WIN !!", rightX, textY + 1, Arcade::Color::GREEN});
+            Arcade::TextEntity winText1;
+            winText1.content = "  YOU  ";
+            winText1.x = rightX;
+            winText1.y = textY;
+            winText1.color = Arcade::Color::GREEN;
+            data.texts.push_back(winText1);
+            Arcade::TextEntity winText2;
+            winText2.content = " WIN !!";
+            winText2.x = rightX;
+            winText2.y = textY + 1;
+            winText2.color = Arcade::Color::GREEN;
+            data.texts.push_back(winText2);
         } else {
-            data.texts.push_back({" GAME ", rightX, textY, Arcade::Color::RED});
-            data.texts.push_back({"OVER !", rightX, textY + 1, Arcade::Color::RED});
+            Arcade::TextEntity loseText1;
+            loseText1.content = " GAME ";
+            loseText1.x = rightX;
+            loseText1.y = textY;
+            loseText1.color = Arcade::Color::RED;
+            data.texts.push_back(loseText1);
+            Arcade::TextEntity loseText2;
+            loseText2.content = "OVER !";
+            loseText2.x = rightX;
+            loseText2.y = textY + 1;
+            loseText2.color = Arcade::Color::RED;
+            data.texts.push_back(loseText2);
         }
-        data.texts.push_back({"Press R to restart", rightX - 2, textY + 4, Arcade::Color::WHITE});
-        data.texts.push_back({"Press ESC for menu", rightX - 2, textY + 5, Arcade::Color::WHITE});
+        Arcade::TextEntity restartText;
+        restartText.content = "Press R to restart";
+        restartText.x = rightX - 2;
+        restartText.y = textY + 4;
+        restartText.color = Arcade::Color::WHITE;
+        data.texts.push_back(restartText);
+        Arcade::TextEntity menuText;
+        menuText.content = "Press ESC for menu";
+        menuText.x = rightX - 2;
+        menuText.y = textY + 5;
+        menuText.color = Arcade::Color::WHITE;
+        data.texts.push_back(menuText);
     }
 
     return data;
