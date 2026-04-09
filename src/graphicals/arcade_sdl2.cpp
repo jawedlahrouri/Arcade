@@ -395,7 +395,7 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
             angle = 0.0;
         else if (obj.type == Arcade::ElementType::PLAYER_RIGHT)
             angle = 180.0;
-        else if (obj.type == Arcade::ElementType::PLAYER_BODY) {
+        else if (obj.type == Arcade::ElementType::PLAYER) {
             if (i > 0) {
                 const auto &prev = objects[i - 1];
                 angle = (prev.x != obj.x) ? 0.0 : 90.0;
