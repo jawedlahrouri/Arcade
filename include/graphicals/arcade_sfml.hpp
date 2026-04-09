@@ -22,6 +22,7 @@ private:
     std::string _textInput;
 
     static const std::unordered_map<sf::Keyboard::Key, Arcade::InputCommand> KEY_MAP;
+    std::unordered_map<Arcade::ElementType, std::string> _assetsMap;
 
     sf::Color getSfmlColor(Arcade::Color color);
     void drawTile(int x, int y, Arcade::Color color);
@@ -33,7 +34,7 @@ public:
     SfmlAdapter() = default;
     ~SfmlAdapter() override;
 
-    void init() override;
+    void init(const std::unordered_map<Arcade::ElementType, std::string> &assets) override;
     void clear() override;
     void display() override;
     void draw(const Arcade::DisplayData &data) override;

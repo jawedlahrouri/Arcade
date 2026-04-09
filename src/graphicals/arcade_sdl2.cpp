@@ -86,8 +86,11 @@ SDL_Texture* Sdl2AssetManager::getTexture(const std::string& path)
  * @brief Initializes SDL, SDL_ttf, SDL_image, the window, renderer, and asset manager.
  * @return Does not return a value.
  */
-void Sdl2Adapter::init()
+void Sdl2Adapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets)
 {
+    _assetsMap = assets;
+    if (window != nullptr)
+        return;
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         throw Exception("SDL could not initialize! SDL_Error: " + std::string(SDL_GetError()));
     }
@@ -372,9 +375,9 @@ void Sdl2Adapter::draw(const std::vector<Arcade::SpriteObject> &objects)
 
     for (size_t i = 0; i < objects.size(); i++) {
         const auto &obj = objects[i];
-        const auto texIt = texturePathMap.find(obj.type);
+        const auto texIt = _assetsMap.find(obj.type); 
 
-        if (texIt == texturePathMap.end())
+        if (texIt == _assetsMap.end())
             continue;
         SDL_Texture *texture = assetManager->getTexture(texIt->second);
         if (!texture)

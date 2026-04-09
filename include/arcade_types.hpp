@@ -58,6 +58,7 @@ namespace Arcade {
         PLAYER_RIGHT,
         PLAYER_TAIL,
         PLAYER_TURN,
+        PLAYER_BODY,
         FOOD,
         BOMB,
         FLAG,
