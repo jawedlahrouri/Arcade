@@ -158,12 +158,16 @@ void Core::applyMenuAction(const MenuAction &action, bool &inMenu)
     if (action.libPath.empty()) {
         return;
     }
-    if (action.isGame) {
-        loadGame(action.libPath);
-        inMenu = false;
-        return;
+    try {
+        if (action.isGame) {
+            loadGame(action.libPath);
+            inMenu = false;
+        } else {
+            changeGraphicLib(action.libPath);
+        }
+    } catch (const Exception &e) {
+        std::cerr << "Error applying menu action: " << e.what() << std::endl;
     }
-    changeGraphicLib(action.libPath);
 }
 
 /**

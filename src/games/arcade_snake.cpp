@@ -162,8 +162,18 @@ Arcade::DisplayData SnakeGame::getDisplayables() const
         data.sprites.push_back({type, _body[i].first, _body[i].second});
     }
 
-    data.texts.push_back({"SNAKE", 25, 0, Arcade::Color::WHITE});
-    data.texts.push_back({"Score: " + std::to_string(_score), 25, 1, Arcade::Color::WHITE});
+    Arcade::TextEntity titleText;
+    titleText.content = "SNAKE";
+    titleText.x = 25;
+    titleText.y = 0;
+    titleText.color = Arcade::Color::WHITE;
+    data.texts.push_back(titleText);
+    Arcade::TextEntity scoreText;
+    scoreText.content = "Score: " + std::to_string(_score);
+    scoreText.x = 25;
+    scoreText.y = 1;
+    scoreText.color = Arcade::Color::WHITE;
+    data.texts.push_back(scoreText);
 
     return data;
 }
@@ -176,10 +186,6 @@ bool SnakeGame::isGameOver()
 std::any SnakeGame::init() 
 { 
     return {}; 
-}
-
-void SnakeGame::handleMouse([[maybe_unused]] Arcade::MouseEvent inputs) 
-{ 
 }
 
 extern "C" {
