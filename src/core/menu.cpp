@@ -96,7 +96,12 @@ void Menu::addLibraryListTexts(Arcade::DisplayData &data, const std::vector<std:
 {
     for (size_t i = 0; i < libs.size(); ++i) {
         const Arcade::Color color = (i == selectedIndex) ? selectedColor : Arcade::Color::WHITE;
-        data.texts.push_back({libs[i], 4, startY + static_cast<int>(i), color});
+        Arcade::TextEntity text;
+        text.content = libs[i];
+        text.x = 4;
+        text.y = startY + static_cast<int>(i);
+        text.color = color;
+        data.texts.push_back(text);
     }
 }
 
@@ -113,12 +118,20 @@ void Menu::addMissingLibrariesWarnings(Arcade::DisplayData &data, bool noGames, 
     int currentY, int graphicCount)
 {
     if (noGames) {
-        data.texts.push_back({"No game library found in ./lib", 2,
-            currentY + graphicCount + 2, Arcade::Color::YELLOW});
+        Arcade::TextEntity text;
+        text.content = "No game library found in ./lib";
+        text.x = 2;
+        text.y = currentY + graphicCount + 2;
+        text.color = Arcade::Color::YELLOW;
+        data.texts.push_back(text);
     }
     if (noGraphics) {
-        data.texts.push_back({"No graphic library found in ./lib", 2,
-            currentY + graphicCount + 3, Arcade::Color::YELLOW});
+        Arcade::TextEntity text;
+        text.content = "No graphic library found in ./lib";
+        text.x = 2;
+        text.y = currentY + graphicCount + 3;
+        text.color = Arcade::Color::YELLOW;
+        data.texts.push_back(text);
     }
 }
 
@@ -314,27 +327,52 @@ Arcade::DisplayData Menu::getDisplayables() const
 
     Menu::addBorderSprites(data, screenW, screenH);
 
-    data.texts.push_back({debugInfo, 2, 1, Arcade::Color::MAGENTA});
+    Arcade::TextEntity debugText;
+    debugText.content = debugInfo;
+    debugText.x = 2;
+    debugText.y = 1;
+    debugText.color = Arcade::Color::MAGENTA;
+    data.texts.push_back(debugText);
 
     const std::string menuTitle = "--- ARCADE MENU ---";
     const std::string gamesTitle = "--- GAMES AVAILABLE ---";
     const std::string graphicsTitle = "--- GRAPHICS AVAILABLE ---";
 
-    data.texts.push_back({menuTitle, Menu::centerX(screenW, menuTitle), currentY, Arcade::Color::YELLOW});
+    Arcade::TextEntity menuTitleText;
+    menuTitleText.content = menuTitle;
+    menuTitleText.x = Menu::centerX(screenW, menuTitle);
+    menuTitleText.y = currentY;
+    menuTitleText.color = Arcade::Color::YELLOW;
+    data.texts.push_back(menuTitleText);
     currentY += 2;
 
-    data.texts.push_back({gamesTitle, Menu::centerX(screenW, gamesTitle), currentY, Arcade::Color::RED});
+    Arcade::TextEntity gamesTitleText;
+    gamesTitleText.content = gamesTitle;
+    gamesTitleText.x = Menu::centerX(screenW, gamesTitle);
+    gamesTitleText.y = currentY;
+    gamesTitleText.color = Arcade::Color::RED;
+    data.texts.push_back(gamesTitleText);
     currentY += 2;
     Menu::addLibraryListTexts(data, _gameLibs, _selectedGameIndex, currentY, Arcade::Color::GREEN);
     currentY += static_cast<int>(_gameLibs.size()) + 1;
 
-    data.texts.push_back({graphicsTitle, Menu::centerX(screenW, graphicsTitle), currentY, Arcade::Color::BLUE});
+    Arcade::TextEntity graphicsTitleText;
+    graphicsTitleText.content = graphicsTitle;
+    graphicsTitleText.x = Menu::centerX(screenW, graphicsTitle);
+    graphicsTitleText.y = currentY;
+    graphicsTitleText.color = Arcade::Color::BLUE;
+    data.texts.push_back(graphicsTitleText);
     currentY += 2;
     Menu::addLibraryListTexts(data, _graphicLibs, _selectedGraphicIndex, currentY, Arcade::Color::CYAN);
 
     Menu::addMissingLibrariesWarnings(data, _gameLibs.empty(), _graphicLibs.empty(),
         currentY, static_cast<int>(_graphicLibs.size()));
     
-    data.texts.push_back({"Press L for leaderboard", 2, screenH - 2, Arcade::Color::MAGENTA});
+    Arcade::TextEntity leaderboardText;
+    leaderboardText.content = "Press L for leaderboard";
+    leaderboardText.x = 2;
+    leaderboardText.y = screenH - 2;
+    leaderboardText.color = Arcade::Color::MAGENTA;
+    data.texts.push_back(leaderboardText);
     return data;
 }
