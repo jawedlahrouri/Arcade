@@ -22,7 +22,7 @@ class IGraphic {
          * @brief Initializes graphic backend resources.
          * @return Does not return a value.
          */
-        virtual void init(const std::unordered_map<Arcade::ElementType, std::string> &assets) = 0;
+        virtual void init(const std::unordered_map<Arcade::ElementType, std::string> &assets, std::string font) = 0;
         /**
          * @brief Clears the current render target.
          * @return Does not return a value.
