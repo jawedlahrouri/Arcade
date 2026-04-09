@@ -71,9 +71,9 @@ void Core::changeGraphicLib(const std::string& newLibPath) {
         _graphicLoader = std::move(newLoader);
         _graphic = std::move(newGraphic);
         if (_currentGame) {
-            _graphic->init(_currentGame->getAssets(), "asset/font/coolvetica/Coolvetica Rg.otf");
+            _graphic->init(_currentGame->getAssets(), "assets/font/coolvetica/Coolvetica Rg.otf");
         } else {
-            _graphic->init({}, "asset/font/coolvetica/Coolvetica Rg.otf");
+            _graphic->init({}, "assets/font/coolvetica/Coolvetica Rg.otf");
         }
         _currentGraphicLibPath = newLibPath;
     } catch (const Exception &) {
@@ -112,7 +112,7 @@ void Core::loadGame(const std::string& gamePath) {
         _currentGameLibPath = gamePath;
         _currentGame->init();
         if (_graphic)
-            _graphic->init(_currentGame->getAssets(), "asset/font/coolvetica/Coolvetica Rg.otf");
+            _graphic->init(_currentGame->getAssets(), "assets/font/coolvetica/Coolvetica Rg.otf");
     } catch (const Exception &) {
         throw;
     } catch (const std::exception &e) {
@@ -180,9 +180,9 @@ bool Core::handleSwitchGraphics(Menu &arcadeMenu)
     }
     changeGraphicLib(action.libPath);
     if (_currentGame) {
-        _graphic->init(_currentGame->getAssets(), "asset/font/coolvetica/Coolvetica Rg.otf");
+        _graphic->init(_currentGame->getAssets(), "assets/font/coolvetica/Coolvetica Rg.otf");
     } else {
-        _graphic->init({}, "asset/font/coolvetica/Coolvetica Rg.otf");
+        _graphic->init({}, "assets/font/coolvetica/Coolvetica Rg.otf");
     }
     return true;
 }
@@ -356,7 +356,7 @@ void Core::run()
     Menu arcadeMenu;
 
     try {
-        _graphic->init({}, "asset/font/coolvetica/Coolvetica Rg.otf");
+        _graphic->init({}, "assets/font/coolvetica/Coolvetica Rg.otf");
         arcadeMenu.loadLibrariesList();
     } catch (const Exception &) {
         throw;
