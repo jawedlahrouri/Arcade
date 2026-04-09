@@ -87,8 +87,6 @@ namespace Arcade {
         int fontSize = 24;
         Color color = Color::WHITE;
 
-        TextEntity() = default;
-
         TextEntity(const std::string &content_, int x_, int y_, Color color_)
             : content(content_), x(x_), y(y_), color(color_)
         {}
