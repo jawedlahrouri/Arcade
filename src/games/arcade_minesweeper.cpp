@@ -307,18 +307,18 @@ extern "C" {
 
 std::unordered_map<Arcade::ElementType, std::string> arcade_minesweeper::getAssets() {
     return {
-        {Arcade::ElementType::WALL, "asset/textures/wall.png"},
-        {Arcade::ElementType::FLAG, "asset/textures/flag.png"},
-        {Arcade::ElementType::BOMB, "asset/textures/bomb.png"},
-        {Arcade::ElementType::PLAYER, "asset/textures/Miner.png"},
-        {Arcade::ElementType::EMPTY, "asset/textures/TileEmpty.png"},
-        {Arcade::ElementType::ONE, "asset/textures/Tile1.png"},
-        {Arcade::ElementType::TWO, "asset/textures/Tile2.png"},
-        {Arcade::ElementType::THREE, "asset/textures/Tile3.png"},
-        {Arcade::ElementType::FOUR, "asset/textures/Tile4.png"},
-        {Arcade::ElementType::FIVE, "asset/textures/Tile5.png"},
-        {Arcade::ElementType::SIX, "asset/textures/Tile6.png"},
-        {Arcade::ElementType::SEVEN, "asset/textures/Tile7.png"},
-        {Arcade::ElementType::EIGHT, "asset/textures/Tile8.png"},
+        {Arcade::ElementType::WALL, "assets/textures/wall.png"},
+        {Arcade::ElementType::FLAG, "assets/textures/flag.png"},
+        {Arcade::ElementType::BOMB, "assets/textures/bomb.png"},
+        {Arcade::ElementType::PLAYER, "assets/textures/Miner.png"},
+        {Arcade::ElementType::EMPTY, "assets/textures/TileEmpty.png"},
+        {Arcade::ElementType::ONE, "assets/textures/Tile1.png"},
+        {Arcade::ElementType::TWO, "assets/textures/Tile2.png"},
+        {Arcade::ElementType::THREE, "assets/textures/Tile3.png"},
+        {Arcade::ElementType::FOUR, "assets/textures/Tile4.png"},
+        {Arcade::ElementType::FIVE, "assets/textures/Tile5.png"},
+        {Arcade::ElementType::SIX, "assets/textures/Tile6.png"},
+        {Arcade::ElementType::SEVEN, "assets/textures/Tile7.png"},
+        {Arcade::ElementType::EIGHT, "assets/textures/Tile8.png"},
     };
 }

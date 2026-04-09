@@ -111,17 +111,17 @@ std::any SnakeGame::update()
 std::unordered_map<Arcade::ElementType, std::string> SnakeGame::getAssets()
 {
     return {
-        {Arcade::ElementType::PLAYER_UP, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_DOWN, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_LEFT, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_RIGHT, "asset/textures/snake-head1.png"},
-        {Arcade::ElementType::PLAYER_TURN, "asset/textures/snake-turn1.png"},
-        {Arcade::ElementType::PLAYER_TAIL, "asset/textures/snake-tail1.png"},
-        {Arcade::ElementType::PLAYER_BODY, "asset/textures/snake-body1.png"},
-        {Arcade::ElementType::PLAYER, "asset/textures/snake-body1.png"},
-        {Arcade::ElementType::FOOD, "asset/textures/snake-apple.png"},
-        {Arcade::ElementType::FOOD, "asset/textures/food.bmp"},
-        {Arcade::ElementType::WALL, "asset/textures/wall.png"}
+        {Arcade::ElementType::PLAYER_UP, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_DOWN, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_LEFT, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_RIGHT, "assets/textures/snake-head1.png"},
+        {Arcade::ElementType::PLAYER_TURN, "assets/textures/snake-turn1.png"},
+        {Arcade::ElementType::PLAYER_TAIL, "assets/textures/snake-tail1.png"},
+        {Arcade::ElementType::PLAYER_BODY, "assets/textures/snake-body1.png"},
+        {Arcade::ElementType::PLAYER, "assets/textures/snake-body1.png"},
+        {Arcade::ElementType::FOOD, "assets/textures/snake-apple.png"},
+        {Arcade::ElementType::FOOD, "assets/textures/food.bmp"},
+        {Arcade::ElementType::WALL, "assets/textures/wall.png"}
     };
 }
 
