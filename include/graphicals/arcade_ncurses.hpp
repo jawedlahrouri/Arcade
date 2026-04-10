@@ -122,17 +122,17 @@ public:
      * @brief Polls inputs and maps them to Arcade commands.
      * @return Vector of input commands.
      */
-    std::vector<Arcade::InputCommand> getKeyboardEvents() override;
+    [[nodiscard]] std::vector<Arcade::InputCommand> getKeyboardEvents() override;
     /**
      * @brief Gets the last text input from keyboard.
      * @return String containing typed characters.
      */
-    std::string getTextInput() override;
+    [[nodiscard]] std::string getTextInput() override;
     /**
      * @brief Returns the current terminal size in logical units.
      * @return Pair of width and height.
      */
-    std::pair<int,int> getScreenSize() override;
+    [[nodiscard]] std::pair<int,int> getScreenSize() override;
     /**
      * @brief Releases ncurses resources.
      * @return Does not return a value.

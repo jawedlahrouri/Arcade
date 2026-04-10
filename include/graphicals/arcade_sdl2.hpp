@@ -159,17 +159,17 @@ public:
      * @brief Polls SDL events and maps them to Arcade commands.
      * @return Vector of input commands.
      */
-    std::vector<Arcade::InputCommand> getKeyboardEvents() override;
+    [[nodiscard]] std::vector<Arcade::InputCommand> getKeyboardEvents() override;
     /**
      * @brief Gets the text typed since the previous call.
      * @return Captured text input.
      */
-    std::string getTextInput() override;
+    [[nodiscard]] std::string getTextInput() override;
     /**
      * @brief Returns the current screen size in logical units.
      * @return Pair of width and height.
      */
-    std::pair<int,int> getScreenSize() override;
+    [[nodiscard]] std::pair<int,int> getScreenSize() override;
     /**
      * @brief Releases SDL2 resources and cached assets.
      * @return Does not return a value.

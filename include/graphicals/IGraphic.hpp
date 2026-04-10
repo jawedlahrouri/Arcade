@@ -43,17 +43,17 @@ class IGraphic {
          * @brief Polls pending input commands.
          * @return Vector of detected input commands.
          */
-        virtual std::string getTextInput() = 0;
+        [[nodiscard]] virtual std::string getTextInput() = 0;
         /**
          * @brief Polls pending input commands.
          * @return Vector of detected input commands.
          */
-        virtual std::vector<Arcade::InputCommand> getKeyboardEvents() = 0;
+        [[nodiscard]] virtual std::vector<Arcade::InputCommand> getKeyboardEvents() = 0;
         /**
          * @brief Returns the current logical screen size.
          * @return Pair of width and height.
          */
-        virtual std::pair<int,int> getScreenSize() = 0;
+        [[nodiscard]] virtual std::pair<int,int> getScreenSize() = 0;
 
     protected:
     private:

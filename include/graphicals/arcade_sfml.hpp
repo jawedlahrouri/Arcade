@@ -38,9 +38,9 @@ public:
     void clear() override;
     void display() override;
     void draw(const Arcade::DisplayData &data) override;
-    std::vector<Arcade::InputCommand> getKeyboardEvents() override;
-    std::string getTextInput() override;
-    std::pair<int, int> getScreenSize() override;
+    [[nodiscard]] std::vector<Arcade::InputCommand> getKeyboardEvents() override;
+    [[nodiscard]] std::string getTextInput() override;
+    [[nodiscard]] std::pair<int, int> getScreenSize() override;
 };
 
 #endif /* !ARCADE_SFML_HPP_ */

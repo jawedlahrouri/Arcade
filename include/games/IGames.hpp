@@ -20,13 +20,13 @@ namespace Arcade {
     public:
         virtual ~IGames() = default;
 
-        virtual std::any init() = 0;
-        virtual std::any update() = 0;
+        [[nodiscard]] virtual std::any init() = 0;
+        [[nodiscard]] virtual std::any update() = 0;
         virtual void handleKey(const std::vector<Arcade::InputCommand>& inputs) = 0;
-        virtual int getScore() = 0;
-        virtual bool isGameOver() = 0;
-        virtual Arcade::DisplayData getDisplayables() const = 0;
-        virtual std::unordered_map<Arcade::ElementType, std::string> getAssets() = 0;
+        [[nodiscard]] virtual int getScore() = 0;
+        [[nodiscard]] virtual bool isGameOver() = 0;
+        [[nodiscard]] virtual Arcade::DisplayData getDisplayables() const = 0;
+        [[nodiscard]] virtual std::unordered_map<Arcade::ElementType, std::string> getAssets() = 0;
     };
 }
 
