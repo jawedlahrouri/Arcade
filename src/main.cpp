@@ -45,13 +45,12 @@ namespace {
  * @param argv Array of command-line arguments.
  * @return true when the path prefix is valid.
  */
-bool check_main::check_lib_folder(int argc, const char **argv)
+bool check_main::check_lib_folder(const char **argv)
 {
-    (void)argc;
     std::string lib_path = argv[1];
-    if (lib_path.find("./lib/") != 0) {
+
+    if (lib_path.find("./lib/") != 0)
         throw Exception("Error: Library path must start with './lib/'");
-    }
     return true;
 }
 
@@ -70,17 +69,15 @@ bool check_main::check_file_exist(const std::string &path)
 
 /**
  * @brief Validates that the selected library has a .so extension.
- * @param argc Number of command-line arguments.
  * @param argv Array of command-line arguments.
  * @return true when the extension is .so.
  */
-bool check_main::check_is_so(int argc, const char **argv)
+bool check_main::check_is_so(const char **argv)
 {
-    (void)argc;
     std::string lib_path = argv[1];
-    if (!lib_path.ends_with(".so")) {
+
+    if (!lib_path.ends_with(".so"))
         throw Exception("Error: File '" + lib_path + "' is not a .so file");
-    }
     return true;
 }
 
@@ -95,8 +92,8 @@ bool check_main::check_args(int ac, const char **av)
     if (ac != 2) {
         throw Exception("Usage: " + std::string(av[0]) + " <library_path>");
     }
-    check_lib_folder(ac, av);
-    check_is_so(ac, av);
+    check_lib_folder(av);
+    check_is_so(av);
 #ifndef UNIT_TEST
     check_file_exist(std::string(av[1]));
 #endif

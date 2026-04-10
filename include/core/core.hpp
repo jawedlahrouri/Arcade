@@ -51,7 +51,7 @@ class Core {
      * @param arcadeMenu Menu instance (unused but kept for parity).
      * @return true when the game was reloaded and the frame should be skipped.
      */
-    bool handleReloadGame(Menu &arcadeMenu);
+    bool handleReloadGame(void);
     /**
      * @brief Attempts to switch to a different game library.
      * @param gamePath Path to the game shared library.

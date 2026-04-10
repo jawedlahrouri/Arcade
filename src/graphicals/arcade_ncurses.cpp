@@ -68,10 +68,8 @@ std::map<Arcade::ElementType, char> asciiMap = {
  * @brief Initializes ncurses mode, color pairs, and input settings.
  * @return Does not return a value.
  */
-void NcursesAdapter::init(const std::unordered_map<Arcade::ElementType, std::string> &assets, std::string font)
+void NcursesAdapter::init([[maybe_unused]] const std::unordered_map<Arcade::ElementType, std::string> &assets, [[maybe_unused]] std::string font)
 {
-    (void)font;
-    (void)assets;
     if (_isInit)
         return;
     initscr();
@@ -131,10 +129,8 @@ void NcursesAdapter::drawTile(int tileX, int tileY, Arcade::Color color)
  * @param fontSize Unused in ncurses backend.
  * @return Does not return a value.
  */
-void NcursesAdapter::drawText(int posX, int posY, const std::string &text, Arcade::Color color, const std::string &fontPath = "asset/font/coolvetica/Coolvetica Rg.otf", int fontSize = 24)
+void NcursesAdapter::drawText(int posX, int posY, const std::string &text, Arcade::Color color,[[maybe_unused]] const std::string &fontPath,[[maybe_unused]] int fontSize)
 {
-    (void)fontSize;
-    (void)fontPath;
     int colorPair = static_cast<int>(color) + 1;
     attron(COLOR_PAIR(colorPair));
     mvprintw(posY, posX * 2, "%s", text.c_str());
@@ -148,10 +144,8 @@ void NcursesAdapter::drawText(int posX, int posY, const std::string &text, Arcad
  * @param fontSize Unused in ncurses backend.
  * @return Estimated width in tiles.
  */
-int NcursesAdapter::measureTextWidth(const std::string &text, const std::string &fontPath, int fontSize)
+int NcursesAdapter::measureTextWidth(const std::string &text, [[maybe_unused]] const std::string &fontPath, [[maybe_unused]] int fontSize)
 {
-    (void)fontPath;
-    (void)fontSize;
     return static_cast<int>((text.length() + 1) / 2);
 }
 
@@ -206,12 +200,7 @@ void NcursesAdapter::drawCircle(int centerX, int centerY, int radius, Arcade::Co
  * @param spritePath Path to sprite resource.
  * @return Does not return a value.
  */
-void NcursesAdapter::drawSprite(int posX, int posY, const std::string &spritePath)
-{
-    (void)posX;
-    (void)posY;
-    (void)spritePath;
-}
+void NcursesAdapter::drawSprite([[maybe_unused]]int posX,[[maybe_unused]] int posY,[[maybe_unused]] const std::string &spritePath) {}
 
 /**
  * @brief Draws a single boxed tile with the requested color.
