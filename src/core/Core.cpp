@@ -200,9 +200,8 @@ bool Core::switchGame(const std::string &gamePath)
     return true;
 }
 
-bool Core::handleReloadGame(Menu &arcadeMenu)
+bool Core::handleReloadGame()
 {
-    (void)arcadeMenu;
     if (_currentGame)
         _currentGame->init();
     return false;
@@ -249,7 +248,7 @@ void Core::handleCommand(const Arcade::InputCommand &command, bool &inMenu, bool
         }
     }
     if (command == Arcade::InputCommand::RELOAD_GAME) {
-        skipFrame = handleReloadGame(arcadeMenu);
+        skipFrame = handleReloadGame();
     }
 }
 

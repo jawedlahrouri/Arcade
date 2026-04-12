@@ -9,6 +9,10 @@
 #include <cstdlib>
 #include <ctime>
 
+/**
+ * @brief Initializes the Minesweeper game state based on the selected difficulty.
+ * @return An empty std::any (for interface compatibility).
+ */
 std::any arcade_minesweeper::init() {
     if (_difficulty == 0) {
         _width = 16;
@@ -41,6 +45,10 @@ std::any arcade_minesweeper::init() {
     return {};
 }
 
+/**
+ * @brief Updates the game state, handles timer and win/lose conditions.
+ * @return An empty std::any (for interface compatibility).
+ */
 std::any arcade_minesweeper::update() {
     if (_isGameOver)
         return {};
@@ -75,6 +83,11 @@ std::any arcade_minesweeper::update() {
     return {};
 }
 
+/**
+ * @brief Handles user input commands for the Minesweeper game.
+ * @param inputs List of input commands for the current frame.
+ * @return Does not return a value.
+ */
 void arcade_minesweeper::handleKey(const std::vector<Arcade::InputCommand>& inputs) {
     for (auto input : inputs) {
         if (input == Arcade::InputCommand::SWITCH_DIFFICULTY) {
@@ -106,6 +119,10 @@ void arcade_minesweeper::handleKey(const std::vector<Arcade::InputCommand>& inpu
     }
 }
 
+/**
+ * @brief Calculates and returns the current score for the Minesweeper game.
+ * @return The current score as an integer.
+ */
 int arcade_minesweeper::getScore()
 {
     int revealed = 0;
@@ -122,10 +139,18 @@ int arcade_minesweeper::getScore()
     return score;
 }
 
+/**
+ * @brief Checks if the game is over.
+ * @return True if the game is over, false otherwise.
+ */
 bool arcade_minesweeper::isGameOver() {
     return false; 
 }
 
+/**
+ * @brief Builds and returns the display data (sprites and texts) for the Minesweeper game.
+ * @return The current display data for rendering.
+ */
 Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     Arcade::DisplayData data;
     int offsetX = 5;
@@ -260,6 +285,12 @@ Arcade::DisplayData arcade_minesweeper::getDisplayables() const {
     return data;
 }
 
+/**
+ * @brief Generates the bomb field, avoiding the first clicked cell and its neighbors.
+ * @param safe_x X coordinate of the safe cell.
+ * @param safe_y Y coordinate of the safe cell.
+ * @return Does not return a value.
+ */
 void arcade_minesweeper::generate_bomb_field(int safe_x, int safe_y) {
     int bombsPlaced = 0;
 
@@ -295,6 +326,12 @@ void arcade_minesweeper::generate_bomb_field(int safe_x, int safe_y) {
     }
 }
 
+/**
+ * @brief Reveals a cell and triggers game logic (bomb, empty, or neighbor reveal).
+ * @param coord_x X coordinate of the cell.
+ * @param coord_y Y coordinate of the cell.
+ * @return Does not return a value.
+ */
 void arcade_minesweeper::reveal_case(int coord_x, int coord_y) {
     if (coord_x < 0 || coord_x >= _width || coord_y < 0 || coord_y >= _height)
         return;
@@ -313,6 +350,12 @@ void arcade_minesweeper::reveal_case(int coord_x, int coord_y) {
     }
 }
 
+/**
+ * @brief Recursively reveals all neighboring empty cells.
+ * @param coord_x X coordinate of the starting cell.
+ * @param coord_y Y coordinate of the starting cell.
+ * @return Does not return a value.
+ */
 void arcade_minesweeper::reveal_neighbor_case(int coord_x, int coord_y) {
     for (int dy = -1; dy <= 1; ++dy) {
         for (int dx = -1; dx <= 1; ++dx) {
@@ -326,10 +369,20 @@ void arcade_minesweeper::reveal_neighbor_case(int coord_x, int coord_y) {
     }
 }
 
+/**
+ * @brief Checks if a cell contains a bomb.
+ * @param coord_x X coordinate of the cell.
+ * @param coord_y Y coordinate of the cell.
+ * @return True if the cell contains a bomb, false otherwise.
+ */
 bool arcade_minesweeper::is_bomb(int coord_x, int coord_y) {
     return _grid[coord_y][coord_x] == BOMB;
 }
 
+/**
+ * @brief Handles the logic when a bomb is triggered (game over, reveal all bombs).
+ * @return Does not return a value.
+ */
 void arcade_minesweeper::splode_bomb() {
     _isGameOver = true;
     _hasWon = false;
@@ -341,6 +394,10 @@ void arcade_minesweeper::splode_bomb() {
     }
 }
 
+/**
+ * @brief Ends the game and sets the game over state.
+ * @return Does not return a value.
+ */
 void arcade_minesweeper::end_game() {
     _isGameOver = true;
 }

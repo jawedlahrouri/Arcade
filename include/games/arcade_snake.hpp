@@ -27,13 +27,13 @@ class SnakeGame : public Arcade::IGames {
     public:
         SnakeGame();
         ~SnakeGame() override;
-        std::any update() override;
+        [[nodiscard]] std::any update() override;
         void handleKey(const std::vector<Arcade::InputCommand>& inputs) override;
-        int getScore() override;
-        bool isGameOver() override;
-        Arcade::DisplayData getDisplayables() const override;
-        std::unordered_map<Arcade::ElementType, std::string> getAssets() override;
-        std::any init() override;
+        [[nodiscard]] int getScore() override;
+        [[nodiscard]] bool isGameOver() override;
+        [[nodiscard]] Arcade::DisplayData getDisplayables() const override;
+        [[nodiscard]] std::unordered_map<Arcade::ElementType, std::string> getAssets() override;
+        [[nodiscard]] std::any init() override;
 };
 
 #endif /* !ARCADE_SNAKE_HPP_ */

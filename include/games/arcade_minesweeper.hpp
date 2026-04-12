@@ -39,13 +39,13 @@ class arcade_minesweeper : public Arcade::IGames {
         arcade_minesweeper() = default;
         ~arcade_minesweeper() override = default;
 
-        std::any init() override;
-        std::any update() override;
+        [[nodiscard]] std::any init() override;
+        [[nodiscard]] std::any update() override;
         void handleKey(const std::vector<Arcade::InputCommand>& inputs) override;
-        int getScore() override;
-        bool isGameOver() override;
-        Arcade::DisplayData getDisplayables() const override;
-        std::unordered_map<Arcade::ElementType, std::string> getAssets() override;
+        [[nodiscard]] int getScore() override;
+        [[nodiscard]] bool isGameOver() override;
+        [[nodiscard]] Arcade::DisplayData getDisplayables() const override;
+        [[nodiscard]] std::unordered_map<Arcade::ElementType, std::string> getAssets() override;
         void generate_bomb_field(int safe_x, int safe_y); 
         void reveal_case(int coord_x, int coord_y); 
         void reveal_neighbor_case(int coord_x, int coord_y);

@@ -10,6 +10,10 @@
 #include <chrono>
 #include <unordered_map>
 
+/**
+ * @brief Constructs a new SnakeGame object and initializes the game state.
+ * @return Does not return a value.
+ */
 SnakeGame::SnakeGame()
 {
     _score = 0;
@@ -21,15 +25,28 @@ SnakeGame::SnakeGame()
     _isGameOver = false;
 }
 
+/**
+ * @brief Destructor for SnakeGame.
+ * @return Does not return a value.
+ */
 SnakeGame::~SnakeGame()
 {
 }
 
+/**
+ * @brief Returns the current score of the snake game.
+ * @return The current score as an integer.
+ */
 int SnakeGame::getScore()
 {
     return _score;
 }
 
+/**
+ * @brief Handles user input commands for the snake game.
+ * @param inputs List of input commands for the current frame.
+ * @return Does not return a value.
+ */
 void SnakeGame::handleKey(const std::vector<Arcade::InputCommand>& inputs)
 {
     for (auto command : inputs) {
@@ -44,6 +61,10 @@ void SnakeGame::handleKey(const std::vector<Arcade::InputCommand>& inputs)
     }
 }
 
+/**
+ * @brief Spawns a new apple at a random position not occupied by the snake.
+ * @return Does not return a value.
+ */
 void SnakeGame::spawnApple()
 {
     bool onBody = true;
@@ -61,6 +82,10 @@ void SnakeGame::spawnApple()
     }
 }
 
+/**
+ * @brief Updates the snake's position, handles collisions and apple eating.
+ * @return An empty std::any (for interface compatibility).
+ */
 std::any SnakeGame::update()
 {
     std::pair<int, int> snakeHead = _body.front();
@@ -108,6 +133,10 @@ std::any SnakeGame::update()
     return {};
 }
 
+/**
+ * @brief Returns the mapping of element types to asset file paths for the snake game.
+ * @return Unordered map of element types to asset file paths.
+ */
 std::unordered_map<Arcade::ElementType, std::string> SnakeGame::getAssets()
 {
     return {
@@ -124,6 +153,10 @@ std::unordered_map<Arcade::ElementType, std::string> SnakeGame::getAssets()
     };
 }
 
+/**
+ * @brief Builds and returns the display data (sprites and texts) for the snake game.
+ * @return The current display data for rendering.
+ */
 Arcade::DisplayData SnakeGame::getDisplayables() const
 {
     Arcade::DisplayData data;
