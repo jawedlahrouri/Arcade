@@ -100,6 +100,19 @@ bool check_main::check_args(int ac, const char **av)
     return true;
 }
 
+/**
+ * @brief Checks if the program is running in a graphical environment (DISPLAY).
+ * @return true if DISPLAY is set, throws Exception otherwise.
+ */
+bool close_if_is_tty()
+{
+    const char *display = std::getenv("DISPLAY");
+    if (!display || display[0] == '\0') {
+        throw Exception("You can't play if you don't have a display environment (DISPLAY not set)");
+    }
+    return true;
+}
+
 #ifndef UNIT_TEST
 /**
  * @brief Program entry point that validates arguments and starts the core loop.
@@ -117,6 +130,7 @@ int main(int argc, char **argv)
 
     try {
         check_main::check_args(argc, const_cast<const char **>(argv));
+        close_if_is_tty();
         Core core = Core(argv[1]);
         core.run();
     } catch (const WarningException &e) {
