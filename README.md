@@ -1,64 +1,19 @@
-# ARCADE-1
+# 🕹️ Arcade — Modular Dynamic Gaming Platform in C++20
 
-Tests group
+[![Academic Year](https://img.shields.io/badge/Epitech-Tek2-green?style=for-the-badge&logo=epitech&logoColor=white)](https://www.epitech.eu/)
+[![Module](https://img.shields.io/badge/Module-G--OOP--400-informational?style=for-the-badge)](#)
+[![Language](https://img.shields.io/badge/Language-C%2B%2B20-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](#)
 
-Tests have been done with the group:
+## 📘 Description
+**Arcade** est une plateforme de jeux d'arcade modulaire conçue en **C++20**. Son architecture repose sur le découplage total entre le cœur applicatif, les moteurs de jeux (Snake, Pacman, etc.) et les bibliothèques graphiques (SFML, SDL2, Ncurses) chargées dynamiquement à chaud sous forme de bibliothèques partagées (`.so`) via `dlopen`/`dlsym`.
 
-`joseph.birck@epitech.eu.jpg`
+## ⚙️ Architecture & Design Patterns
+- **Abstraction Graphique (`IGraphicLib`)** : Interface commune permettant de commuter instantanément de bibliothèque graphique en pleine partie sans interrompre le jeu.
+- **Abstraction de Jeu (`IGameLib`)** : Logique de jeu indépendante de toute bibliothèque graphique.
+- **Gestionnaire Dynamique (`DLLoader`)** : Encapsulation RAII des handles de bibliothèques dynamiques.
 
-## Features
-
-- Core executable loading dynamic `.so` plugins at runtime.
-- Interchangeable graphic backends (ncurses and SDL2).
-- Unified input system with `Arcade::InputCommand`.
-- Menu that scans `./lib` to list available games and graphic libraries.
-
-## Requirements
-
-- g++ (C++20)
-- make
-- ncurses
-- SDL2
-- SDL2_ttf
-
-## Build
-
+## 🔨 Compilation & Utilisation
 ```bash
 make
+./arcade ./lib/arcade_sfml.so
 ```
-
-Useful commands:
-
-```bash
-make clean
-make fclean
-make re
-```
-
-## Run
-
-```bash
-./arcade ./lib/arcade_ncurses.so
-./arcade ./lib/arcade_sdl2.so
-```
-
-## Controls
-
-- Arrow keys: menu navigation / in-game movement
-- ENTER: launch selected game
-- S: switch graphic backend at runtime
-- ESC: back to menu
-- Q: quit
-
-## Project structure
-
-- `include/`: interfaces and core headers
-- `src/`: implementations
-- `lib/`: generated plugins
-- `asset/`: project resources
-- `doc/`: project documentation
-
-## Internal docs
-
-- `doc/structure.current.md`: up-to-date architecture and project scan
-- `doc/structure.old2.md`: previous snapshot
